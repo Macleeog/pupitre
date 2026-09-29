@@ -9,13 +9,14 @@ export type FightResult = {
   xp: number;
   kamas: number;
   items: { itemId: number; quantity: number }[];
+  mine?: boolean;
 };
 
 export type FightEnd = Extract<GameEvent, { type: "fight-end" }>;
 
 export type GameEvent =
   | { type: "fight-start"; fighters: number; at: number }
-  | { type: "fight-end"; at: number; durationMs?: number; results?: FightResult[] }
+  | { type: "fight-end"; at: number; durationMs?: number; results?: FightResult[]; ownFighterIds?: string[] }
   | { type: "turn-start" | "turn-end"; fighterId: string; at: number };
 
 export type NetState = {
@@ -37,6 +38,7 @@ export type NetState = {
   lastFightEvent: GameEvent | null;
   lastFightEnd: FightEnd | null;
   fightsSeen: number;
+  ownFighterIds?: string[];
 };
 
 declare global {

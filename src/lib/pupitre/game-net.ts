@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchItem } from "@/lib/pupitre/items";
 import { usePupitre } from "@/lib/pupitre/store";
-import type { FightEnd, NetState } from "@/pupitre-desktop";
+import type { FightEnd, FightResult, NetState } from "@/pupitre-desktop";
 
 export function useNetState(): NetState | null {
   const [state, setState] = useState<NetState | null>(null);
@@ -21,16 +21,25 @@ export function useNetState(): NetState | null {
   return state;
 }
 
+export function hasLoot(result: FightResult): boolean {
+  return result.kamas > 0 || result.items.length > 0;
+}
+
+// `mine` comes from the reader: set for the characters played from this PC, or for the only
+// rewarded fighter when none is known yet.
 export function fightLoot(event: FightEnd) {
   const quantities = new Map<number, number>();
   let kamas = 0;
-  for (const result of event.results ?? []) {
+  const results = event.results ?? [];
+  for (const result of results) {
+    if (!result.mine) continue;
     kamas += result.kamas;
     for (const { itemId, quantity } of result.items) {
       quantities.set(itemId, (quantities.get(itemId) ?? 0) + quantity);
     }
   }
-  return { kamas, items: [...quantities].map(([itemId, quantity]) => ({ itemId, quantity })) };
+  const unattributed = !results.some((result) => result.mine) && results.some(hasLoot);
+  return { kamas, items: [...quantities].map(([itemId, quantity]) => ({ itemId, quantity })), unattributed };
 }
 
 async function nameNewResources(resourceIds: string[]) {

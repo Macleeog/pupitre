@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 export type CatalogItem = {
   id: number;
   name: string;
@@ -101,4 +103,21 @@ export function fetchItem(id: number): Promise<CatalogItem | null> {
     byId.set(id, pending);
   }
   return pending;
+}
+
+export function useItemNames(ids: number[]): Map<number, string> {
+  const key = [...new Set(ids)].sort((a, b) => a - b).join(",");
+  const [names, setNames] = useState(() => new Map<number, string>());
+  useEffect(() => {
+    if (!key) return;
+    let alive = true;
+    void Promise.all(key.split(",").map((id) => fetchItem(Number(id)))).then((items) => {
+      if (!alive) return;
+      setNames(new Map(items.flatMap((item) => (item ? [[item.id, item.name] as const] : []))));
+    });
+    return () => {
+      alive = false;
+    };
+  }, [key]);
+  return names;
 }
