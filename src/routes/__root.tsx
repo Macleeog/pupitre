@@ -14,7 +14,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Pupitre, le second écran pour Dofus 3 : roue des personnages, tour, table des runes Unity et textes rapides.",
+          "Pupitre, application pour Dofus 3 : ordre de passage, roue, poids des runes et compteur de farm.",
       },
       { name: "theme-color", content: "#101614" },
     ],

@@ -65,7 +65,7 @@ export function Desk() {
             <p className="text-xs font-medium tracking-widest text-lamp uppercase">Dofus 3</p>
             <h1 className="font-display text-4xl leading-none text-fog">Pupitre</h1>
             <p className="mt-2 max-w-sm text-sm text-mist">
-              Le second écran de la team. Tu confirmes le tour, la roue dit qui mettre devant.
+              L'application de la team. Tu confirmes le tour, la roue dit qui mettre devant.
             </p>
           </div>
           {focus ? (
@@ -169,10 +169,9 @@ function About() {
       </button>
       {open ? (
         <p className="mt-2 max-w-prose">
-          Multifus, sur Dofus Rétro, amène tout seul la fenêtre du personnage dont c'est le tour.
-          Un site ne peut pas lire le client Unity ni passer une fenêtre au premier plan. Pupitre garde
-          la roue, l'ordre de passage, la table des runes 3.0, les textes à coller et un compteur de farm. Les objets viennent de DofusDB.
-          Indépendant d'Ankama et de l'auteur de Multifus. Dofus est une marque d'Ankama.
+          Pupitre est l'application bureau. Elle ne lit pas la mémoire du client Unity : pas de tour détecté tout seul,
+          pas de drops lus dans le jeu, pas de fenêtre amenée au premier plan. Le farm et l'ordre de passage se notent à la main.
+          Les objets et les poids de runes viennent du catalogue Dofus 3. Indépendant d'Ankama. Dofus est une marque d'Ankama.
         </p>
       ) : null}
     </section>

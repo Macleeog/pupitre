@@ -10,7 +10,7 @@ import {
   type FarmSession,
   type FarmSnapshot,
 } from "@/lib/pupitre/farm";
-import type { RuneEdition, RuneFamilyId, RuneGrade } from "@/lib/pupitre/runes";
+import type { RuneFamilyId, RuneGrade } from "@/lib/pupitre/runes";
 
 export type ServerMode = "classique" | "mono";
 export type DeskTab = "tour" | "roue" | "runes" | "textes";
@@ -60,7 +60,6 @@ type PupitreState = {
   journal: JournalEntry[];
   texts: QuickText[];
   pins: RoutePin[];
-  edition: RuneEdition;
   family: "all" | RuneFamilyId;
   query: string;
   handId: string;
@@ -85,7 +84,6 @@ type PupitreState = {
   addPin: (place: string) => void;
   toggleArrival: (pinId: string, characterId: string) => void;
   removePin: (id: string) => void;
-  setEdition: (edition: RuneEdition) => void;
   setFamily: (family: PupitreState["family"]) => void;
   setQuery: (query: string) => void;
   setHand: (id: string, grade?: RuneGrade) => void;
@@ -143,7 +141,6 @@ export const usePupitre = create<PupitreState>()(
       journal: [],
       texts: DEFAULT_TEXTS,
       pins: [{ id: "pin-exemple", place: "Zaap, coin de la place", done: [] }],
-      edition: "unity",
       family: "all",
       query: "",
       handId: "vita",
@@ -258,7 +255,6 @@ export const usePupitre = create<PupitreState>()(
           }),
         })),
       removePin: (id) => set((state) => ({ pins: state.pins.filter((pin) => pin.id !== id) })),
-      setEdition: (edition) => set({ edition, handId: edition === "unity" ? "vita" : "vita" }),
       setFamily: (family) => set({ family }),
       setQuery: (query) => set({ query }),
       setHand: (id, grade) => set({ handId: id, grade: grade ?? "rune" }),
@@ -408,7 +404,6 @@ export const usePupitre = create<PupitreState>()(
         journal: state.journal,
         texts: state.texts,
         pins: state.pins,
-        edition: state.edition,
         handId: state.handId,
         grade: state.grade,
         sink: state.sink,

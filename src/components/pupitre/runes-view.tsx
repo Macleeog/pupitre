@@ -17,8 +17,6 @@ const GRADES: { id: RuneGrade; label: string }[] = [
 ];
 
 export function RunesView() {
-  const edition = usePupitre((state) => state.edition);
-  const setEdition = usePupitre((state) => state.setEdition);
   const family = usePupitre((state) => state.family);
   const setFamily = usePupitre((state) => state.setFamily);
   const query = usePupitre((state) => state.query);
@@ -32,44 +30,20 @@ export function RunesView() {
 
   const rows = useMemo(() => {
     const needle = query.trim().toLocaleLowerCase("fr");
-    return runesFor(edition).filter((stat) => {
+    return runesFor().filter((stat) => {
       if (family !== "all" && stat.family !== family) return false;
       if (!needle) return true;
       return `${stat.name} ${stat.short}`.toLocaleLowerCase("fr").includes(needle);
     });
-  }, [edition, family, query]);
+  }, [family, query]);
 
-  const hand = runesFor(edition).find((stat) => stat.id === handId) ?? runesFor(edition)[0];
+  const hand = runesFor().find((stat) => stat.id === handId) ?? runesFor()[0];
   const held = hand ? gradeOf(hand, grade) : null;
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 rounded-full border border-edge bg-moss p-1">
-        <button
-          type="button"
-          onClick={() => setEdition("unity")}
-          className={
-            "min-h-11 rounded-full text-sm font-medium " +
-            (edition === "unity" ? "bg-lamp text-lamp-ink" : "text-mist")
-          }
-        >
-          Dofus 3
-        </button>
-        <button
-          type="button"
-          onClick={() => setEdition("retro")}
-          className={
-            "min-h-11 rounded-full text-sm font-medium " +
-            (edition === "retro" ? "bg-paper text-ink" : "text-mist")
-          }
-        >
-          Rétro
-        </button>
-      </div>
       <p className="text-sm text-mist">
-        {edition === "unity"
-          ? "Poids du client Unity. La vitalité pèse 0,2, le critique 10. Ce n’est pas la table Rétro."
-          : "Table Rétro, comme le pupitre Multifus : critique à 30, soin à 20, vitalité arrondie."}
+        Poids Dofus 3, les mêmes sur DofusDB et DoFensive. Vitalité 0,2, critique 10, do piège 5, renvoi 5.
       </p>
       <input
         value={query}
@@ -130,7 +104,7 @@ export function RunesView() {
         </ul>
       </div>
 
-      {hand && edition === "unity" ? (
+      {hand ? (
         <section className="rounded-card border border-edge bg-moss p-4">
           <h3 className="font-medium">Rune en main · {hand.short}</h3>
           <p className="text-sm text-mist">{hand.name}</p>
