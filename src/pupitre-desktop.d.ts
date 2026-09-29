@@ -4,9 +4,18 @@ export type NetStatus = "idle" | "unsupported" | "missing" | "starting" | "liste
 
 export type NetDirection = "in" | "out";
 
+export type FightResult = {
+  fighterId: string;
+  xp: number;
+  kamas: number;
+  items: { itemId: number; quantity: number }[];
+};
+
+export type FightEnd = Extract<GameEvent, { type: "fight-end" }>;
+
 export type GameEvent =
   | { type: "fight-start"; fighters: number; at: number }
-  | { type: "fight-end"; at: number }
+  | { type: "fight-end"; at: number; durationMs?: number; results?: FightResult[] }
   | { type: "turn-start" | "turn-end"; fighterId: string; at: number };
 
 export type NetState = {
@@ -26,6 +35,8 @@ export type NetState = {
   capturesDir: string;
   inFight: boolean;
   lastFightEvent: GameEvent | null;
+  lastFightEnd: FightEnd | null;
+  fightsSeen: number;
 };
 
 declare global {

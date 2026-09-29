@@ -13,6 +13,41 @@ const NO_FIGHTER = 18446744073709551615n;
 const SAME_FIGHT_MS = 5000;
 const SAME_TURN_MS = 1000;
 
+function toNumber(value) {
+  return value === undefined ? 0 : Number(BigInt.asIntN(64, value));
+}
+
+// Fight-end payload, read from real captures (2026-09-29):
+//   4: duration in ms
+//   5: one entry per fighter
+//      1: { 4: { 3: { 1: { 1: xp } } }, 6: fighterId }
+//      2: { 2: [ { 3: [ { 1: itemId, 4: quantity } ] } ], 3: kamas }
+function fightResults(payload) {
+  const results = [];
+  for (const entry of payload.get(5) ?? []) {
+    if (entry.wireType !== 2) continue;
+    const fields = parseMessage(entry.raw);
+    const fighter = messageField(fields, 1);
+    const id = varintField(fighter, 6);
+    if (id === undefined || id === NO_FIGHTER) continue;
+    const xp = varintField(messageField(messageField(messageField(fighter, 4), 3), 1), 1);
+    const loot = messageField(fields, 2);
+    const items = [];
+    for (const group of loot?.get(2) ?? []) {
+      if (group.wireType !== 2) continue;
+      for (const stack of parseMessage(group.raw)?.get(3) ?? []) {
+        if (stack.wireType !== 2) continue;
+        const item = parseMessage(stack.raw);
+        const itemId = toNumber(varintField(item, 1));
+        const quantity = toNumber(varintField(item, 4)) || 1;
+        if (itemId > 0) items.push({ itemId, quantity });
+      }
+    }
+    results.push({ fighterId: id.toString(), xp: toNumber(xp), kamas: toNumber(varintField(loot, 3)), items });
+  }
+  return results;
+}
+
 function fighterOrder(payload) {
   const ids = [];
   for (const entry of payload.get(1) ?? []) {
@@ -62,7 +97,12 @@ function createFightTracker(emit) {
         active.delete(connection);
         if (at - lastEnd > SAME_FIGHT_MS) {
           lastEnd = at;
-          emit({ type: "fight-end", at });
+          emit({
+            type: "fight-end",
+            at,
+            durationMs: toNumber(varintField(payload, 4)),
+            results: fightResults(payload),
+          });
         }
       }
     },
