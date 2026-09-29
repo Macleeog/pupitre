@@ -16,7 +16,6 @@ export function TourView() {
   const focusId = usePupitre((state) => state.focusId);
   const focus = characters.find((character) => character.id === focusId) ?? null;
   const advance = usePupitre((state) => state.advance);
-  const pulse = usePupitre((state) => state.pulse);
   const setFocus = usePupitre((state) => state.setFocus);
   const moveCharacter = usePupitre((state) => state.moveCharacter);
   const removeCharacter = usePupitre((state) => state.removeCharacter);
@@ -54,11 +53,6 @@ export function TourView() {
               Tour suivant
               <ChevronRight className="size-5" aria-hidden="true" />
             </button>
-            <div className="mt-3 grid grid-cols-3 gap-2">
-              <PulseButton label="Échange" onClick={() => pulse("trade")} />
-              <PulseButton label="Invitation" onClick={() => pulse("invite")} />
-              <PulseButton label="Message" onClick={() => pulse("pm")} />
-            </div>
             <p className="mt-3 text-xs text-ink/55">N passe au suivant. Les touches 1 à 9 choisissent dans l'ordre.</p>
           </>
         ) : (
@@ -153,7 +147,7 @@ export function TourView() {
           ) : null}
         </div>
         {journal.length === 0 ? (
-          <p className="text-sm text-mist">Les tours, échanges, invitations et messages s'inscrivent ici.</p>
+          <p className="text-sm text-mist">Chaque « Tour suivant » s'inscrit ici.</p>
         ) : (
           <ul className="flex flex-col gap-1">
             {journal.map((entry) => (
@@ -163,18 +157,6 @@ export function TourView() {
         )}
       </section>
     </div>
-  );
-}
-
-function PulseButton({ label, onClick }: { label: string; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="min-h-11 rounded-full border border-ink/15 text-sm font-medium text-ink"
-    >
-      {label}
-    </button>
   );
 }
 

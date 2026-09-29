@@ -93,7 +93,6 @@ type PupitreState = {
   moveCharacter: (id: string, direction: -1 | 1) => void;
   setFocus: (id: string) => void;
   advance: () => void;
-  pulse: (kind: Exclude<PulseKind, "turn">) => void;
   clearJournal: () => void;
   clearTeam: () => void;
   restoreExample: () => void;
@@ -227,19 +226,6 @@ export const usePupitre = create<PupitreState>()(
           focusId,
           journal: [entry, ...state.journal].slice(0, 12),
         });
-      },
-      pulse: (kind) => {
-        const state = get();
-        const character = state.characters.find((entry) => entry.id === state.focusId);
-        if (!character) return;
-        const entry: JournalEntry = {
-          id: uid("jr"),
-          at: Date.now(),
-          kind,
-          characterId: character.id,
-          name: character.name,
-        };
-        set({ journal: [entry, ...state.journal].slice(0, 12) });
       },
       clearJournal: () => set({ journal: [] }),
       clearTeam: () => set({ characters: [], focusId: null, pins: [], journal: [] }),
