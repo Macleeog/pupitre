@@ -36,6 +36,14 @@ export type Character = {
 
 export type FightLootItem = { itemId: number; quantity: number };
 
+export type ResourcePatch = Partial<
+  Pick<FarmResource, "name" | "qty" | "price" | "priceFrom" | "itemId" | "icon" | "typeName" | "level">
+>;
+
+export type HdvPrice = { unit: number; at: number };
+
+const HDV_PRICES_KEPT = 1000;
+
 export const DEFAULT_SHORTCUTS: ShortcutMap = {
   overlay: "CommandOrControl+Shift+F9",
   start: "CommandOrControl+Shift+F6",
@@ -89,10 +97,10 @@ type PupitreState = {
   addResource: () => void;
   addFightLoot: (kamas: number, items: FightLootItem[]) => string[];
   undoFightLoot: (id: string) => void;
-  patchResource: (
-    id: string,
-    patch: Partial<Pick<FarmResource, "name" | "qty" | "price" | "itemId" | "icon" | "typeName" | "level">>,
-  ) => void;
+  patchResource: (id: string, patch: ResourcePatch) => void;
+  hdvPrices: Record<string, HdvPrice>;
+  applyHdvPrices: (prices: { itemId: number; unitPrice: number }[], at: number) => void;
+  forgetHdvPrices: () => void;
   removeResource: (id: string) => void;
   removeFarmHistory: (id: string) => void;
 };
@@ -270,12 +278,14 @@ export const usePupitre = create<PupitreState>()(
               resources[index] = { ...current, qty: String(parseKamas(current.qty) + quantity), fromFight: true };
             } else {
               const id = uid("res");
+              const known = state.hdvPrices[itemId];
               created.push(id);
               resources.push({
                 id,
                 name: `Objet ${itemId}`,
                 qty: String(quantity),
-                price: "",
+                price: known ? String(known.unit) : "",
+                priceFrom: known ? "hdv" : undefined,
                 itemId,
                 icon: "",
                 typeName: "",
@@ -334,7 +344,10 @@ export const usePupitre = create<PupitreState>()(
                 }
               }
               if (patch.qty !== undefined) next.qty = digitsOnly(patch.qty);
-              if (patch.price !== undefined) next.price = digitsOnly(patch.price);
+              if (patch.price !== undefined) {
+                next.price = digitsOnly(patch.price);
+                next.priceFrom = next.price ? (patch.priceFrom ?? "manual") : undefined;
+              }
               if (patch.itemId !== undefined) next.itemId = patch.itemId;
               if (patch.icon !== undefined) next.icon = patch.icon;
               if (patch.typeName !== undefined) next.typeName = patch.typeName.slice(0, 40);
@@ -343,6 +356,24 @@ export const usePupitre = create<PupitreState>()(
             }),
           },
         })),
+      hdvPrices: {},
+      applyHdvPrices: (prices, at) =>
+        set((state) => {
+          if (prices.length === 0) return state;
+          const fresh = Object.fromEntries(prices.map(({ itemId, unitPrice }) => [itemId, { unit: unitPrice, at }]));
+          const hdvPrices = Object.fromEntries(
+            Object.entries({ ...state.hdvPrices, ...fresh })
+              .sort(([, a], [, b]) => b.at - a.at)
+              .slice(0, HDV_PRICES_KEPT),
+          );
+          const resources = state.farm.resources.map((resource) => {
+            const known = resource.itemId != null ? fresh[resource.itemId] : undefined;
+            if (!known || resource.priceFrom === "manual") return resource;
+            return { ...resource, price: String(known.unit), priceFrom: "hdv" as const };
+          });
+          return { hdvPrices, farm: { ...state.farm, resources } };
+        }),
+      forgetHdvPrices: () => set({ hdvPrices: {} }),
       removeResource: (id) =>
         set((state) => ({
           farm: {
@@ -368,6 +399,7 @@ export const usePupitre = create<PupitreState>()(
         autoCombats: state.autoCombats,
         autoLoot: state.autoLoot,
         shortcuts: state.shortcuts,
+        hdvPrices: state.hdvPrices,
       }),
       merge: (persisted, current) => {
         const saved = (persisted ?? {}) as Partial<PupitreState> & {

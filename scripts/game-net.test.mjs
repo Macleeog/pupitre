@@ -10,6 +10,7 @@ const { FrameStream, decodeFrame, readVarint } = require("../desktop/game-net/de
 const { createFightTracker } = require("../desktop/game-net/fights.cjs");
 const { GameNetReader, captureFilter } = require("../desktop/game-net/reader.cjs");
 const { KNOWN_TYPES, codesHealth } = require("../desktop/game-net/known-types.cjs");
+const { readMarket } = require("../desktop/game-net/market.cjs");
 
 const hex = (s) => Buffer.from(s.replace(/\s+/g, ""), "hex");
 
@@ -265,6 +266,56 @@ test("codes du jeu : alerte seulement quand la plupart des types sont inconnus",
   assert.equal(codesHealth([...known.slice(0, 15), "abc", "abd", "abe"], 1000).state, "ok");
   assert.equal(codesHealth(renamed, 1000).state, "stale");
   assert.equal(codesHealth([...renamed, ...known.slice(0, 3)], 1000).state, "stale");
+});
+
+// Listings from the sell-mode capture of 2026-09-29: Viande Hachée by 1 and by 10, Plume de Piou Vert.
+function sellerListings(lots) {
+  const settings = bytesField(1, Buffer.concat([intField(2, 200), intField(3, 672)]));
+  const listing = ([uid, itemId, quantity, price]) =>
+    bytesField(
+      2,
+      Buffer.concat([
+        bytesField(1, Buffer.concat([intField(1, uid), intField(2, itemId), intField(3, quantity)])),
+        intField(2, price),
+        intField(3, 2419139),
+      ]),
+    );
+  return Buffer.concat([settings, ...lots.map(listing)]);
+}
+
+test("hôtel des ventes : un prix unitaire par objet, le moins cher des lots", () => {
+  const value = sellerListings([
+    [7350584, 17123, 1, 29],
+    [7350647, 17123, 10, 322],
+    [7350390, 6899, 1, 113],
+    [7350397, 6899, 1, 113],
+    [1, 0, 1, 50],
+  ]);
+  assert.deepEqual(readMarket({ type: "ket", value }), {
+    source: "sale",
+    prices: [
+      { itemId: 17123, unitPrice: 29 },
+      { itemId: 6899, unitPrice: 113 },
+    ],
+  });
+  assert.deepEqual(readMarket({ type: "ket", value: sellerListings([[1, 17123, 100, 2550]]) }).prices, [
+    { itemId: 17123, unitPrice: 26 },
+  ]);
+  assert.equal(readMarket({ type: "isb", value }), null);
+});
+
+test("lecteur : la mise en vente à l'HDV envoie les prix", () => {
+  const events = [];
+  const reader = new GameNetReader({ capturesDir: os.tmpdir(), onEvent: (e) => events.push(e) });
+  const inbound = framed(event("ket", sellerListings([[7350390, 6899, 1, 113]])));
+  reader.handleLine(["1700000000.5", "5555", "7", "100", "", inbound.toString("hex")].join("\t"));
+  assert.deepEqual(events, [
+    { type: "hdv-prices", at: 1700000000500, source: "sale", prices: [{ itemId: 6899, unitPrice: 113 }] },
+  ]);
+  assert.deepEqual(reader.snapshot().lastMarket, { at: 1700000000500, source: "sale", items: 1 });
+  const outbound = framed(bytesField(1, bytesField(1, any("ket", sellerListings([[1, 6899, 1, 5]])))));
+  reader.handleLine(["1700000001.0", "51000", "7", "900", "", outbound.toString("hex")].join("\t"));
+  assert.equal(events.length, 1);
 });
 
 test("filtre de capture limité aux serveurs de jeu", () => {

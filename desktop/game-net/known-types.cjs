@@ -1,14 +1,15 @@
 // Every message type seen in the captures of 2026-09-29. Ankama renames all obfuscated types
 // together on a game update, so a session where most types are unknown means the fight codes in
-// fights.cjs are probably stale too. Refresh both from a new capture.
+// fights.cjs and market.cjs are probably stale too. Refresh both from a new capture.
 const KNOWN_TYPES = new Set([
-  "hpo", "hpr", "hps", "iii", "iir", "ine", "isa", "isf", "isx", "iva", "ivf", "iyo", "ize",
-  "jfp", "jon", "joo", "jop", "joq", "jou", "jpo", "jpp", "jpt", "jpw", "jpx", "jqb", "jqy",
-  "jqz", "jrj", "jro", "jrs", "jue", "juh", "jul", "jun", "juo", "jus", "juu", "juz", "jva",
-  "jvj", "jvk", "jvn", "jvt", "jvv", "jwc", "jwd", "jwe", "jxh", "jxl", "jxu", "jxw", "jyf",
-  "jyk", "jyl", "jym", "jyn", "jyo", "jyq", "kkc", "kkf", "kkg", "kki", "kkr", "knz", "kob",
-  "kqf", "krf", "krk", "krn", "kru", "kty", "kua", "kub", "kuh", "kui", "kul", "kum", "kun",
-  "kuo", "kuq", "lob", "loc", "log", "loh", "lok", "loq", "lsz", "lxd",
+  "hlp", "hpo", "hpr", "hps", "iii", "iir", "imp", "ine", "isa", "isb", "isf", "isx", "iup",
+  "iva", "ivf", "iyo", "ize", "jfp", "jon", "joo", "jop", "joq", "jou", "jpo", "jpp", "jpt",
+  "jpw", "jpx", "jqb", "jqy", "jqz", "jrj", "jro", "jrs", "jue", "juh", "jul", "jun", "juo",
+  "jus", "juu", "juz", "jva", "jvj", "jvk", "jvn", "jvt", "jvv", "jwc", "jwd", "jwe", "jxh",
+  "jxl", "jxu", "jxw", "jyf", "jyk", "jyl", "jym", "jyn", "jyo", "jyq", "jzi", "kby", "ket",
+  "kiy", "kkc", "kkf", "kkg", "kki", "kkr", "knz", "kob", "kqf", "krf", "krk", "krn", "kru",
+  "kty", "kua", "kub", "kuh", "kui", "kul", "kum", "kun", "kuo", "kuq", "lob", "loc", "log",
+  "loh", "lok", "loq", "lsz", "lxd",
 ]);
 
 const MIN_MESSAGES = 300;

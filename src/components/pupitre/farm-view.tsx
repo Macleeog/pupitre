@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Eraser, Plus, Swords, Trash2, Undo2 } from "lucide-react";
+import { Eraser, Plus, Store, Swords, Trash2, Undo2 } from "lucide-react";
 import {
   averageMs,
   elapsedMs,
@@ -14,7 +14,7 @@ import {
 import { searchItems, useItemNames, type CatalogItem } from "@/lib/pupitre/items";
 import { formatAccelerator } from "@/lib/pupitre/shortcuts";
 import { HistoryCharts } from "@/components/pupitre/history-view";
-import { usePupitre, type FarmHistoryEntry } from "@/lib/pupitre/store";
+import { usePupitre, type FarmHistoryEntry, type ResourcePatch } from "@/lib/pupitre/store";
 import type { FarmResource, FightLogEntry } from "@/lib/pupitre/farm";
 
 const STATUS_LABEL: Record<FarmStatus, string> = {
@@ -295,8 +295,9 @@ export function FarmView() {
             </section>
           </div>
           <p className="text-sm text-mist">
-            Les objets viennent du catalogue Dofus 3 (DofusDB). Le prix unitaire, c'est le tien. Dans l'exe, l'onglet
-            Réseau peut ajouter seul les combats, les kamas et le butin de fin de combat.
+            Les objets viennent du catalogue Dofus 3 (DofusDB). Dans l'exe, l'onglet Réseau ajoute seul les combats, les
+            kamas et le butin, et reprend tes prix quand tu ouvres le mode vente de l'hôtel des ventes. Un prix tapé à la
+            main reste le tien.
           </p>
           <FightLog entries={farm.fightLog ?? []} resources={farm.resources} onUndo={undoFightLoot} />
           <section>
@@ -317,7 +318,7 @@ function ResourceName({
 }: {
   resource: FarmResource;
   onFocus: () => void;
-  onPatch: (patch: Partial<Pick<FarmResource, "name" | "qty" | "price" | "itemId" | "icon" | "typeName" | "level">>) => void;
+  onPatch: (patch: ResourcePatch) => void;
 }) {
   const [editing, setEditing] = useState(false);
   const [hits, setHits] = useState<CatalogItem[]>([]);
@@ -381,7 +382,7 @@ function ResourceName({
           className="min-h-11 min-w-0 flex-1 rounded-lg bg-transparent px-2"
         />
       </div>
-      {linked || resource.fromFight ? (
+      {linked || resource.fromFight || resource.priceFrom === "hdv" ? (
         <p className="flex flex-wrap items-center gap-x-2 px-2 text-xs text-mist">
           {resource.fromFight ? (
             <span
@@ -390,6 +391,15 @@ function ResourceName({
             >
               <Swords className="size-3" aria-hidden="true" />
               combat
+            </span>
+          ) : null}
+          {resource.priceFrom === "hdv" ? (
+            <span
+              className="inline-flex items-center gap-1 rounded-full border border-edge px-1.5 text-fog"
+              title="Prix repris de ta mise en vente à l'hôtel des ventes. Tape un prix pour garder le tien."
+            >
+              <Store className="size-3" aria-hidden="true" />
+              HDV
             </span>
           ) : null}
           {linked
@@ -416,7 +426,9 @@ function ResourceName({
                     icon: item.icon,
                     typeName: item.typeName,
                     level: item.level,
-                    price: !resource.price && item.price > 1 ? String(item.price) : undefined,
+                    ...(!resource.price && item.price > 1
+                      ? { price: String(item.price), priceFrom: "catalog" as const }
+                      : {}),
                   });
                 }}
               >

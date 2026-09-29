@@ -10,6 +10,8 @@ export type FarmResource = {
   typeName: string;
   level: number | null;
   fromFight?: boolean;
+  // Only "manual" prices are protected from auction house updates.
+  priceFrom?: "catalog" | "hdv" | "manual";
 };
 
 export type FightLogEntry = {

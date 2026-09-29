@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { FolderOpen, RotateCw, Swords, Circle, Square, TriangleAlert, UserCheck } from "lucide-react";
+import { FolderOpen, RotateCw, Store, Swords, Circle, Square, TriangleAlert, UserCheck } from "lucide-react";
 import { fightLoot, hasLoot, useNetState } from "@/lib/pupitre/game-net";
 import { useItemNames } from "@/lib/pupitre/items";
 import { usePupitre } from "@/lib/pupitre/store";
-import type { FightEnd, GameEvent, NetState, NetStatus } from "@/pupitre-desktop";
+import type { FightEnd, FightEvent, NetState, NetStatus } from "@/pupitre-desktop";
 
 const STATUS: Record<NetStatus, { label: string; tone: string }> = {
   idle: { label: "En attente", tone: "border-edge text-mist" },
@@ -30,7 +30,7 @@ function clock(at: number): string {
   return new Date(at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
 
-function describeFight(event: GameEvent | null): string {
+function describeFight(event: FightEvent | null): string {
   if (!event) return "Aucun combat vu depuis le lancement.";
   if (event.type === "fight-start") return `Combat commencé à ${clock(event.at)}, ${event.fighters} combattants.`;
   if (event.type === "fight-end") return `Dernier combat terminé à ${clock(event.at)}.`;
@@ -73,6 +73,7 @@ export function NetworkView() {
       <StatusCard state={state} now={now} />
       {state.codes?.state === "stale" ? <StaleCodes share={state.codes.knownShare ?? 0} /> : null}
       <FightCard state={state} />
+      <MarketCard now={now} />
       <CaptureCard state={state} now={now} />
       {state.status === "missing" || state.status === "error" || state.status === "unsupported" ? <SetupHelp /> : null}
     </div>
@@ -186,6 +187,55 @@ function OwnFighters({ ids }: { ids: string[] }) {
         </button>
       ) : null}
     </div>
+  );
+}
+
+function MarketCard({ now }: { now: number }) {
+  const hdvPrices = usePupitre((s) => s.hdvPrices);
+  const forgetHdvPrices = usePupitre((s) => s.forgetHdvPrices);
+  const entries = Object.entries(hdvPrices).sort(([, a], [, b]) => b.at - a.at);
+  const names = useItemNames(entries.slice(0, 6).map(([id]) => Number(id)));
+  const latest = entries[0]?.[1].at ?? null;
+  return (
+    <section className="rounded-card border border-edge bg-moss p-4">
+      <div className="flex items-center gap-3">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-pine text-mist">
+          <Store className="size-5" aria-hidden="true" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <h2 className="font-medium text-fog">Hôtel des ventes</h2>
+          <p className="text-sm text-mist">
+            {entries.length === 0
+              ? "Aucun prix pour l'instant."
+              : `${entries.length} prix gardé${entries.length > 1 ? "s" : ""} en mémoire, mis à jour ${ago(latest, now)}.`}
+          </p>
+        </div>
+        {entries.length > 0 ? (
+          <button
+            type="button"
+            onClick={forgetHdvPrices}
+            className="min-h-11 rounded-full border border-edge px-4 text-sm text-fog"
+            title="Les prix déjà recopiés dans la session restent."
+          >
+            Oublier
+          </button>
+        ) : null}
+      </div>
+      {entries.length > 0 ? (
+        <ul className="mt-3 flex flex-col gap-1 text-sm">
+          {entries.slice(0, 6).map(([id, price]) => (
+            <li key={id} className="flex justify-between gap-3 rounded-lg bg-pine px-3 py-1.5">
+              <span className="min-w-0 truncate text-fog">{names.get(Number(id)) ?? `Objet ${id}`}</span>
+              <span className="shrink-0 text-mist">{numbers.format(price.unit)} K / u</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      <p className="mt-3 text-xs text-mist">
+        Ouvre le mode vente de l'hôtel des ventes : Pupitre lit le prix de tes objets en vente (le moins cher par
+        unité quand tu vends par lots) et l'applique à tes ressources. Un prix tapé à la main n'est jamais remplacé.
+      </p>
+    </section>
   );
 }
 

@@ -6,6 +6,7 @@ const readline = require("node:readline");
 const { FrameStream, toJson } = require("./decode.cjs");
 const { createFightTracker } = require("./fights.cjs");
 const { codesHealth } = require("./known-types.cjs");
+const { readMarket } = require("./market.cjs");
 
 const GAME_PORTS = new Set([5555, 443]);
 const SERVERS = [
@@ -96,6 +97,7 @@ class GameNetReader {
     this.lastFightEvent = null;
     this.lastFightEnd = null;
     this.fightsSeen = 0;
+    this.lastMarket = null;
     this.capture = null;
     this.status = "idle";
     this.detail = "";
@@ -240,6 +242,12 @@ class GameNetReader {
     }
     try {
       this.fights.handle(stream, message, at, direction);
+      const market = inbound ? readMarket(message) : null;
+      if (market && market.prices.length > 0) {
+        this.lastMarket = { at, source: market.source, items: market.prices.length };
+        this.dirty = true;
+        this.onEvent?.({ type: "hdv-prices", at, source: market.source, prices: market.prices });
+      }
     } catch {
       // A malformed payload must never stop the reader.
     }
@@ -289,6 +297,7 @@ class GameNetReader {
       fightsSeen: this.fightsSeen,
       ownFighterIds: this.fights.ownFighterIds(),
       codes: codesHealth([...this.types.keys()], this.counters.messages),
+      lastMarket: this.lastMarket,
     };
   }
 

@@ -48,13 +48,16 @@ async function nameNewResources(resourceIds: string[]) {
     if (!resource?.itemId) continue;
     const item = await fetchItem(resource.itemId);
     if (!item) continue;
+    const current = usePupitre.getState().farm.resources.find((entry) => entry.id === resourceId);
+    const catalogPrice = !current?.price && item.price > 1;
     usePupitre.getState().patchResource(resourceId, {
       name: item.name,
       itemId: item.id,
       icon: item.icon,
       typeName: item.typeName,
       level: item.level,
-      price: item.price > 1 ? String(item.price) : undefined,
+      price: catalogPrice ? String(item.price) : undefined,
+      priceFrom: catalogPrice ? "catalog" : undefined,
     });
   }
 }
@@ -63,6 +66,10 @@ async function nameNewResources(resourceIds: string[]) {
 // so counting in both would add every fight twice.
 export function bindGameEvents(): () => void {
   const off = window.pupitre?.net?.onGameEvent((event) => {
+    if (event.type === "hdv-prices") {
+      usePupitre.getState().applyHdvPrices(event.prices, event.at);
+      return;
+    }
     if (event.type !== "fight-end") return;
     const { autoCombats, autoLoot, farm, addCombat, addFightLoot } = usePupitre.getState();
     if (farm.status !== "running") return;

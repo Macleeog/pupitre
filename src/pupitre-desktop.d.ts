@@ -18,12 +18,16 @@ export type FightResult = {
   mine?: boolean;
 };
 
-export type FightEnd = Extract<GameEvent, { type: "fight-end" }>;
+export type FightEnd = Extract<FightEvent, { type: "fight-end" }>;
 
-export type GameEvent =
+export type FightEvent =
   | { type: "fight-start"; fighters: number; at: number }
   | { type: "fight-end"; at: number; durationMs?: number; results?: FightResult[]; ownFighterIds?: string[] }
   | { type: "turn-start" | "turn-end"; fighterId: string; at: number };
+
+export type GameEvent =
+  | FightEvent
+  | { type: "hdv-prices"; at: number; source: "sale"; prices: { itemId: number; unitPrice: number }[] };
 
 export type NetState = {
   status: NetStatus;
@@ -41,11 +45,12 @@ export type NetState = {
   capture: { active: boolean; file: string | null; count: number; startedAt: number | null };
   capturesDir: string;
   inFight: boolean;
-  lastFightEvent: GameEvent | null;
+  lastFightEvent: FightEvent | null;
   lastFightEnd: FightEnd | null;
   fightsSeen: number;
   ownFighterIds?: string[];
   codes?: { state: "ok" | "unknown" | "stale"; knownShare: number | null };
+  lastMarket?: { at: number; source: "sale"; items: number } | null;
 };
 
 export type OverlaySize = "compact" | "large";
