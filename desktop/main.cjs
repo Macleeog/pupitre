@@ -1,8 +1,9 @@
-const { app, BrowserWindow, dialog, globalShortcut, ipcMain, screen } = require("electron");
+const { app, BrowserWindow, dialog, globalShortcut, ipcMain, screen, shell } = require("electron");
 const { spawn } = require("node:child_process");
 const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
+const { GameNetReader } = require("./game-net/reader.cjs");
 
 const PORT = 47321;
 const DEFAULT_PLACEMENT = { right: 12, top: 48 };
@@ -145,41 +146,39 @@ function followDofus(overlay) {
   return child;
 }
 
-// Capture reseau PASSIVE (lecture seule) : opt-in via PUPITRE_SNIFFER=1.
-// Necessite Wireshark (tshark + Npcap). Relaie chaque message JSON aux fenetres.
-function followTraffic(targets) {
-  if (process.platform !== "win32" || process.env.PUPITRE_SNIFFER !== "1") return null;
-  const child = spawn(
-    process.execPath,
-    [
-      path.join(__dirname, "pupitre-sniffer.cjs"),
-      "--iface",
-      process.env.PUPITRE_IFACE || "Wi-Fi",
-      "--port",
-      process.env.PUPITRE_PORT || "5555",
-    ],
-    { env: { ...process.env, ELECTRON_RUN_AS_NODE: "1" }, windowsHide: true, stdio: ["ignore", "pipe", "ignore"] },
-  );
-  let buffer = "";
-  child.stdout.on("data", (chunk) => {
-    buffer += String(chunk);
-    const lines = buffer.split(/\r?\n/);
-    buffer = lines.pop() ?? "";
-    for (const line of lines) {
-      if (!line) continue;
-      let message;
-      try {
-        message = JSON.parse(line);
-      } catch {
-        continue;
-      }
-      for (const win of targets) {
-        if (win && !win.isDestroyed()) win.webContents.send("game-message", message);
-      }
-    }
+// Passive, read-only: tshark (Wireshark + Npcap) copies the game's packets; nothing is
+// injected, redirected or sent anywhere.
+function readGameNetwork(desk) {
+  const capturesDir = path.join(app.getPath("userData"), "packet-captures");
+  const toDesk = (channel, payload) => {
+    if (!desk.isDestroyed()) desk.webContents.send(channel, payload);
+  };
+  const reader = new GameNetReader({
+    capturesDir,
+    onState: (state) => toDesk("net:state", state),
+    onEvent: (event) => toDesk("game-event", event),
   });
-  child.on("error", () => {});
-  return child;
+  const fromDesk = (event) => event.sender === desk.webContents;
+  ipcMain.handle("net:get-state", (event) => (fromDesk(event) ? reader.snapshot() : null));
+  ipcMain.handle("net:capture-start", (event) => (fromDesk(event) ? reader.startCapture() : null));
+  ipcMain.handle("net:capture-stop", (event) => (fromDesk(event) ? reader.stopCapture() : null));
+  ipcMain.handle("net:restart", async (event) => {
+    if (!fromDesk(event)) return null;
+    await reader.restart();
+    return reader.snapshot();
+  });
+  ipcMain.handle("net:open-folder", async (event) => {
+    if (!fromDesk(event)) return;
+    const file = reader.snapshot().capture.file;
+    if (file && fs.existsSync(file)) {
+      shell.showItemInFolder(file);
+      return;
+    }
+    fs.mkdirSync(capturesDir, { recursive: true });
+    await shell.openPath(capturesDir);
+  });
+  void reader.start();
+  return reader;
 }
 
 app.whenReady().then(async () => {
@@ -201,10 +200,10 @@ app.whenReady().then(async () => {
   child.stdout.on("data", (chunk) => logs.push(String(chunk)));
   child.stderr.on("data", (chunk) => logs.push(String(chunk)));
 
-  let traffic = null;
+  let network = null;
   const shutdown = () => {
     if (!child.killed) child.kill();
-    if (traffic && !traffic.killed) traffic.kill();
+    network?.stop();
   };
   app.on("before-quit", shutdown);
   child.on("exit", (code) => {
@@ -249,8 +248,6 @@ app.whenReady().then(async () => {
   overlay.setAlwaysOnTop(true, "screen-saver");
   overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   const watcher = followDofus(overlay);
-  traffic = followTraffic([desk, overlay]);
-
   const shortcuts = [
     ["CommandOrControl+Shift+F6", "start"],
     ["CommandOrControl+Shift+F7", "pause"],
@@ -261,6 +258,7 @@ app.whenReady().then(async () => {
     globalShortcut.register(accelerator, () => sendFarm(command, overlay, desk));
   }
 
+  network = readGameNetwork(desk);
   await desk.loadURL(`http://127.0.0.1:${PORT}/`);
   await overlay.loadURL(`http://127.0.0.1:${PORT}/overlay`);
   desk.on("closed", () => {

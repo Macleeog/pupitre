@@ -6,17 +6,27 @@ contextBridge.exposeInMainWorld("pupitre", {
     ipcRenderer.on("farm-command", listener);
     return () => ipcRenderer.removeListener("farm-command", listener);
   },
-<<<<<<< HEAD
   overlayMoveBy(dx, dy) {
     ipcRenderer.send("overlay:move-by", dx, dy);
   },
   overlayDragEnd() {
     ipcRenderer.send("overlay:drag-end");
-=======
-  onGameMessage(handler) {
-    const listener = (_event, message) => handler(message);
-    ipcRenderer.on("game-message", listener);
-    return () => ipcRenderer.removeListener("game-message", listener);
->>>>>>> origin/feature/passive-sniffer
+  },
+  net: {
+    getState: () => ipcRenderer.invoke("net:get-state"),
+    startCapture: () => ipcRenderer.invoke("net:capture-start"),
+    stopCapture: () => ipcRenderer.invoke("net:capture-stop"),
+    restart: () => ipcRenderer.invoke("net:restart"),
+    openFolder: () => ipcRenderer.invoke("net:open-folder"),
+    onState(handler) {
+      const listener = (_event, state) => handler(state);
+      ipcRenderer.on("net:state", listener);
+      return () => ipcRenderer.removeListener("net:state", listener);
+    },
+    onGameEvent(handler) {
+      const listener = (_event, gameEvent) => handler(gameEvent);
+      ipcRenderer.on("game-event", listener);
+      return () => ipcRenderer.removeListener("game-event", listener);
+    },
   },
 });
