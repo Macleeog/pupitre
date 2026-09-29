@@ -129,6 +129,14 @@ function registerShortcuts(map, run) {
   return status;
 }
 
+// Windows drifts the size up on every setPosition when display scaling isn't 100%, so the
+// overlay is always moved with explicit bounds at this fixed size.
+const OVERLAY_SIZE = { width: 300, height: 150 };
+
+function moveOverlay(overlay, x, y) {
+  overlay.setBounds({ x: Math.round(x), y: Math.round(y), ...OVERLAY_SIZE });
+}
+
 function followDofus(overlay) {
   const state = { game: null, placement: loadPlacement(), dragging: false, hiddenByUser: false };
 
@@ -145,20 +153,17 @@ function followDofus(overlay) {
 
   const place = () => {
     if (!state.game || overlay.isDestroyed()) return;
-    const [width, height] = overlay.getSize();
+    const { width, height } = OVERLAY_SIZE;
     const top = Math.min(Math.max(0, state.placement.top), Math.max(0, state.game.height - height));
     const right = Math.min(Math.max(0, state.placement.right), Math.max(0, state.game.width - width));
-    overlay.setPosition(
-      Math.round(state.game.x + state.game.width - width - right),
-      Math.round(state.game.y + top),
-    );
+    moveOverlay(overlay, state.game.x + state.game.width - width - right, state.game.y + top);
   };
 
   ipcMain.on("overlay:move-by", (event, dx, dy) => {
     if (event.sender !== overlay.webContents || !Number.isFinite(dx) || !Number.isFinite(dy)) return;
     state.dragging = true;
     const [x, y] = overlay.getPosition();
-    overlay.setPosition(Math.round(x + dx), Math.round(y + dy));
+    moveOverlay(overlay, x + dx, y + dy);
   });
 
   ipcMain.on("overlay:drag-end", (event) => {
@@ -167,7 +172,7 @@ function followDofus(overlay) {
     if (!state.game) return;
     const bounds = overlay.getBounds();
     state.placement = {
-      right: Math.round(state.game.x + state.game.width - bounds.x - bounds.width),
+      right: Math.round(state.game.x + state.game.width - bounds.x - OVERLAY_SIZE.width),
       top: Math.round(bounds.y - state.game.y),
     };
     savePlacement(state.placement);
@@ -308,8 +313,11 @@ app.whenReady().then(async () => {
     webPreferences: webPreferences(),
   });
   const overlay = new BrowserWindow({
-    width: 300,
-    height: 150,
+    ...OVERLAY_SIZE,
+    minWidth: OVERLAY_SIZE.width,
+    minHeight: OVERLAY_SIZE.height,
+    maxWidth: OVERLAY_SIZE.width,
+    maxHeight: OVERLAY_SIZE.height,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
@@ -320,6 +328,12 @@ app.whenReady().then(async () => {
     focusable: false,
     backgroundColor: "#00000000",
     webPreferences: webPreferences(),
+  });
+  overlay.on("resize", () => {
+    const [width, height] = overlay.getSize();
+    if (width === OVERLAY_SIZE.width && height === OVERLAY_SIZE.height) return;
+    const [x, y] = overlay.getPosition();
+    moveOverlay(overlay, x, y);
   });
   overlay.setAlwaysOnTop(true, "screen-saver");
   overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
