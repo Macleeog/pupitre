@@ -8,7 +8,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { FrameStream, decodeFrame, readVarint } = require("../desktop/game-net/decode.cjs");
 const { createFightTracker } = require("../desktop/game-net/fights.cjs");
-const { GameNetReader, captureFilter } = require("../desktop/game-net/reader.cjs");
+const { GameNetReader, captureFilter, describeInterfaces, pickInterfaces, payloadFromHex } = require("../desktop/game-net/reader.cjs");
 const { KNOWN_TYPES, codesHealth } = require("../desktop/game-net/known-types.cjs");
 const { readMarket } = require("../desktop/game-net/market.cjs");
 
@@ -342,6 +342,19 @@ test("lecteur : la mise en vente à l'HDV envoie les prix", () => {
   const outbound = framed(bytesField(1, bytesField(1, any("ket", sellerListings([[1, 6899, 1, 5]])))));
   reader.handleLine(["1700000001.0", "51000", "7", "900", "", outbound.toString("hex")].join("\t"));
   assert.equal(events.length, 1);
+});
+
+test("capture : les cartes virtuelles sont laissées de côté", () => {
+  const listed = describeInterfaces(
+    [
+      "1. \\Device\\NPF_{AAA} (Wi-Fi)",
+      "2. \\Device\\NPF_{BBB} (vEthernet (WSL))",
+      "3. \\Device\\NPF_Loopback (Adapter for loopback traffic capture)",
+      "4. etwdump (Event Tracing for Windows (ETW) reader)",
+    ].join("\n"),
+  );
+  assert.deepEqual(pickInterfaces(listed), ["\\Device\\NPF_{AAA}"]);
+  assert.deepEqual(payloadFromHex("0a:ff"), Buffer.from([0x0a, 0xff]));
 });
 
 test("filtre de capture limité aux serveurs de jeu", () => {

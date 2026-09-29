@@ -7,8 +7,18 @@ const RELEASES = "https://github.com/Macleeog/pupitre/releases";
 
 // Updates come from the GitHub releases (latest.yml, written by electron-builder). Only a copy
 // installed by the setup can replace itself; an extracted zip is told to install once.
+function pupitreVersion() {
+  try {
+    const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8"));
+    if (typeof pkg.version === "string" && pkg.version) return pkg.version;
+  } catch {
+    // A packaged copy still exposes it through Electron.
+  }
+  return app.getVersion();
+}
+
 function watchForUpdates(desk) {
-  let state = { status: "idle", version: app.getVersion(), available: null, progress: 0, detail: "" };
+  let state = { status: "idle", version: pupitreVersion(), available: null, progress: 0, detail: "" };
   const set = (patch) => {
     state = { ...state, ...patch };
     if (!desk.isDestroyed()) desk.webContents.send("update:state", state);

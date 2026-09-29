@@ -41,18 +41,8 @@ export function FarmView() {
   const undoFightLoot = usePupitre((state) => state.undoFightLoot);
   const shortcuts = usePupitre((state) => state.shortcuts);
   const [selected, setSelected] = useState<string | null>(null);
-  const [now, setNow] = useState(() => Date.now());
-
-  useEffect(() => {
-    if (farm.status !== "running") return;
-    const timer = window.setInterval(() => setNow(Date.now()), 250);
-    return () => window.clearInterval(timer);
-  }, [farm.status]);
-
-  const elapsed = elapsedMs(farm, now);
-  const totals = snapshot(farm, elapsed);
+  const totals = snapshot(farm, elapsedMs(farm, Date.now()));
   const counting = farm.status === "running" || farm.status === "paused";
-  const hours = elapsed / 3_600_000;
   const sessionEmpty =
     farm.status === "idle" &&
     farm.combats === 0 &&
@@ -134,7 +124,7 @@ export function FarmView() {
                 Dans l'exe, un bandeau suit la fenêtre Dofus. {formatAccelerator(shortcuts.start)} démarre,{" "}
                 {formatAccelerator(shortcuts.pause)} pause, {formatAccelerator(shortcuts.stop)} termine,{" "}
                 {formatAccelerator(shortcuts.combat)} ajoute un combat, {formatAccelerator(shortcuts.reset)} efface. À
-                changer dans l'onglet Raccourcis.
+                changer dans l'onglet Réglages.
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button
@@ -157,20 +147,7 @@ export function FarmView() {
               <ClearSession empty={sessionEmpty} onClear={resetFarm} />
             </section>
 
-            <section className="rounded-card border border-edge bg-moss p-4">
-              <p className="text-xs font-medium tracking-widest text-mist uppercase">Mesures en temps réel</p>
-              <div className="mt-3 grid grid-cols-3 gap-2">
-                <Measure label="Durée" value={formatDuration(elapsed)} />
-                <Measure label="Combats" value={String(farm.combats)} />
-                <Measure label="Donjons" value={String(farm.donjons)} />
-                <Measure label="Combats/h" value={formatDecimal(perHour(farm.combats, elapsed))} />
-                <Measure label="Donjons/h" value={formatDecimal(perHour(farm.donjons, elapsed))} />
-                <Measure label="Moy. combat" value={formatDuration(averageMs(elapsed, farm.combats))} />
-              </div>
-              <div className="mt-2">
-                <Measure label="Moy. donjon" value={formatDuration(averageMs(elapsed, farm.donjons))} />
-              </div>
-            </section>
+            <LiveMeasures />
           </div>
 
           <div className="grid gap-3 lg:grid-cols-[1.4fr_0.8fr]">
@@ -275,23 +252,7 @@ export function FarmView() {
                 value={farm.jackpot}
                 onChange={(value) => patchFarm({ jackpot: value })}
               />
-              <ProfitCard
-                title="Rentabilité normale · hors jackpot"
-                value={totals.normal}
-                elapsed={elapsed}
-                hours={hours}
-                combats={farm.combats}
-                donjons={farm.donjons}
-              />
-              <ProfitCard
-                title="Rentabilité totale · avec jackpot"
-                value={totals.total}
-                elapsed={elapsed}
-                hours={hours}
-                combats={farm.combats}
-                donjons={farm.donjons}
-                emphasis
-              />
+              <LiveProfit />
             </section>
           </div>
           <p className="text-sm text-mist">
@@ -501,6 +462,67 @@ function FightLog({
         ))}
       </ul>
     </section>
+  );
+}
+
+function useTickingNow(running: boolean): number {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!running) return;
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [running]);
+  return now;
+}
+
+function LiveMeasures() {
+  const farm = usePupitre((state) => state.farm);
+  const now = useTickingNow(farm.status === "running");
+  const elapsed = elapsedMs(farm, now);
+  return (
+    <section className="rounded-card border border-edge bg-moss p-4">
+      <p className="text-xs font-medium tracking-widest text-mist uppercase">Mesures en temps réel</p>
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        <Measure label="Durée" value={formatDuration(elapsed)} />
+        <Measure label="Combats" value={String(farm.combats)} />
+        <Measure label="Donjons" value={String(farm.donjons)} />
+        <Measure label="Combats/h" value={formatDecimal(perHour(farm.combats, elapsed))} />
+        <Measure label="Donjons/h" value={formatDecimal(perHour(farm.donjons, elapsed))} />
+        <Measure label="Moy. combat" value={formatDuration(averageMs(elapsed, farm.combats))} />
+      </div>
+      <div className="mt-2">
+        <Measure label="Moy. donjon" value={formatDuration(averageMs(elapsed, farm.donjons))} />
+      </div>
+    </section>
+  );
+}
+
+function LiveProfit() {
+  const farm = usePupitre((state) => state.farm);
+  const now = useTickingNow(farm.status === "running");
+  const elapsed = elapsedMs(farm, now);
+  const totals = snapshot(farm, elapsed);
+  const hours = elapsed / 3_600_000;
+  return (
+    <>
+      <ProfitCard
+        title="Rentabilité normale · hors jackpot"
+        value={totals.normal}
+        elapsed={elapsed}
+        hours={hours}
+        combats={farm.combats}
+        donjons={farm.donjons}
+      />
+      <ProfitCard
+        title="Rentabilité totale · avec jackpot"
+        value={totals.total}
+        elapsed={elapsed}
+        hours={hours}
+        combats={farm.combats}
+        donjons={farm.donjons}
+        emphasis
+      />
+    </>
   );
 }
 

@@ -25,6 +25,10 @@ const SERVERS = [
   "ombre",
 ];
 const SKIPPED_INTERFACES = /loopback|etwdump|ciscodump|randpkt|sshdump|udpdump|wifidump|sdjournal|androiddump|dpauxmon/i;
+const VIRTUAL_INTERFACE = /virtual|vmware|vbox|hyper-?v|vethernet|bluetooth|miniport|tunnel|wsl|docker|pseudo|teredo|isatap/i;
+const ADDRESS_TTL_MS = 12 * 60 * 60 * 1000;
+const IDLE_STOP_MS = 5000;
+const STREAM_TTL_MS = 3 * 60 * 1000;
 const MAX_STREAMS = 64;
 const RECENT = 40;
 const TYPES_SHOWN = 30;
@@ -39,6 +43,24 @@ function findTshark() {
   return candidates.find((candidate) => candidate && fs.existsSync(candidate)) ?? null;
 }
 
+function describeInterfaces(stdout) {
+  const listed = [];
+  for (const line of stdout.split(/\r?\n/)) {
+    const match = /^\d+\.\s+(\S+)(?:\s+\((.*)\))?/.exec(line.trim());
+    if (!match || SKIPPED_INTERFACES.test(line)) continue;
+    const name = `${match[2] ?? ""} ${match[1]}`;
+    listed.push({ id: match[1], name, virtual: VIRTUAL_INTERFACE.test(name) });
+  }
+  return listed;
+}
+
+// Virtual adapters (Hyper-V, WSL, VPN) make tshark decode traffic that is not the game's.
+// When every adapter looks virtual, keep them all so a capture still happens.
+function pickInterfaces(listed) {
+  const real = listed.filter((item) => !item.virtual);
+  return (real.length > 0 ? real : listed).map((item) => item.id);
+}
+
 function listInterfaces(tshark) {
   return new Promise((resolve, reject) => {
     execFile(tshark, ["-D"], { windowsHide: true, timeout: 15000 }, (error, stdout, stderr) => {
@@ -46,14 +68,61 @@ function listInterfaces(tshark) {
         reject(new Error(String(stderr || error.message).trim()));
         return;
       }
-      const ids = [];
-      for (const line of stdout.split(/\r?\n/)) {
-        const match = /^\d+\.\s+(\S+)/.exec(line.trim());
-        if (match && !SKIPPED_INTERFACES.test(line)) ids.push(match[1]);
-      }
-      resolve(ids);
+      resolve(describeInterfaces(stdout));
     });
   });
+}
+
+function readAddressCache(file) {
+  try {
+    const saved = JSON.parse(fs.readFileSync(file, "utf8"));
+    if (!Array.isArray(saved.addresses) || saved.addresses.length === 0 || Date.now() - Number(saved.at) > ADDRESS_TTL_MS) {
+      return null;
+    }
+    if (!saved.addresses.every((address) => typeof address === "string" && /^\d{1,3}(?:\.\d{1,3}){3}$/.test(address))) {
+      return null;
+    }
+    return saved.addresses;
+  } catch {
+    return null;
+  }
+}
+
+function writeAddressCache(file, addresses) {
+  try {
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, JSON.stringify({ at: Date.now(), addresses }));
+  } catch {
+    // The next launch resolves the names again.
+  }
+}
+
+const HEX_VALUE = new Int8Array(128).fill(-1);
+for (let i = 0; i < 10; i++) HEX_VALUE[48 + i] = i;
+for (let i = 0; i < 6; i++) {
+  HEX_VALUE[65 + i] = 10 + i;
+  HEX_VALUE[97 + i] = 10 + i;
+}
+
+function payloadFromHex(hex) {
+  let digits = 0;
+  for (let i = 0; i < hex.length; i++) if (hex.charCodeAt(i) !== 58) digits++;
+  const out = Buffer.allocUnsafe(digits >> 1);
+  let written = 0;
+  for (let i = 0; i < hex.length; ) {
+    const code = hex.charCodeAt(i);
+    if (code === 58) {
+      i++;
+      continue;
+    }
+    const hi = code < 128 ? HEX_VALUE[code] : -1;
+    const lowCode = hex.charCodeAt(i + 1);
+    const lo = lowCode < 128 ? HEX_VALUE[lowCode] : -1;
+    if (hi < 0 || lo < 0) return null;
+    out[written++] = (hi << 4) | lo;
+    i += 2;
+  }
+  return written === out.length ? out : out.subarray(0, written);
 }
 
 async function serverAddresses() {
@@ -71,8 +140,9 @@ function captureFilter(addresses) {
 const FIELDS = ["frame.time_epoch", "tcp.srcport", "tcp.stream", "tcp.seq_raw", "tcp.seq", "tcp.payload"];
 
 class GameNetReader {
-  constructor({ capturesDir, onState, onEvent, ownFighterIds = [], onOwnFighters }) {
+  constructor({ capturesDir, cacheFile = null, onState, onEvent, ownFighterIds = [], onOwnFighters }) {
     this.capturesDir = capturesDir;
+    this.cacheFile = cacheFile;
     this.onState = onState;
     this.onEvent = onEvent;
     this.child = null;
@@ -102,6 +172,9 @@ class GameNetReader {
     this.status = "idle";
     this.detail = "";
     this.interfaces = [];
+    this.activeWanted = false;
+    this.starting = false;
+    this.idleTimer = null;
     this.resetCounters();
   }
 
@@ -120,62 +193,101 @@ class GameNetReader {
     this.flush();
   }
 
+  setActive(active) {
+    if (active === this.activeWanted) return;
+    this.activeWanted = active;
+    if (this.idleTimer) {
+      clearTimeout(this.idleTimer);
+      this.idleTimer = null;
+    }
+    if (active) {
+      if (!this.child && !this.starting) void this.start();
+      return;
+    }
+    if (!this.child || this.capture) return;
+    this.idleTimer = setTimeout(() => {
+      this.idleTimer = null;
+      if (!this.activeWanted && this.child && !this.capture) this.suspend();
+    }, IDLE_STOP_MS);
+  }
+
+  suspend() {
+    const child = this.child;
+    this.child = null;
+    if (child && !child.killed) child.kill();
+    this.setStatus("idle", "");
+  }
+
   async start() {
-    if (this.child) return;
-    if (process.platform !== "win32" && !process.env.PUPITRE_TSHARK) {
-      this.setStatus("unsupported", "La lecture du réseau ne fonctionne que dans l'exe Windows.");
-      return;
-    }
-    const tshark = findTshark();
-    if (!tshark) {
-      this.setStatus("missing", "Wireshark n'est pas installé. Installe-le avec Npcap, puis relance la lecture.");
-      return;
-    }
-    this.setStatus("starting", "Recherche des cartes réseau et des serveurs Dofus…");
-    this.timer ??= setInterval(() => this.flush(), 1000);
-    let args;
+    if (this.child || this.starting) return;
+    this.activeWanted = true;
+    this.starting = true;
     try {
+      if (process.platform !== "win32" && !process.env.PUPITRE_TSHARK) {
+        this.setStatus("unsupported", "La lecture du réseau ne fonctionne que dans l'exe Windows.");
+        return;
+      }
+      const tshark = findTshark();
+      if (!tshark) {
+        this.setStatus("missing", "Wireshark n'est pas installé. Installe-le avec Npcap, puis relance la lecture.");
+        return;
+      }
+      this.setStatus("starting", "Recherche des cartes réseau et des serveurs Dofus…");
+      this.timer ??= setInterval(() => this.flush(), 1000);
+      let args;
       const replay = process.env.PUPITRE_PCAP;
       if (replay) {
         this.interfaces = [path.basename(replay)];
         args = ["-r", replay, "-n", "-Y", "tcp.len > 0 && (tcp.port == 5555 || tcp.port == 443)"];
       } else {
-        const [interfaces, addresses] = await Promise.all([listInterfaces(tshark), serverAddresses()]);
+        const cached = this.cacheFile ? readAddressCache(this.cacheFile) : null;
+        const resolving = serverAddresses().then((addresses) => {
+          if (addresses.length > 0 && this.cacheFile) writeAddressCache(this.cacheFile, addresses);
+          return addresses;
+        });
+        const [listed, addresses] = await Promise.all([listInterfaces(tshark), cached ? Promise.resolve(cached) : resolving]);
+        if (!cached) void resolving;
+        const interfaces = pickInterfaces(listed);
         if (interfaces.length === 0) throw new Error("Aucune carte réseau utilisable. Npcap est-il installé ?");
         this.interfaces = interfaces;
         args = ["-l", "-n", ...interfaces.flatMap((id) => ["-i", id]), "-f", captureFilter(addresses), "-Y", "tcp.len > 0"];
       }
+      args.push("-T", "fields", "-E", "separator=/t", ...FIELDS.flatMap((field) => ["-e", field]));
+
+      this.resetCounters();
+      this.streams.clear();
+      this.startedAt = Date.now();
+      const child = spawn(tshark, args, { windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
+      this.child = child;
+      let stderr = "";
+      child.stderr.on("data", (chunk) => {
+        stderr = (stderr + String(chunk)).slice(-2000);
+      });
+      child.on("error", (error) => {
+        if (this.child === child) this.child = null;
+        this.setStatus("error", error.message);
+      });
+      child.on("exit", (code) => {
+        if (this.child !== child) return;
+        this.child = null;
+        const reason = stderr.trim().split(/\r?\n/).filter((line) => !/^Capturing on/i.test(line)).at(-1);
+        if (process.env.PUPITRE_PCAP && code === 0) this.setStatus("stopped", "Relecture terminée.");
+        else this.setStatus("error", reason || `tshark s'est arrêté (code ${code ?? "?"}).`);
+      });
+      readline.createInterface({ input: child.stdout }).on("line", (line) => this.handleLine(line));
+      this.setStatus("listening", "");
+      if (!this.activeWanted) this.suspend();
     } catch (error) {
       this.setStatus("error", error instanceof Error ? error.message : String(error));
-      return;
+    } finally {
+      this.starting = false;
     }
-    args.push("-T", "fields", "-E", "separator=/t", ...FIELDS.flatMap((field) => ["-e", field]));
-
-    this.resetCounters();
-    this.streams.clear();
-    this.startedAt = Date.now();
-    const child = spawn(tshark, args, { windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
-    this.child = child;
-    let stderr = "";
-    child.stderr.on("data", (chunk) => {
-      stderr = (stderr + String(chunk)).slice(-2000);
-    });
-    child.on("error", (error) => {
-      if (this.child === child) this.child = null;
-      this.setStatus("error", error.message);
-    });
-    child.on("exit", (code) => {
-      if (this.child !== child) return;
-      this.child = null;
-      const reason = stderr.trim().split(/\r?\n/).filter((line) => !/^Capturing on/i.test(line)).at(-1);
-      if (process.env.PUPITRE_PCAP && code === 0) this.setStatus("stopped", "Relecture terminée.");
-      else this.setStatus("error", reason || `tshark s'est arrêté (code ${code ?? "?"}).`);
-    });
-    readline.createInterface({ input: child.stdout }).on("line", (line) => this.handleLine(line));
-    this.setStatus("listening", "");
   }
 
   stop() {
+    this.activeWanted = false;
+    if (this.idleTimer) clearTimeout(this.idleTimer);
+    this.idleTimer = null;
     const child = this.child;
     this.child = null;
     if (child && !child.killed) child.kill();
@@ -204,7 +316,9 @@ class GameNetReader {
       frames = new FrameStream();
       this.streams.set(key, frames);
     }
-    const payload = Buffer.from(hex.replace(/:/g, ""), "hex");
+    frames.seenAt = Date.now();
+    const payload = payloadFromHex(hex);
+    if (!payload || payload.length === 0) return;
     this.counters.packets += 1;
     this.counters.bytes += payload.length;
     this.dirty = true;
@@ -275,8 +389,9 @@ class GameNetReader {
     return this.lastCapture;
   }
 
-  snapshot() {
-    const types = [...this.types.values()].sort((a, b) => b.count - a.count).slice(0, TYPES_SHOWN);
+  snapshot(brief = false) {
+    const types = brief ? [] : [...this.types.values()].sort((a, b) => b.count - a.count).slice(0, TYPES_SHOWN);
+    const recent = brief ? [] : [...this.recent].reverse();
     return {
       status: this.status,
       detail: this.detail,
@@ -286,7 +401,7 @@ class GameNetReader {
       ...this.counters,
       distinctTypes: this.types.size,
       types,
-      recent: [...this.recent].reverse(),
+      recent,
       capture: this.capture
         ? { active: true, file: this.capture.file, count: this.capture.count, startedAt: this.capture.startedAt }
         : { active: false, file: this.lastCapture?.file ?? null, count: this.lastCapture?.count ?? 0, startedAt: null },
@@ -307,10 +422,16 @@ class GameNetReader {
   }
 
   flush() {
+    if (this.streams.size > 8) {
+      const cutoff = Date.now() - STREAM_TTL_MS;
+      for (const [key, frames] of this.streams) {
+        if ((frames.seenAt ?? 0) < cutoff) this.streams.delete(key);
+      }
+    }
     if (!this.dirty) return;
     this.dirty = false;
-    this.onState?.(this.snapshot());
+    this.onState?.(this.snapshot(true));
   }
 }
 
-module.exports = { GameNetReader, captureFilter, findTshark };
+module.exports = { GameNetReader, captureFilter, findTshark, describeInterfaces, pickInterfaces, payloadFromHex };

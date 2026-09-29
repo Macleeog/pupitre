@@ -11,6 +11,7 @@ import { bindGameEvents } from "@/lib/pupitre/game-net";
 import { bindFarmHotkeys, bindFarmSync } from "@/lib/pupitre/farm-sync";
 import { bindShortcuts } from "@/lib/pupitre/shortcuts";
 import { useUpdateState } from "@/lib/pupitre/updates";
+import { APP_VERSION } from "@/lib/pupitre/version";
 
 const TABS: { id: DeskTab; label: string; icon: typeof Timer }[] = [
   { id: "session", label: "Session", icon: Timer },
@@ -28,12 +29,21 @@ export function Desk() {
   const frame = current === "reglages" ? "max-w-3xl" : "max-w-6xl";
 
   useEffect(() => {
-    void Promise.resolve(usePupitre.persist.rehydrate()).then(() => setHydrated(true));
+    const syncReader = () => {
+      const { farm, tab } = usePupitre.getState();
+      window.pupitre?.net?.setActive?.(farm.status === "running" || tab === "reseau");
+    };
+    const unsub = usePupitre.subscribe(syncReader);
+    void Promise.resolve(usePupitre.persist.rehydrate()).then(() => {
+      setHydrated(true);
+      syncReader();
+    });
     const unbindSync = bindFarmSync();
     const unbindKeys = bindFarmHotkeys();
     const unbindGame = bindGameEvents();
     const unbindShortcuts = bindShortcuts();
     return () => {
+      unsub();
       unbindShortcuts();
       unbindSync();
       unbindKeys();
@@ -50,7 +60,9 @@ export function Desk() {
       <header className={"mx-auto flex w-full flex-col gap-4 px-4 pt-5 " + frame}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-xs font-medium tracking-widest text-lamp uppercase">Dofus 3</p>
+            <p className="text-xs font-medium tracking-widest text-lamp uppercase">
+              Dofus 3 <span className="tracking-normal text-mist normal-case">· v{APP_VERSION}</span>
+            </p>
             <h1 className="font-display text-4xl leading-none text-fog">Pupitre</h1>
             <p className="mt-2 max-w-sm text-sm text-mist">Le compagnon de tes sessions de farm.</p>
             <p className="mt-2 max-w-sm text-xs text-mist">
@@ -139,12 +151,13 @@ function UpdateBanner({ onOpen }: { onOpen: () => void }) {
 function About() {
   const [open, setOpen] = useState(false);
   return (
-    <section className="mt-8 border-t border-edge pt-4 text-sm text-mist">
+    <section className="mt-8 flex flex-wrap items-center justify-between gap-x-4 border-t border-edge pt-4 text-sm text-mist">
       <button type="button" className="min-h-11 font-medium text-fog" onClick={() => setOpen((value) => !value)}>
         {open ? "Fermer la note" : "Ce que Pupitre ne fait pas"}
       </button>
+      <p className="min-h-11 py-2.5">Pupitre v{APP_VERSION}</p>
       {open ? (
-        <p className="mt-2 max-w-prose">
+        <p className="mt-2 max-w-prose basis-full">
           Pupitre est un fan site. Il n'est pas lié, approuvé ni soutenu par Ankama. Dofus, Dofus Touch et
           Ankama sont des marques d'Ankama. L'exe pose un bandeau sur la fenêtre du jeu et accepte des raccourcis
           pour la session. Avec Wireshark installé, il lit en lecture seule les messages du jeu (onglet Réseau) :

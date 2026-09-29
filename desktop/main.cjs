@@ -21,6 +21,16 @@ const DEFAULT_SHORTCUTS = {
   combat: "CommandOrControl+Shift+F5",
 };
 
+function pupitreVersion() {
+  try {
+    const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8"));
+    if (typeof pkg.version === "string" && pkg.version) return pkg.version;
+  } catch {
+    // The window title falls back to the name alone.
+  }
+  return "";
+}
+
 function outputRoot() {
   if (app.isPackaged) return path.join(process.resourcesPath, "output");
   return path.join(__dirname, "..", ".output");
@@ -49,6 +59,7 @@ function webPreferences() {
     contextIsolation: true,
     nodeIntegration: false,
     sandbox: true,
+    spellcheck: false,
   };
 }
 
@@ -262,6 +273,7 @@ function readGameNetwork(desk) {
     capturesDir,
     onState: (state) => toDesk("net:state", state),
     onEvent: (event) => toDesk("game-event", event),
+    cacheFile: path.join(app.getPath("userData"), "game-servers.json"),
     ownFighterIds: loadOwnFighters(),
     onOwnFighters: (ids) => writeJson("own-fighters.json", ids),
   });
@@ -273,6 +285,9 @@ function readGameNetwork(desk) {
     if (!fromDesk(event)) return null;
     await reader.restart();
     return reader.snapshot();
+  });
+  ipcMain.on("net:set-active", (event, active) => {
+    if (fromDesk(event) && typeof active === "boolean") reader.setActive(active);
   });
   ipcMain.handle("net:forget-own", (event) => {
     if (!fromDesk(event)) return null;
@@ -289,38 +304,43 @@ function readGameNetwork(desk) {
     fs.mkdirSync(capturesDir, { recursive: true });
     await shell.openPath(capturesDir);
   });
-  void reader.start();
   return reader;
 }
 
-app.whenReady().then(async () => {
-  const root = outputRoot();
-  const entry = path.join(root, "server", "index.mjs");
-  const logs = [];
-  const child = spawn(process.execPath, [entry], {
-    cwd: root,
-    env: {
-      ...process.env,
-      ELECTRON_RUN_AS_NODE: "1",
-      HOST: "127.0.0.1",
-      PORT: String(PORT),
-      NITRO_HOST: "127.0.0.1",
-      NITRO_PORT: String(PORT),
-    },
-    stdio: ["ignore", "pipe", "pipe"],
-  });
-  child.stdout.on("data", (chunk) => logs.push(String(chunk)));
-  child.stderr.on("data", (chunk) => logs.push(String(chunk)));
+// Starts while Electron itself is still booting, so the window is not waiting on a cold server.
+app.commandLine.appendSwitch("disable-features", "SpareRendererForSitePerProcess");
+const root = outputRoot();
+const entry = path.join(root, "server", "index.mjs");
+const logs = [];
+const pushLog = (chunk) => {
+  logs.push(String(chunk));
+  if (logs.length > 30) logs.shift();
+};
+const child = spawn(process.execPath, [entry], {
+  cwd: root,
+  env: {
+    ...process.env,
+    ELECTRON_RUN_AS_NODE: "1",
+    HOST: "127.0.0.1",
+    PORT: String(PORT),
+    NITRO_HOST: "127.0.0.1",
+    NITRO_PORT: String(PORT),
+  },
+  stdio: ["ignore", "pipe", "pipe"],
+});
+child.stdout.on("data", pushLog);
+child.stderr.on("data", pushLog);
+child.on("exit", (code) => {
+  if (code && code !== 0) pushLog(`exit ${code}`);
+});
 
+app.whenReady().then(async () => {
   let network = null;
   const shutdown = () => {
     if (!child.killed) child.kill();
     network?.stop();
   };
   app.on("before-quit", shutdown);
-  child.on("exit", (code) => {
-    if (code && code !== 0) logs.push(`exit ${code}`);
-  });
 
   try {
     await waitForServer();
@@ -338,8 +358,9 @@ app.whenReady().then(async () => {
     height: 820,
     minWidth: 390,
     minHeight: 640,
-    title: "Pupitre",
+    title: pupitreVersion() ? `Pupitre ${pupitreVersion()}` : "Pupitre",
     backgroundColor: "#1a120c",
+    show: false,
     autoHideMenuBar: true,
     webPreferences: webPreferences(),
   });
@@ -381,10 +402,10 @@ app.whenReady().then(async () => {
     return registerShortcuts(clean, runShortcut);
   });
 
+  desk.once("ready-to-show", () => desk.show());
   network = readGameNetwork(desk);
   watchForUpdates(desk);
-  await desk.loadURL(`http://127.0.0.1:${PORT}/`);
-  await overlay.loadURL(`http://127.0.0.1:${PORT}/overlay`);
+  await Promise.all([desk.loadURL(`http://127.0.0.1:${PORT}/`), overlay.loadURL(`http://127.0.0.1:${PORT}/overlay`)]);
   desk.on("closed", () => {
     if (watcher && !watcher.killed) watcher.kill();
     if (!overlay.isDestroyed()) overlay.close();

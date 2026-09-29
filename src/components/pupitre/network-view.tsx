@@ -153,8 +153,9 @@ function FightCard({ state }: { state: NetState }) {
         Ajouter les kamas et le butin aux ressources de la session
       </label>
       <p className="mt-1 text-xs text-mist">
-        Seulement quand la session est en cours. Seul ton butin est ajouté : Pupitre reconnaît ton personnage la
-        première fois qu'il lance un sort ou passe son tour, puis s'en souvient d'une fois sur l'autre.
+        Seulement quand la session est en cours. La lecture du jeu démarre avec elle, ou quand cet onglet est ouvert,
+        et s'arrête ensuite pour laisser le PC tranquille. Seul ton butin est ajouté : Pupitre reconnaît ton personnage
+        la première fois qu'il lance un sort ou passe son tour, puis s'en souvient d'une fois sur l'autre.
       </p>
       <OwnFighters ids={state.ownFighterIds ?? []} />
       {state.lastFightEnd ? <LastFight fight={state.lastFightEnd} seen={state.fightsSeen} /> : null}

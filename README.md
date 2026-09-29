@@ -36,7 +36,7 @@ Si une combinaison est déjà prise par une autre application, l'onglet le signa
 
 ## Lecture du réseau (onglet Réseau)
 
-Optionnel. Avec [Wireshark](https://www.wireshark.org/download.html) installé (garde Npcap coché), l'exe lit en lecture seule les messages du jeu, ceux dont le type commence par `type.ankama.com/`. Il ne modifie ni la connexion ni le fichier `hosts`, et n'envoie rien.
+Optionnel. Avec [Wireshark](https://www.wireshark.org/download.html) installé (garde Npcap coché), l'exe lit en lecture seule les messages du jeu, ceux dont le type commence par `type.ankama.com/`. Il ne modifie ni la connexion ni le fichier `hosts`, et n'envoie rien. La lecture ne tourne que pendant une session, ou tant que l'onglet Réseau est ouvert, et seulement sur les vraies cartes réseau. La version de Pupitre est affichée dans l'en-tête et en bas de page.
 
 - **Combats** : début, tours et fin de combat sont détectés. La session de farm peut compter +1 combat toute seule (une fois par combat, même en multicompte).
 - **Butin** : à la fin du combat, les kamas et les objets de tes personnages vont dans les ressources de la session. Pupitre reconnaît un personnage quand il lance un sort ou passe son tour depuis ce PC, et s'en souvient d'une fois sur l'autre (`%APPDATA%\Pupitre\own-fighters.json`, bouton **Oublier** dans Réseau). Avant ça, il crédite seulement un gagnant unique (combat solo) ; à plusieurs, il affiche « butin non attribué » et n'ajoute rien. Les lignes venues d'un combat portent le badge « combat », restent modifiables, et « Butin des derniers combats » permet d'annuler un combat (kamas et objets, pas le compteur de combats).

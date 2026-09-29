@@ -91,6 +91,7 @@ declare global {
         restart: () => Promise<NetState | null>;
         openFolder: () => Promise<void>;
         forgetOwn: () => Promise<NetState | null>;
+        setActive?: (active: boolean) => void;
         onState: (handler: (state: NetState) => void) => () => void;
         onGameEvent: (handler: (event: GameEvent) => void) => () => void;
       };

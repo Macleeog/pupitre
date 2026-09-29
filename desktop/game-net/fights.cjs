@@ -12,6 +12,7 @@ const CODES = {
 // Client requests only sent while it is the client's own turn (spell cast, end of turn),
 // seen in every capture of 2026-09-29.
 const OWN_TURN_REQUESTS = new Set(["jrj", "jvv"]);
+const WATCHED = new Set([CODES.fightOrder, CODES.turnStart, CODES.turnEnd, CODES.fightEnd]);
 const NO_FIGHTER = 18446744073709551615n;
 const SAME_FIGHT_MS = 5000;
 const SAME_TURN_MS = 1000;
@@ -103,6 +104,8 @@ function createFightTracker(emit, { ownFighterIds = [], onOwnFighter } = {}) {
         }
         return;
       }
+      // Inventory and chat messages are large and frequent; only fight messages are worth parsing.
+      if (!WATCHED.has(message.type)) return;
       const payload = parseMessage(message.value);
       if (!payload) return;
       if (message.type === CODES.fightOrder) {

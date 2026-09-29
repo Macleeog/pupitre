@@ -361,17 +361,24 @@ export const usePupitre = create<PupitreState>()(
         set((state) => {
           if (prices.length === 0) return state;
           const fresh = Object.fromEntries(prices.map(({ itemId, unitPrice }) => [itemId, { unit: unitPrice, at }]));
-          const hdvPrices = Object.fromEntries(
-            Object.entries({ ...state.hdvPrices, ...fresh })
-              .sort(([, a], [, b]) => b.at - a.at)
-              .slice(0, HDV_PRICES_KEPT),
-          );
+          const pricesChanged = prices.some(({ itemId, unitPrice }) => state.hdvPrices[itemId]?.unit !== unitPrice);
           const resources = state.farm.resources.map((resource) => {
             const known = resource.itemId != null ? fresh[resource.itemId] : undefined;
             if (!known || resource.priceFrom === "manual") return resource;
-            return { ...resource, price: String(known.unit), priceFrom: "hdv" as const };
+            const price = String(known.unit);
+            if (resource.price === price && resource.priceFrom === "hdv") return resource;
+            return { ...resource, price, priceFrom: "hdv" as const };
           });
-          return { hdvPrices, farm: { ...state.farm, resources } };
+          const resourcesChanged = resources.some((resource, index) => resource !== state.farm.resources[index]);
+          if (!pricesChanged && !resourcesChanged) return state;
+          const hdvPrices = pricesChanged
+            ? Object.fromEntries(
+                Object.entries({ ...state.hdvPrices, ...fresh })
+                  .sort(([, a], [, b]) => b.at - a.at)
+                  .slice(0, HDV_PRICES_KEPT),
+              )
+            : state.hdvPrices;
+          return { hdvPrices, farm: resourcesChanged ? { ...state.farm, resources } : state.farm };
         }),
       forgetHdvPrices: () => set({ hdvPrices: {} }),
       removeResource: (id) =>
