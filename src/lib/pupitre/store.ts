@@ -98,7 +98,10 @@ type PupitreState = {
   addCombat: () => void;
   addDonjon: () => void;
   addResource: () => void;
-  patchResource: (id: string, patch: Partial<Pick<FarmResource, "name" | "qty" | "price">>) => void;
+  patchResource: (
+    id: string,
+    patch: Partial<Pick<FarmResource, "name" | "qty" | "price" | "itemId" | "icon" | "typeName" | "level">>,
+  ) => void;
   removeResource: (id: string) => void;
   removeFarmHistory: (id: string) => void;
 };
@@ -353,7 +356,7 @@ export const usePupitre = create<PupitreState>()(
             ...state.farm,
             resources: [
               ...state.farm.resources,
-              { id: uid("res"), name: "", qty: "", price: "" },
+              { id: uid("res"), name: "", qty: "", price: "", itemId: null, icon: "", typeName: "", level: null },
             ],
           },
         })),
@@ -361,16 +364,26 @@ export const usePupitre = create<PupitreState>()(
         set((state) => ({
           farm: {
             ...state.farm,
-            resources: state.farm.resources.map((resource) =>
-              resource.id === id
-                ? {
-                    ...resource,
-                    name: patch.name !== undefined ? patch.name.slice(0, 40) : resource.name,
-                    qty: patch.qty !== undefined ? digitsOnly(patch.qty) : resource.qty,
-                    price: patch.price !== undefined ? digitsOnly(patch.price) : resource.price,
-                  }
-                : resource,
-            ),
+            resources: state.farm.resources.map((resource) => {
+              if (resource.id !== id) return resource;
+              const next: FarmResource = { ...resource };
+              if (patch.name !== undefined) {
+                next.name = patch.name.slice(0, 72);
+                if (patch.itemId === undefined) {
+                  next.itemId = null;
+                  next.icon = "";
+                  next.typeName = "";
+                  next.level = null;
+                }
+              }
+              if (patch.qty !== undefined) next.qty = digitsOnly(patch.qty);
+              if (patch.price !== undefined) next.price = digitsOnly(patch.price);
+              if (patch.itemId !== undefined) next.itemId = patch.itemId;
+              if (patch.icon !== undefined) next.icon = patch.icon;
+              if (patch.typeName !== undefined) next.typeName = patch.typeName.slice(0, 40);
+              if (patch.level !== undefined) next.level = patch.level;
+              return next;
+            }),
           },
         })),
       removeResource: (id) =>

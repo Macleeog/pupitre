@@ -5,6 +5,10 @@ export type FarmResource = {
   name: string;
   qty: string;
   price: string;
+  itemId: number | null;
+  icon: string;
+  typeName: string;
+  level: number | null;
 };
 
 export type FarmSession = {

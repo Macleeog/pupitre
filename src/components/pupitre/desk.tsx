@@ -171,7 +171,7 @@ function About() {
         <p className="mt-2 max-w-prose">
           Multifus, sur Dofus Rétro, amène tout seul la fenêtre du personnage dont c'est le tour.
           Un site ne peut pas lire le client Unity ni passer une fenêtre au premier plan. Pupitre garde
-          la roue, l'ordre de passage, la table des runes 3.0, les textes à coller et un compteur de farm manuel.
+          la roue, l'ordre de passage, la table des runes 3.0, les textes à coller et un compteur de farm. Les objets viennent de DofusDB.
           Indépendant d'Ankama et de l'auteur de Multifus. Dofus est une marque d'Ankama.
         </p>
       ) : null}

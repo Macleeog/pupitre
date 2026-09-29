@@ -11,7 +11,9 @@ import {
   snapshot,
   type FarmStatus,
 } from "@/lib/pupitre/farm";
+import { searchItems, type CatalogItem } from "@/lib/pupitre/items";
 import { usePupitre, type FarmHistoryEntry } from "@/lib/pupitre/store";
+import type { FarmResource } from "@/lib/pupitre/farm";
 
 const STATUS_LABEL: Record<FarmStatus, string> = {
   idle: "Prêt à démarrer",
@@ -180,7 +182,7 @@ export function FarmView() {
                 </div>
               </div>
               {farm.resources.length === 0 ? (
-                <p className="text-sm text-mist">Aucun drop. Ajoute une ressource et son prix HDV.</p>
+                <p className="text-sm text-mist">Aucun drop. Cherche un objet du catalogue Dofus 3.</p>
               ) : (
                 <ul className="flex flex-col gap-2">
                   <li className="hidden grid-cols-[1.4fr_0.6fr_0.8fr_0.8fr] gap-2 px-2 text-xs text-mist sm:grid">
@@ -200,13 +202,10 @@ export function FarmView() {
                             (active ? "border-lamp bg-canopy" : "border-edge bg-pine")
                           }
                         >
-                          <input
-                            aria-label="Nom de la ressource"
-                            value={resource.name}
+                          <ResourceName
+                            resource={resource}
                             onFocus={() => setSelected(resource.id)}
-                            onChange={(event) => patchResource(resource.id, { name: event.target.value })}
-                            placeholder="Nom"
-                            className="min-h-11 rounded-lg bg-transparent px-2"
+                            onPatch={(patch) => patchResource(resource.id, patch)}
                           />
                           <input
                             aria-label="Quantité"
@@ -275,11 +274,132 @@ export function FarmView() {
               />
             </section>
           </div>
-          <p className="text-sm text-mist">Compteur manuel. Aucune lecture du jeu : tu notes les drops et les prix.</p>
+          <p className="text-sm text-mist">
+            Compteur manuel. Les objets viennent du catalogue Dofus 3 (DofusDB). Le prix unitaire, c'est le tien.
+          </p>
           <section>
             <h3 className="mb-2 text-xs font-medium tracking-widest text-mist uppercase">Historique</h3>
             <HistoryList entries={history} onRemove={removeFarmHistory} />
           </section>
+    </div>
+  );
+}
+
+function ResourceName({
+  resource,
+  onFocus,
+  onPatch,
+}: {
+  resource: FarmResource;
+  onFocus: () => void;
+  onPatch: (patch: Partial<Pick<FarmResource, "name" | "qty" | "price" | "itemId" | "icon" | "typeName" | "level">>) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [hits, setHits] = useState<CatalogItem[]>([]);
+  const [broken, setBroken] = useState(false);
+  const listId = `items-${resource.id}`;
+
+  useEffect(() => {
+    if (!editing) return;
+    const query = resource.name.trim();
+    if (query.length < 2) {
+      setHits([]);
+      return;
+    }
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      searchItems(query, controller.signal)
+        .then((items) => setHits(items))
+        .catch((error: unknown) => {
+          if (error instanceof Error && error.name === "AbortError") return;
+          setHits([]);
+        });
+    }, 220);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [editing, resource.name]);
+
+  const linked = resource.itemId != null && resource.name.length > 0;
+
+  return (
+    <div>
+      <div className="flex min-h-11 items-center gap-2">
+        {resource.icon && !broken ? (
+          <img
+            src={resource.icon}
+            alt=""
+            width={28}
+            height={28}
+            className="size-7 shrink-0 rounded bg-moss object-contain"
+            onError={() => setBroken(true)}
+          />
+        ) : null}
+        <input
+          role="combobox"
+          aria-label="Nom de la ressource"
+          aria-expanded={editing && hits.length > 0}
+          aria-controls={listId}
+          aria-autocomplete="list"
+          value={resource.name}
+          onFocus={() => {
+            onFocus();
+            setEditing(true);
+          }}
+          onChange={(event) => {
+            setBroken(false);
+            setEditing(true);
+            onPatch({ name: event.target.value });
+          }}
+          placeholder="Étoffe, clef, équipement"
+          className="min-h-11 min-w-0 flex-1 rounded-lg bg-transparent px-2"
+        />
+      </div>
+      {linked ? (
+        <p className="px-2 text-xs text-mist">
+          {[resource.typeName, resource.level != null ? `niv. ${resource.level}` : ""].filter(Boolean).join(" · ")}
+        </p>
+      ) : null}
+      {editing && hits.length > 0 ? (
+        <ul id={listId} role="listbox" className="mt-1 overflow-hidden rounded-xl border border-edge bg-moss">
+          {hits.map((item) => (
+            <li key={item.id}>
+              <button
+                type="button"
+                role="option"
+                className="flex min-h-11 w-full items-center gap-2 px-2 text-left text-sm hover:bg-canopy"
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => {
+                  setBroken(false);
+                  setEditing(false);
+                  setHits([]);
+                  onPatch({
+                    name: item.name,
+                    itemId: item.id,
+                    icon: item.icon,
+                    typeName: item.typeName,
+                    level: item.level,
+                    price: !resource.price && item.price > 1 ? String(item.price) : undefined,
+                  });
+                }}
+              >
+                {item.icon ? (
+                  <img src={item.icon} alt="" width={28} height={28} className="size-7 shrink-0 object-contain" />
+                ) : (
+                  <span className="size-7 shrink-0" />
+                )}
+                <span className="min-w-0">
+                  <span className="block truncate">{item.name}</span>
+                  <span className="text-xs text-mist">
+                    {[item.typeName, `niv. ${item.level}`].filter(Boolean).join(" · ")}
+                  </span>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   );
 }
