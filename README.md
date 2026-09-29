@@ -5,7 +5,7 @@
 Dofus, Dofus Touch et Ankama sont des marques d’Ankama. Ce projet n’est pas approuvé, affilié ni soutenu par Ankama. Les symboles et illustrations des classes (`public/classes/`) sont la propriété d’Ankama ; ils viennent de l’encyclopédie officielle et de DofusDB, et servent seulement à reconnaître les classes, sans usage commercial. C’est un outil de fans, rien d’autre.
 This is a fan site, not an Ankama product. Dofus and Ankama are trademarks of Ankama.
 
-Second écran pour Dofus 3 : ordre de passage, roue des personnages, textes à coller dans le chat et compteur de farm. Le front est en React (TanStack Start). Il n’y a pas de backend Rust : le bureau est un exécutable Electron, et les données restent sur la machine.
+Second écran pour Dofus 3 : personnages, roue, compteur de farm avec lecture réseau des combats, et raccourcis globaux. Le front est en React (TanStack Start). Il n’y a pas de backend Rust : le bureau est un exécutable Electron, et les données restent sur la machine.
 
 Inspiré du pupitre [Multifus](https://github.com/viclafouch/multifus) (Dofus Rétro), réécrit pour le client Unity. 
 

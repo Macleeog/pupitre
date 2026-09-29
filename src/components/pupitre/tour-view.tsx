@@ -1,15 +1,8 @@
 import { useState } from "react";
-import { ArrowDown, ArrowUp, ChevronRight, MapPin, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { CLASSES, classById, type ClassId } from "@/lib/pupitre/classes";
-import { usePupitre, type JournalEntry, type PulseKind } from "@/lib/pupitre/store";
+import { usePupitre } from "@/lib/pupitre/store";
 import { ClassArt, Sigil } from "@/components/pupitre/sigil";
-
-const PULSE_LABEL: Record<PulseKind, string> = {
-  turn: "Tour",
-  trade: "Échange",
-  invite: "Invitation",
-  pm: "Message",
-};
 
 export function TourView() {
   const characters = usePupitre((state) => state.characters);
@@ -19,8 +12,6 @@ export function TourView() {
   const setFocus = usePupitre((state) => state.setFocus);
   const moveCharacter = usePupitre((state) => state.moveCharacter);
   const removeCharacter = usePupitre((state) => state.removeCharacter);
-  const journal = usePupitre((state) => state.journal);
-  const clearJournal = usePupitre((state) => state.clearJournal);
   const clearTeam = usePupitre((state) => state.clearTeam);
   const restoreExample = usePupitre((state) => state.restoreExample);
 
@@ -134,28 +125,6 @@ export function TourView() {
         </ol>
         <AddCharacter />
       </section>
-
-      <RouteBoard />
-
-      <section>
-        <div className="mb-2 flex items-center justify-between">
-          <h3 className="font-medium">Journal</h3>
-          {journal.length > 0 ? (
-            <button type="button" className="min-h-11 text-sm text-mist" onClick={clearJournal}>
-              Effacer
-            </button>
-          ) : null}
-        </div>
-        {journal.length === 0 ? (
-          <p className="text-sm text-mist">Chaque « Tour suivant » s'inscrit ici.</p>
-        ) : (
-          <ul className="flex flex-col gap-1">
-            {journal.map((entry) => (
-              <JournalLine key={entry.id} entry={entry} />
-            ))}
-          </ul>
-        )}
-      </section>
     </div>
   );
 }
@@ -228,97 +197,5 @@ function AddCharacter() {
         Ajouter
       </button>
     </form>
-  );
-}
-
-function RouteBoard() {
-  const characters = usePupitre((state) => state.characters);
-  const pins = usePupitre((state) => state.pins);
-  const addPin = usePupitre((state) => state.addPin);
-  const toggleArrival = usePupitre((state) => state.toggleArrival);
-  const removePin = usePupitre((state) => state.removePin);
-  const [place, setPlace] = useState("");
-
-  return (
-    <section className="rounded-card border border-edge bg-moss p-4">
-      <div className="mb-1 flex items-center gap-2">
-        <MapPin className="size-4 text-lamp" aria-hidden="true" />
-        <h3 className="font-medium">Pas suivant</h3>
-      </div>
-      <p className="mb-3 text-sm text-mist">
-        Le clic dans le jeu n'existe pas ici. Tu notes le lieu, puis tu coches ceux qui sont arrivés.
-      </p>
-      <form
-        className="mb-3 flex gap-2"
-        onSubmit={(event) => {
-          event.preventDefault();
-          addPin(place);
-          setPlace("");
-        }}
-      >
-        <input
-          value={place}
-          onChange={(event) => setPlace(event.target.value)}
-          placeholder="Zaap, coordonnées, salle"
-          maxLength={48}
-          aria-label="Lieu"
-          className="min-h-11 min-w-0 flex-1 rounded-xl border border-edge bg-pine px-3 placeholder:text-mist"
-        />
-        <button type="submit" className="min-h-11 rounded-full bg-canopy px-4 text-sm font-medium">
-          Noter
-        </button>
-      </form>
-      <ul className="flex flex-col gap-3">
-        {pins.map((pin) => {
-          const next = characters.find((character) => !pin.done.includes(character.id));
-          return (
-            <li key={pin.id} className="rounded-2xl border border-edge bg-pine p-3">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="font-medium">{pin.place}</p>
-                  <p className="text-sm text-lamp">{next ? `Suivant : ${next.name}` : "Tout le monde est là"}</p>
-                </div>
-                <button
-                  type="button"
-                  className="min-h-11 text-sm text-mist"
-                  onClick={() => removePin(pin.id)}
-                >
-                  Retirer
-                </button>
-              </div>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {characters.map((character) => {
-                  const done = pin.done.includes(character.id);
-                  return (
-                    <button
-                      key={character.id}
-                      type="button"
-                      onClick={() => toggleArrival(pin.id, character.id)}
-                      className={
-                        "min-h-11 rounded-full border px-3 text-sm " +
-                        (done ? "border-edge text-mist line-through" : "border-lamp text-fog")
-                      }
-                    >
-                      {character.name}
-                    </button>
-                  );
-                })}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
-  );
-}
-
-function JournalLine({ entry }: { entry: JournalEntry }) {
-  const time = new Date(entry.at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-  return (
-    <li className="flex items-baseline gap-3 text-sm">
-      <span className="w-12 shrink-0 text-mist">{time}</span>
-      <span className="w-24 shrink-0 text-lamp">{PULSE_LABEL[entry.kind]}</span>
-      <span className="truncate">{entry.name}</span>
-    </li>
   );
 }

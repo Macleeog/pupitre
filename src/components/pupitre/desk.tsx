@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { BringToFront, CircleDot, ClipboardType, Keyboard, Radio } from "lucide-react";
+import { BringToFront, CircleDot, Keyboard, Radio } from "lucide-react";
 import { classById } from "@/lib/pupitre/classes";
-import { usePupitre, type DeskTab, type ServerMode } from "@/lib/pupitre/store";
+import { usePupitre, type DeskTab } from "@/lib/pupitre/store";
 import { Sigil } from "@/components/pupitre/sigil";
 import { TourView } from "@/components/pupitre/tour-view";
 import { WheelView } from "@/components/pupitre/wheel-view";
-import { TextsView } from "@/components/pupitre/texts-view";
 import { FarmView } from "@/components/pupitre/farm-view";
 import { NetworkView } from "@/components/pupitre/network-view";
 import { ShortcutsView } from "@/components/pupitre/shortcuts-view";
@@ -16,7 +15,6 @@ import { bindShortcuts } from "@/lib/pupitre/shortcuts";
 const TABS: { id: DeskTab; label: string; icon: typeof BringToFront }[] = [
   { id: "tour", label: "Tour", icon: BringToFront },
   { id: "roue", label: "Roue", icon: CircleDot },
-  { id: "textes", label: "Textes", icon: ClipboardType },
   { id: "reseau", label: "Réseau", icon: Radio },
   { id: "raccourcis", label: "Raccourcis", icon: Keyboard },
 ];
@@ -24,8 +22,6 @@ const TABS: { id: DeskTab; label: string; icon: typeof BringToFront }[] = [
 export function Desk() {
   const tab = usePupitre((state) => state.tab);
   const setTab = usePupitre((state) => state.setTab);
-  const mode = usePupitre((state) => state.mode);
-  const setMode = usePupitre((state) => state.setMode);
   const advance = usePupitre((state) => state.advance);
   const setFocus = usePupitre((state) => state.setFocus);
   const characters = usePupitre((state) => state.characters);
@@ -97,28 +93,16 @@ export function Desk() {
             </div>
           ) : null}
         </div>
-        <ModeSwitch mode={mode} onChange={setMode} />
-        {mode === "mono" ? (
-          <p className="rounded-card border border-clay/40 bg-clay/15 px-3 py-2 text-sm text-fog">
-            Serveur monocompte : un seul compte à la fois. Pupitre ne sert pas à en ouvrir un second.
-          </p>
-        ) : (
-          <p className="text-sm text-mist">
-            Classique : plusieurs fenêtres, sauf prisme et combats d'alliance, où un seul compte est autorisé.
-          </p>
-        )}
       </header>
 
       <main className={"mx-auto w-full px-4 pt-5 pb-28 " + frame}>
         {onTour ? (
           <div className="flex flex-col gap-6">
-            <GettingStarted />
             <FarmView />
             <TourView />
           </div>
         ) : null}
         {tab === "roue" ? <WheelView /> : null}
-        {tab === "textes" ? <TextsView /> : null}
         {tab === "reseau" ? <NetworkView /> : null}
         {tab === "raccourcis" ? <ShortcutsView /> : null}
         <About />
@@ -128,7 +112,7 @@ export function Desk() {
         className="fixed inset-x-0 bottom-0 z-20 border-t border-edge bg-moss/95 backdrop-blur"
         aria-label="Sections"
       >
-        <div className={"mx-auto grid grid-cols-5 px-2 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom))] " + frame}>
+        <div className={"mx-auto grid grid-cols-4 px-2 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom))] " + frame}>
           {TABS.map((item) => {
             const Icon = item.icon;
             const active = item.id === "tour" ? onTour : tab === item.id;
@@ -150,58 +134,6 @@ export function Desk() {
           })}
         </div>
       </nav>
-    </div>
-  );
-}
-
-function GettingStarted() {
-  return (
-    <section className="rounded-card border border-edge bg-moss p-4">
-      <h2 className="font-medium text-fog">Pour commencer</h2>
-      <p className="mt-2 text-sm text-mist">
-        Windows 10 ou 11, 64 bits. Rien d'autre à installer : pas de Node, pas de compte, pas de droit administrateur.
-      </p>
-      <a
-        href="https://github.com/Macleeog/pupitre/releases/latest"
-        target="_blank"
-        rel="noreferrer"
-        className="mt-3 inline-flex min-h-11 items-center rounded-full bg-lamp px-4 text-sm font-medium text-lamp-ink"
-      >
-        Télécharger le zip
-      </a>
-      <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-fog">
-        <li>Télécharge le zip, environ 100 Mo. Si Chrome dit « Opening when complete », le fichier est déjà là : ferme la bulle.</li>
-        <li>Extrais le zip, puis ouvre Pupitre.exe qui est dedans. Ne le lance pas depuis Chrome.</li>
-        <li>
-          Si Windows affiche SmartScreen, choisis Informations complémentaires, puis Exécuter quand même. L'exe n'est
-          pas signé. Dofus n'est pas obligatoire.
-        </li>
-      </ol>
-    </section>
-  );
-}
-
-function ModeSwitch({ mode, onChange }: { mode: ServerMode; onChange: (mode: ServerMode) => void }) {
-  return (
-    <div className="grid grid-cols-2 rounded-full border border-edge bg-moss p-1" role="group" aria-label="Type de serveur">
-      {(
-        [
-          ["classique", "Classique"],
-          ["mono", "Monocompte"],
-        ] as const
-      ).map(([id, label]) => (
-        <button
-          key={id}
-          type="button"
-          onClick={() => onChange(id)}
-          className={
-            "min-h-11 rounded-full text-sm font-medium " +
-            (mode === id ? "bg-lamp text-lamp-ink" : "text-mist")
-          }
-        >
-          {label}
-        </button>
-      ))}
     </div>
   );
 }

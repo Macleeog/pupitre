@@ -14,34 +14,11 @@ import {
 } from "@/lib/pupitre/farm";
 import type { ShortcutAction, ShortcutMap, ShortcutStatus } from "@/pupitre-desktop";
 
-export type ServerMode = "classique" | "mono";
-export type DeskTab = "tour" | "roue" | "textes" | "reseau" | "raccourcis";
-export type PulseKind = "turn" | "trade" | "invite" | "pm";
-
+export type DeskTab = "tour" | "roue" | "reseau" | "raccourcis";
 export type Character = {
   id: string;
   name: string;
   classId: ClassId;
-};
-
-export type JournalEntry = {
-  id: string;
-  at: number;
-  kind: PulseKind;
-  characterId: string;
-  name: string;
-};
-
-export type QuickText = {
-  id: string;
-  label: string;
-  body: string;
-};
-
-export type RoutePin = {
-  id: string;
-  place: string;
-  done: string[];
 };
 
 export type FightLootItem = { itemId: number; quantity: number };
@@ -68,13 +45,9 @@ export type FarmHistoryEntry = FarmSnapshot & {
 };
 
 type PupitreState = {
-  mode: ServerMode;
   tab: DeskTab;
   characters: Character[];
   focusId: string | null;
-  journal: JournalEntry[];
-  texts: QuickText[];
-  pins: RoutePin[];
   farm: FarmSession;
   farmHistory: FarmHistoryEntry[];
   autoCombats: boolean;
@@ -86,22 +59,14 @@ type PupitreState = {
   setShortcut: (action: ShortcutAction, accelerator: string) => void;
   resetShortcuts: () => void;
   setShortcutStatus: (status: Partial<Record<ShortcutAction, ShortcutStatus>>) => void;
-  setMode: (mode: ServerMode) => void;
   setTab: (tab: DeskTab) => void;
   addCharacter: (name: string, classId: ClassId) => void;
   removeCharacter: (id: string) => void;
   moveCharacter: (id: string, direction: -1 | 1) => void;
   setFocus: (id: string) => void;
   advance: () => void;
-  clearJournal: () => void;
   clearTeam: () => void;
   restoreExample: () => void;
-  addText: (label: string, body: string) => void;
-  updateText: (id: string, patch: Partial<Pick<QuickText, "label" | "body">>) => void;
-  removeText: (id: string) => void;
-  addPin: (place: string) => void;
-  toggleArrival: (pinId: string, characterId: string) => void;
-  removePin: (id: string) => void;
   patchFarm: (patch: Partial<Pick<FarmSession, "zone" | "notes" | "keys" | "other" | "jackpot">>) => void;
   startFarm: () => void;
   pauseFarm: () => void;
@@ -127,15 +92,6 @@ const EXAMPLE: Character[] = [
   { id: "ex-nacre", name: "Nacre", classId: "forgelance" },
 ];
 
-const DEFAULT_TEXTS: QuickText[] = [
-  { id: "tx-pret", label: "Prêt", body: "pret" },
-  { id: "tx-suis", label: "Je suis", body: "je vous suis" },
-  { id: "tx-lance", label: "Je lance", body: "je lance" },
-  { id: "tx-soin", label: "Soin", body: "need soin" },
-  { id: "tx-pause", label: "Pause", body: "pause 1 min" },
-  { id: "tx-vente", label: "Vente", body: "vente en cours, mp" },
-];
-
 function uid(prefix: string): string {
   return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
 }
@@ -153,14 +109,10 @@ function nextId(characters: Character[], current: string | null): string | null 
 
 export const usePupitre = create<PupitreState>()(
   persist(
-    (set, get) => ({
-      mode: "classique",
+    (set) => ({
       tab: "tour",
       characters: EXAMPLE,
       focusId: EXAMPLE[0]?.id ?? null,
-      journal: [],
-      texts: DEFAULT_TEXTS,
-      pins: [{ id: "pin-exemple", place: "Zaap, coin de la place", done: [] }],
       farm: EMPTY_FARM,
       farmHistory: [],
       autoCombats: true,
@@ -173,7 +125,6 @@ export const usePupitre = create<PupitreState>()(
         set((state) => ({ shortcuts: { ...state.shortcuts, [action]: accelerator.slice(0, 80) } })),
       resetShortcuts: () => set({ shortcuts: DEFAULT_SHORTCUTS }),
       setShortcutStatus: (shortcutStatus) => set({ shortcutStatus }),
-      setMode: (mode) => set({ mode }),
       setTab: (tab) => set({ tab }),
       addCharacter: (name, classId) => {
         const trimmed = name.trim().slice(0, 18);
@@ -189,14 +140,7 @@ export const usePupitre = create<PupitreState>()(
           const characters = state.characters.filter((character) => character.id !== id);
           const focusId =
             state.focusId === id ? (characters[0]?.id ?? null) : state.focusId;
-          return {
-            characters,
-            focusId,
-            pins: state.pins.map((pin) => ({
-              ...pin,
-              done: pin.done.filter((doneId) => doneId !== id),
-            })),
-          };
+          return { characters, focusId };
         }),
       moveCharacter: (id, direction) =>
         set((state) => {
@@ -210,63 +154,17 @@ export const usePupitre = create<PupitreState>()(
           return { characters };
         }),
       setFocus: (id) => set({ focusId: id }),
-      advance: () => {
-        const state = get();
-        const focusId = nextId(state.characters, state.focusId);
-        const character = state.characters.find((entry) => entry.id === focusId);
-        if (!focusId || !character) return;
-        const entry: JournalEntry = {
-          id: uid("jr"),
-          at: Date.now(),
-          kind: "turn",
-          characterId: focusId,
-          name: character.name,
-        };
-        set({
-          focusId,
-          journal: [entry, ...state.journal].slice(0, 12),
-        });
-      },
-      clearJournal: () => set({ journal: [] }),
-      clearTeam: () => set({ characters: [], focusId: null, pins: [], journal: [] }),
+      advance: () =>
+        set((state) => {
+          const focusId = nextId(state.characters, state.focusId);
+          return focusId ? { focusId } : state;
+        }),
+      clearTeam: () => set({ characters: [], focusId: null }),
       restoreExample: () =>
         set({
           characters: EXAMPLE,
           focusId: EXAMPLE[0]?.id ?? null,
-          pins: [{ id: "pin-exemple", place: "Zaap, coin de la place", done: [] }],
         }),
-      addText: (label, body) => {
-        const trimmedLabel = label.trim().slice(0, 24);
-        const trimmedBody = body.trim().slice(0, 180);
-        if (!trimmedLabel || !trimmedBody) return;
-        set((state) => ({
-          texts: [...state.texts, { id: uid("tx"), label: trimmedLabel, body: trimmedBody }],
-        }));
-      },
-      updateText: (id, patch) =>
-        set((state) => ({
-          texts: state.texts.map((text) => (text.id === id ? { ...text, ...patch } : text)),
-        })),
-      removeText: (id) =>
-        set((state) => ({ texts: state.texts.filter((text) => text.id !== id) })),
-      addPin: (place) => {
-        const trimmed = place.trim().slice(0, 48);
-        if (!trimmed) return;
-        set((state) => ({
-          pins: [...state.pins, { id: uid("pin"), place: trimmed, done: [] }],
-        }));
-      },
-      toggleArrival: (pinId, characterId) =>
-        set((state) => ({
-          pins: state.pins.map((pin) => {
-            if (pin.id !== pinId) return pin;
-            const done = pin.done.includes(characterId)
-              ? pin.done.filter((id) => id !== characterId)
-              : [...pin.done, characterId];
-            return { ...pin, done };
-          }),
-        })),
-      removePin: (id) => set((state) => ({ pins: state.pins.filter((pin) => pin.id !== id) })),
       patchFarm: (patch) =>
         set((state) => ({
           farm: {
@@ -485,12 +383,8 @@ export const usePupitre = create<PupitreState>()(
       name: "pupitre-dofus3",
       skipHydration: true,
       partialize: (state) => ({
-        mode: state.mode,
         characters: state.characters,
         focusId: state.focusId,
-        journal: state.journal,
-        texts: state.texts,
-        pins: state.pins,
         farm: state.farm,
         farmHistory: state.farmHistory,
         autoCombats: state.autoCombats,
