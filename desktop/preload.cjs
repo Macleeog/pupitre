@@ -15,12 +15,27 @@ contextBridge.exposeInMainWorld("pupitre", {
   shortcuts: {
     set: (map) => ipcRenderer.invoke("shortcuts:set", map),
   },
+  overlaySize: {
+    get: () => ipcRenderer.invoke("overlay:get-size"),
+    set: (size) => ipcRenderer.send("overlay:set-size", size),
+  },
+  updates: {
+    getState: () => ipcRenderer.invoke("update:get-state"),
+    check: () => ipcRenderer.invoke("update:check"),
+    install: () => ipcRenderer.send("update:install"),
+    onState(handler) {
+      const listener = (_event, state) => handler(state);
+      ipcRenderer.on("update:state", listener);
+      return () => ipcRenderer.removeListener("update:state", listener);
+    },
+  },
   net: {
     getState: () => ipcRenderer.invoke("net:get-state"),
     startCapture: () => ipcRenderer.invoke("net:capture-start"),
     stopCapture: () => ipcRenderer.invoke("net:capture-stop"),
     restart: () => ipcRenderer.invoke("net:restart"),
     openFolder: () => ipcRenderer.invoke("net:open-folder"),
+    forgetOwn: () => ipcRenderer.invoke("net:forget-own"),
     onState(handler) {
       const listener = (_event, state) => handler(state);
       ipcRenderer.on("net:state", listener);

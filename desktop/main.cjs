@@ -4,9 +4,14 @@ const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
 const { GameNetReader } = require("./game-net/reader.cjs");
+const { watchForUpdates } = require("./updates.cjs");
 
 const PORT = 47321;
 const DEFAULT_PLACEMENT = { right: 12, top: 48 };
+const OVERLAY_SIZES = {
+  compact: { width: 300, height: 150 },
+  large: { width: 380, height: 210 },
+};
 const DEFAULT_SHORTCUTS = {
   overlay: "CommandOrControl+Shift+F9",
   start: "CommandOrControl+Shift+F6",
@@ -52,30 +57,36 @@ function sendFarm(command, overlay, desk) {
   if (target && !target.isDestroyed()) target.webContents.send("farm-command", command);
 }
 
-function placementFile() {
-  return path.join(app.getPath("userData"), "overlay.json");
+function userFile(name) {
+  return path.join(app.getPath("userData"), name);
+}
+
+function readJson(name) {
+  try {
+    return JSON.parse(fs.readFileSync(userFile(name), "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+function writeJson(name, value) {
+  try {
+    fs.writeFileSync(userFile(name), JSON.stringify(value));
+  } catch {
+    // These files are conveniences; losing one must never break the app.
+  }
 }
 
 function loadPlacement() {
-  try {
-    const saved = JSON.parse(fs.readFileSync(placementFile(), "utf8"));
-    if (Number.isFinite(saved.right) && Number.isFinite(saved.top)) return { right: saved.right, top: saved.top };
-  } catch {
-    // First launch or unreadable file: fall back to the default corner.
-  }
-  return { ...DEFAULT_PLACEMENT };
+  const saved = readJson("overlay.json");
+  const size = OVERLAY_SIZES[saved?.size] ? saved.size : "compact";
+  if (Number.isFinite(saved?.right) && Number.isFinite(saved?.top)) return { right: saved.right, top: saved.top, size };
+  return { ...DEFAULT_PLACEMENT, size };
 }
 
-function savePlacement(placement) {
-  try {
-    fs.writeFileSync(placementFile(), JSON.stringify(placement));
-  } catch {
-    // Placement is a convenience; losing it must not break the overlay.
-  }
-}
-
-function shortcutsFile() {
-  return path.join(app.getPath("userData"), "shortcuts.json");
+function loadOwnFighters() {
+  const saved = readJson("own-fighters.json");
+  return Array.isArray(saved) ? saved.filter((id) => typeof id === "string" && /^\d{1,20}$/.test(id)) : [];
 }
 
 function cleanShortcuts(map) {
@@ -88,19 +99,7 @@ function cleanShortcuts(map) {
 }
 
 function loadShortcuts() {
-  try {
-    return cleanShortcuts(JSON.parse(fs.readFileSync(shortcutsFile(), "utf8")));
-  } catch {
-    return cleanShortcuts(null);
-  }
-}
-
-function saveShortcuts(map) {
-  try {
-    fs.writeFileSync(shortcutsFile(), JSON.stringify(map));
-  } catch {
-    // The desk keeps its own copy; the file only matters before the desk loads.
-  }
+  return cleanShortcuts(readJson("shortcuts.json"));
 }
 
 function registerShortcuts(map, run) {
@@ -130,15 +129,39 @@ function registerShortcuts(map, run) {
 }
 
 // Windows drifts the size up on every setPosition when display scaling isn't 100%, so the
-// overlay is always moved with explicit bounds at this fixed size.
-const OVERLAY_SIZE = { width: 300, height: 150 };
+// overlay is always moved with explicit bounds at its chosen fixed size.
+function overlaySize(overlay) {
+  return OVERLAY_SIZES[overlay.pupitreSize] ?? OVERLAY_SIZES.compact;
+}
 
 function moveOverlay(overlay, x, y) {
-  overlay.setBounds({ x: Math.round(x), y: Math.round(y), ...OVERLAY_SIZE });
+  overlay.setBounds({ x: Math.round(x), y: Math.round(y), ...overlaySize(overlay) });
+}
+
+function lockOverlaySize(overlay, size) {
+  overlay.pupitreSize = OVERLAY_SIZES[size] ? size : "compact";
+  const { width, height } = overlaySize(overlay);
+  overlay.setMinimumSize(1, 1);
+  overlay.setMaximumSize(4000, 4000);
+  overlay.setSize(width, height);
+  overlay.setMinimumSize(width, height);
+  overlay.setMaximumSize(width, height);
 }
 
 function followDofus(overlay) {
   const state = { game: null, placement: loadPlacement(), dragging: false, hiddenByUser: false };
+  lockOverlaySize(overlay, state.placement.size);
+
+  const resize = (size) => {
+    if (overlay.isDestroyed()) return;
+    const [x, y] = overlay.getPosition();
+    const before = overlaySize(overlay);
+    lockOverlaySize(overlay, size);
+    state.placement = { ...state.placement, size: overlay.pupitreSize };
+    writeJson("overlay.json", state.placement);
+    if (state.game) place();
+    else moveOverlay(overlay, x + before.width - overlaySize(overlay).width, y);
+  };
 
   const toggle = () => {
     if (overlay.isDestroyed()) return;
@@ -153,7 +176,7 @@ function followDofus(overlay) {
 
   const place = () => {
     if (!state.game || overlay.isDestroyed()) return;
-    const { width, height } = OVERLAY_SIZE;
+    const { width, height } = overlaySize(overlay);
     const top = Math.min(Math.max(0, state.placement.top), Math.max(0, state.game.height - height));
     const right = Math.min(Math.max(0, state.placement.right), Math.max(0, state.game.width - width));
     moveOverlay(overlay, state.game.x + state.game.width - width - right, state.game.y + top);
@@ -172,10 +195,11 @@ function followDofus(overlay) {
     if (!state.game) return;
     const bounds = overlay.getBounds();
     state.placement = {
-      right: Math.round(state.game.x + state.game.width - bounds.x - OVERLAY_SIZE.width),
+      right: Math.round(state.game.x + state.game.width - bounds.x - bounds.width),
       top: Math.round(bounds.y - state.game.y),
+      size: overlay.pupitreSize,
     };
-    savePlacement(state.placement);
+    writeJson("overlay.json", state.placement);
     place();
   });
 
@@ -183,7 +207,7 @@ function followDofus(overlay) {
     overlay.once("ready-to-show", () => {
       if (!state.hiddenByUser) overlay.showInactive();
     });
-    return { watcher: null, toggle };
+    return { watcher: null, toggle, resize };
   }
 
   // The script sits inside app.asar in the packaged exe, where powershell.exe cannot open it by path.
@@ -224,7 +248,7 @@ function followDofus(overlay) {
       overlay.hide();
     }
   });
-  return { watcher: child, toggle };
+  return { watcher: child, toggle, resize };
 }
 
 // Passive, read-only: tshark (Wireshark + Npcap) copies the game's packets; nothing is
@@ -238,6 +262,8 @@ function readGameNetwork(desk) {
     capturesDir,
     onState: (state) => toDesk("net:state", state),
     onEvent: (event) => toDesk("game-event", event),
+    ownFighterIds: loadOwnFighters(),
+    onOwnFighters: (ids) => writeJson("own-fighters.json", ids),
   });
   const fromDesk = (event) => event.sender === desk.webContents;
   ipcMain.handle("net:get-state", (event) => (fromDesk(event) ? reader.snapshot() : null));
@@ -246,6 +272,11 @@ function readGameNetwork(desk) {
   ipcMain.handle("net:restart", async (event) => {
     if (!fromDesk(event)) return null;
     await reader.restart();
+    return reader.snapshot();
+  });
+  ipcMain.handle("net:forget-own", (event) => {
+    if (!fromDesk(event)) return null;
+    reader.forgetOwnFighters();
     return reader.snapshot();
   });
   ipcMain.handle("net:open-folder", async (event) => {
@@ -313,11 +344,7 @@ app.whenReady().then(async () => {
     webPreferences: webPreferences(),
   });
   const overlay = new BrowserWindow({
-    ...OVERLAY_SIZE,
-    minWidth: OVERLAY_SIZE.width,
-    minHeight: OVERLAY_SIZE.height,
-    maxWidth: OVERLAY_SIZE.width,
-    maxHeight: OVERLAY_SIZE.height,
+    ...OVERLAY_SIZES.compact,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
@@ -331,23 +358,31 @@ app.whenReady().then(async () => {
   });
   overlay.on("resize", () => {
     const [width, height] = overlay.getSize();
-    if (width === OVERLAY_SIZE.width && height === OVERLAY_SIZE.height) return;
+    const size = overlaySize(overlay);
+    if (width === size.width && height === size.height) return;
     const [x, y] = overlay.getPosition();
     moveOverlay(overlay, x, y);
   });
   overlay.setAlwaysOnTop(true, "screen-saver");
   overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  const { watcher, toggle } = followDofus(overlay);
+  const { watcher, toggle, resize } = followDofus(overlay);
+  ipcMain.handle("overlay:get-size", (event) =>
+    event.sender === desk.webContents || event.sender === overlay.webContents ? overlay.pupitreSize : null,
+  );
+  ipcMain.on("overlay:set-size", (event, size) => {
+    if (event.sender === desk.webContents && typeof size === "string") resize(size);
+  });
   const runShortcut = (action) => (action === "overlay" ? toggle() : sendFarm(action, overlay, desk));
   registerShortcuts(loadShortcuts(), runShortcut);
   ipcMain.handle("shortcuts:set", (event, map) => {
     if (event.sender !== desk.webContents) return null;
     const clean = cleanShortcuts(map);
-    saveShortcuts(clean);
+    writeJson("shortcuts.json", clean);
     return registerShortcuts(clean, runShortcut);
   });
 
   network = readGameNetwork(desk);
+  watchForUpdates(desk);
   await desk.loadURL(`http://127.0.0.1:${PORT}/`);
   await overlay.loadURL(`http://127.0.0.1:${PORT}/overlay`);
   desk.on("closed", () => {

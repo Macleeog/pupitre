@@ -45,6 +45,19 @@ export type NetState = {
   lastFightEnd: FightEnd | null;
   fightsSeen: number;
   ownFighterIds?: string[];
+  codes?: { state: "ok" | "unknown" | "stale"; knownShare: number | null };
+};
+
+export type OverlaySize = "compact" | "large";
+
+export type UpdateStatus = "idle" | "dev" | "manual" | "checking" | "up-to-date" | "downloading" | "ready" | "error";
+
+export type UpdateState = {
+  status: UpdateStatus;
+  version: string;
+  available: string | null;
+  progress: number;
+  detail: string;
 };
 
 declare global {
@@ -56,12 +69,23 @@ declare global {
       shortcuts?: {
         set: (map: ShortcutMap) => Promise<Record<ShortcutAction, ShortcutStatus>>;
       };
+      overlaySize?: {
+        get: () => Promise<OverlaySize | null>;
+        set: (size: OverlaySize) => void;
+      };
+      updates?: {
+        getState: () => Promise<UpdateState | null>;
+        check: () => Promise<UpdateState | null>;
+        install: () => void;
+        onState: (handler: (state: UpdateState) => void) => () => void;
+      };
       net?: {
         getState: () => Promise<NetState | null>;
         startCapture: () => Promise<string | null>;
         stopCapture: () => Promise<{ file: string; count: number } | null>;
         restart: () => Promise<NetState | null>;
         openFolder: () => Promise<void>;
+        forgetOwn: () => Promise<NetState | null>;
         onState: (handler: (state: NetState) => void) => () => void;
         onGameEvent: (handler: (event: GameEvent) => void) => () => void;
       };

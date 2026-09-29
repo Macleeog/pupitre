@@ -1,37 +1,34 @@
 import { useEffect, useState } from "react";
-import { BringToFront, CircleDot, Keyboard, Radio } from "lucide-react";
+import { Radio, RefreshCw, Settings, Timer } from "lucide-react";
 import { classById } from "@/lib/pupitre/classes";
 import { usePupitre, type DeskTab } from "@/lib/pupitre/store";
 import { Sigil } from "@/components/pupitre/sigil";
-import { TourView } from "@/components/pupitre/tour-view";
-import { WheelView } from "@/components/pupitre/wheel-view";
+import { CharacterView } from "@/components/pupitre/character-view";
 import { FarmView } from "@/components/pupitre/farm-view";
 import { NetworkView } from "@/components/pupitre/network-view";
-import { ShortcutsView } from "@/components/pupitre/shortcuts-view";
+import { SettingsView } from "@/components/pupitre/settings-view";
 import { bindGameEvents } from "@/lib/pupitre/game-net";
 import { bindFarmHotkeys, bindFarmSync } from "@/lib/pupitre/farm-sync";
 import { bindShortcuts } from "@/lib/pupitre/shortcuts";
+import { useUpdateState } from "@/lib/pupitre/updates";
 
-const TABS: { id: DeskTab; label: string; icon: typeof BringToFront }[] = [
-  { id: "tour", label: "Tour", icon: BringToFront },
-  { id: "roue", label: "Roue", icon: CircleDot },
+const TABS: { id: DeskTab; label: string; icon: typeof Timer }[] = [
+  { id: "session", label: "Session", icon: Timer },
   { id: "reseau", label: "Réseau", icon: Radio },
-  { id: "raccourcis", label: "Raccourcis", icon: Keyboard },
+  { id: "reglages", label: "Réglages", icon: Settings },
 ];
 
 export function Desk() {
   const tab = usePupitre((state) => state.tab);
   const setTab = usePupitre((state) => state.setTab);
-  const advance = usePupitre((state) => state.advance);
-  const setFocus = usePupitre((state) => state.setFocus);
-  const characters = usePupitre((state) => state.characters);
-  const focusId = usePupitre((state) => state.focusId);
-  const focus = characters.find((character) => character.id === focusId) ?? null;
-  const onTour = tab === "tour";
-  const frame = onTour || tab === "reseau" ? "max-w-6xl" : "max-w-3xl";
+  const me = usePupitre((state) => state.me);
+  const overlaySize = usePupitre((state) => state.overlaySize);
+  const [hydrated, setHydrated] = useState(false);
+  const current = TABS.some((item) => item.id === tab) ? tab : "session";
+  const frame = current === "reglages" ? "max-w-3xl" : "max-w-6xl";
 
   useEffect(() => {
-    void usePupitre.persist.rehydrate();
+    void Promise.resolve(usePupitre.persist.rehydrate()).then(() => setHydrated(true));
     const unbindSync = bindFarmSync();
     const unbindKeys = bindFarmHotkeys();
     const unbindGame = bindGameEvents();
@@ -45,28 +42,8 @@ export function Desk() {
   }, []);
 
   useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      const target = event.target;
-      if (
-        target instanceof HTMLElement &&
-        (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)
-      ) {
-        return;
-      }
-      if (event.key === "n" || event.key === "N") {
-        event.preventDefault();
-        advance();
-        setTab("tour");
-      }
-      const digit = Number(event.key);
-      if (digit >= 1 && digit <= 9) {
-        const character = characters[digit - 1];
-        if (character) setFocus(character.id);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [advance, characters, setFocus, setTab]);
+    if (hydrated) window.pupitre?.overlaySize?.set(overlaySize);
+  }, [hydrated, overlaySize]);
 
   return (
     <div className="min-h-dvh bg-pine text-fog">
@@ -75,36 +52,34 @@ export function Desk() {
           <div className="min-w-0">
             <p className="text-xs font-medium tracking-widest text-lamp uppercase">Dofus 3</p>
             <h1 className="font-display text-4xl leading-none text-fog">Pupitre</h1>
-            <p className="mt-2 max-w-sm text-sm text-mist">
-              L'application de la team. Tu confirmes le tour, la roue dit qui mettre devant.
-            </p>
+            <p className="mt-2 max-w-sm text-sm text-mist">Le compagnon de tes sessions de farm.</p>
             <p className="mt-2 max-w-sm text-xs text-mist">
               Fan site. Aucun lien avec Ankama. Dofus, ses symboles et illustrations de classes sont la propriété
               d'Ankama.
             </p>
           </div>
-          {focus ? (
+          {me ? (
             <div className="hidden shrink-0 items-center gap-2 rounded-full border border-edge bg-moss py-1 pr-3 pl-1 sm:flex">
-              <Sigil id={focus.classId} className="size-9" />
+              <Sigil id={me.classId} className="size-9" />
               <span className="text-sm">
-                <span className="block leading-tight font-medium">{focus.name}</span>
-                <span className="text-mist">{classById(focus.classId).name}</span>
+                <span className="block leading-tight font-medium">{me.name}</span>
+                <span className="text-mist">{classById(me.classId).name}</span>
               </span>
             </div>
           ) : null}
         </div>
+        <UpdateBanner onOpen={() => setTab("reglages")} />
       </header>
 
       <main className={"mx-auto w-full px-4 pt-5 pb-28 " + frame}>
-        {onTour ? (
+        {current === "session" ? (
           <div className="flex flex-col gap-6">
+            <CharacterView />
             <FarmView />
-            <TourView />
           </div>
         ) : null}
-        {tab === "roue" ? <WheelView /> : null}
-        {tab === "reseau" ? <NetworkView /> : null}
-        {tab === "raccourcis" ? <ShortcutsView /> : null}
+        {current === "reseau" ? <NetworkView /> : null}
+        {current === "reglages" ? <SettingsView /> : null}
         <About />
       </main>
 
@@ -112,10 +87,10 @@ export function Desk() {
         className="fixed inset-x-0 bottom-0 z-20 border-t border-edge bg-moss/95 backdrop-blur"
         aria-label="Sections"
       >
-        <div className={"mx-auto grid grid-cols-4 px-2 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom))] " + frame}>
+        <div className={"mx-auto grid grid-cols-3 px-2 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom))] " + frame}>
           {TABS.map((item) => {
             const Icon = item.icon;
-            const active = item.id === "tour" ? onTour : tab === item.id;
+            const active = current === item.id;
             return (
               <button
                 key={item.id}
@@ -138,6 +113,29 @@ export function Desk() {
   );
 }
 
+function UpdateBanner({ onOpen }: { onOpen: () => void }) {
+  const update = useUpdateState();
+  if (update?.status !== "ready") return null;
+  return (
+    <div className="flex flex-wrap items-center gap-3 rounded-card border border-lamp/60 bg-canopy px-4 py-3">
+      <RefreshCw className="size-5 shrink-0 text-lamp" aria-hidden="true" />
+      <p className="min-w-0 flex-1 text-sm text-fog">
+        La version {update.available} est prête. Elle s'installe en redémarrant Pupitre, ou à la prochaine fermeture.
+      </p>
+      <button
+        type="button"
+        onClick={() => window.pupitre?.updates?.install()}
+        className="min-h-11 rounded-full bg-lamp px-4 text-sm font-medium text-lamp-ink"
+      >
+        Redémarrer
+      </button>
+      <button type="button" onClick={onOpen} className="min-h-11 px-2 text-sm text-mist">
+        Détails
+      </button>
+    </div>
+  );
+}
+
 function About() {
   const [open, setOpen] = useState(false);
   return (
@@ -150,7 +148,7 @@ function About() {
           Pupitre est un fan site. Il n'est pas lié, approuvé ni soutenu par Ankama. Dofus, Dofus Touch et
           Ankama sont des marques d'Ankama. L'exe pose un bandeau sur la fenêtre du jeu et accepte des raccourcis
           pour la session. Avec Wireshark installé, il lit en lecture seule les messages du jeu (onglet Réseau) :
-          il ne les modifie pas et n'envoie rien au serveur.
+          il ne les modifie pas et n'envoie rien au serveur. Il vérifie les nouvelles versions sur GitHub.
         </p>
       ) : null}
     </section>
