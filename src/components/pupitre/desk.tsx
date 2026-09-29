@@ -100,6 +100,7 @@ export function Desk() {
       <main className={"mx-auto w-full px-4 pt-5 pb-28 " + frame}>
         {onTour ? (
           <div className="flex flex-col gap-6">
+            <GettingStarted />
             <FarmView />
             <TourView />
           </div>
@@ -136,6 +137,33 @@ export function Desk() {
         </div>
       </nav>
     </div>
+  );
+}
+
+function GettingStarted() {
+  return (
+    <section className="rounded-card border border-edge bg-moss p-4">
+      <h2 className="font-medium text-fog">Pour commencer</h2>
+      <p className="mt-2 text-sm text-mist">
+        Windows 10 ou 11, 64 bits. Rien d'autre à installer : pas de Node, pas de compte, pas de droit administrateur.
+      </p>
+      <a
+        href="https://github.com/Macleeog/pupitre/releases/latest"
+        target="_blank"
+        rel="noreferrer"
+        className="mt-3 inline-flex min-h-11 items-center rounded-full bg-lamp px-4 text-sm font-medium text-lamp-ink"
+      >
+        Télécharger Pupitre.exe
+      </a>
+      <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-fog">
+        <li>Télécharge le fichier, environ 100 Mo.</li>
+        <li>
+          Si Windows affiche SmartScreen, choisis Informations complémentaires, puis Exécuter quand même. L'exe n'est
+          pas signé.
+        </li>
+        <li>Double-clic. La fenêtre s'ouvre toute seule. Dofus n'est pas obligatoire : le bandeau se pose seulement si une fenêtre du jeu est ouverte.</li>
+      </ol>
+    </section>
   );
 }
 
