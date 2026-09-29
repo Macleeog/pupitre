@@ -26,6 +26,17 @@ Dans l’exe, le bandeau de session suit la fenêtre Dofus au premier plan (ou l
 | Ctrl+Maj+F8 | Terminer |
 | Ctrl+Maj+F5 | +1 combat |
 
+## Lecture du réseau (onglet Réseau)
+
+Optionnel. Avec [Wireshark](https://www.wireshark.org/download.html) installé (garde Npcap coché), l'exe lit en lecture seule les messages du jeu, ceux dont le type commence par `type.ankama.com/`. Il ne modifie ni la connexion ni le fichier `hosts`, et n'envoie rien.
+
+- **Combats** : début, tours et fin de combat sont détectés. La session de farm peut compter +1 combat toute seule (une fois par combat, même en multicompte).
+- **Capturer les paquets** : enregistre chaque message décodé dans `%APPDATA%\Pupitre\packet-captures\capture-….ndjson`, une ligne JSON par message.
+
+Les codes des messages de combat (`desktop/game-net/fights.cjs`) viennent de Blitzkrieg 1.42 (licence MIT). Ankama les renomme aux mises à jour : une capture permet de retrouver les nouveaux.
+
+Les conditions d'utilisation d'Ankama interdisent les logiciels tiers qui lisent le trafic du jeu. À tes risques pour ton compte.
+
 ## Développement
 
 ```bash
