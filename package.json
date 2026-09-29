@@ -1,6 +1,6 @@
 {
   "name": "pupitre",
-  "version": "0.1.12-beta.3",
+  "version": "0.1.12-beta.4",
   "private": true,
   "sideEffects": false,
   "type": "module",
