@@ -12,9 +12,10 @@ import {
   type FarmSession,
   type FarmSnapshot,
 } from "@/lib/pupitre/farm";
+import type { ShortcutAction, ShortcutMap, ShortcutStatus } from "@/pupitre-desktop";
 
 export type ServerMode = "classique" | "mono";
-export type DeskTab = "tour" | "roue" | "textes" | "reseau";
+export type DeskTab = "tour" | "roue" | "textes" | "reseau" | "raccourcis";
 export type PulseKind = "turn" | "trade" | "invite" | "pm";
 
 export type Character = {
@@ -45,6 +46,15 @@ export type RoutePin = {
 
 export type FightLootItem = { itemId: number; quantity: number };
 
+export const DEFAULT_SHORTCUTS: ShortcutMap = {
+  overlay: "CommandOrControl+Shift+F9",
+  start: "CommandOrControl+Shift+F6",
+  pause: "CommandOrControl+Shift+F7",
+  stop: "CommandOrControl+Shift+F8",
+  reset: "CommandOrControl+Shift+F10",
+  combat: "CommandOrControl+Shift+F5",
+};
+
 const FIGHT_LOG_SIZE = 10;
 
 export type FarmHistoryEntry = FarmSnapshot & {
@@ -71,6 +81,11 @@ type PupitreState = {
   setAutoCombats: (autoCombats: boolean) => void;
   autoLoot: boolean;
   setAutoLoot: (autoLoot: boolean) => void;
+  shortcuts: ShortcutMap;
+  shortcutStatus: Partial<Record<ShortcutAction, ShortcutStatus>>;
+  setShortcut: (action: ShortcutAction, accelerator: string) => void;
+  resetShortcuts: () => void;
+  setShortcutStatus: (status: Partial<Record<ShortcutAction, ShortcutStatus>>) => void;
   setMode: (mode: ServerMode) => void;
   setTab: (tab: DeskTab) => void;
   addCharacter: (name: string, classId: ClassId) => void;
@@ -92,6 +107,7 @@ type PupitreState = {
   startFarm: () => void;
   pauseFarm: () => void;
   finishFarm: () => void;
+  resetFarm: () => void;
   addCombat: () => void;
   addDonjon: () => void;
   addResource: () => void;
@@ -152,6 +168,12 @@ export const usePupitre = create<PupitreState>()(
       setAutoCombats: (autoCombats) => set({ autoCombats }),
       autoLoot: true,
       setAutoLoot: (autoLoot) => set({ autoLoot }),
+      shortcuts: DEFAULT_SHORTCUTS,
+      shortcutStatus: {},
+      setShortcut: (action, accelerator) =>
+        set((state) => ({ shortcuts: { ...state.shortcuts, [action]: accelerator.slice(0, 80) } })),
+      resetShortcuts: () => set({ shortcuts: DEFAULT_SHORTCUTS }),
+      setShortcutStatus: (shortcutStatus) => set({ shortcutStatus }),
       setMode: (mode) => set({ mode }),
       setTab: (tab) => set({ tab }),
       addCharacter: (name, classId) => {
@@ -335,6 +357,27 @@ export const usePupitre = create<PupitreState>()(
             farmHistory: [entry, ...state.farmHistory].slice(0, 40),
           };
         }),
+      resetFarm: () =>
+        set((state) => {
+          const now = Date.now();
+          const running = state.farm.status === "running";
+          const paused = state.farm.status === "paused";
+          return {
+            farm: {
+              ...state.farm,
+              status: running ? "running" : paused ? "paused" : "idle",
+              startedAt: running || paused ? now : null,
+              segmentStartedAt: running ? now : null,
+              accumulatedMs: 0,
+              combats: 0,
+              donjons: 0,
+              kamas: 0,
+              jackpot: "",
+              resources: clearedResources(state.farm.resources),
+              fightLog: [],
+            },
+          };
+        }),
       addCombat: () =>
         set((state) => {
           if (state.farm.status !== "running" && state.farm.status !== "paused") return state;
@@ -466,7 +509,12 @@ export const usePupitre = create<PupitreState>()(
         farmHistory: state.farmHistory,
         autoCombats: state.autoCombats,
         autoLoot: state.autoLoot,
+        shortcuts: state.shortcuts,
       }),
+      merge: (persisted, current) => {
+        const saved = (persisted ?? {}) as Partial<PupitreState>;
+        return { ...current, ...saved, shortcuts: { ...DEFAULT_SHORTCUTS, ...saved.shortcuts } };
+      },
     },
   ),
 );

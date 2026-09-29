@@ -19,12 +19,18 @@ Il faut Windows 10 ou 11, 64 bits. Rien d’autre : pas de Node, pas de compte P
 
 Dans l’exe, le bandeau de session suit la fenêtre Dofus au premier plan (ou la première ouverte) et ne s’affiche que quand Dofus est devant. Glisse-le où tu veux : sa place par rapport à la fenêtre du jeu est retenue.
 
+Raccourcis par défaut, modifiables dans l'onglet **Raccourcis** (bouton Modifier, puis la combinaison ; Échap annule) :
+
 | Touche | Action |
 |---|---|
+| Ctrl+Maj+F9 | Afficher / masquer le bandeau |
 | Ctrl+Maj+F6 | Démarrer la session |
 | Ctrl+Maj+F7 | Pause |
 | Ctrl+Maj+F8 | Terminer |
+| Ctrl+Maj+F10 | Remettre la session à zéro, sans l'historique |
 | Ctrl+Maj+F5 | +1 combat |
+
+Si une combinaison est déjà prise par une autre application, l'onglet le signale. Les raccourcis sont aussi gardés dans `%APPDATA%\Pupitre\shortcuts.json`, pour marcher dès le lancement.
 
 ## Lecture du réseau (onglet Réseau)
 

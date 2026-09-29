@@ -1,4 +1,10 @@
-export type FarmCommand = "start" | "pause" | "stop" | "combat";
+export type FarmCommand = "start" | "pause" | "stop" | "reset" | "combat";
+
+export type ShortcutAction = "overlay" | FarmCommand;
+
+export type ShortcutMap = Record<ShortcutAction, string>;
+
+export type ShortcutStatus = "ok" | "empty" | "duplicate" | "failed";
 
 export type NetStatus = "idle" | "unsupported" | "missing" | "starting" | "listening" | "stopped" | "error";
 
@@ -47,6 +53,9 @@ declare global {
       onFarmCommand: (handler: (command: FarmCommand) => void) => () => void;
       overlayMoveBy?: (dx: number, dy: number) => void;
       overlayDragEnd?: () => void;
+      shortcuts?: {
+        set: (map: ShortcutMap) => Promise<Record<ShortcutAction, ShortcutStatus>>;
+      };
       net?: {
         getState: () => Promise<NetState | null>;
         startCapture: () => Promise<string | null>;

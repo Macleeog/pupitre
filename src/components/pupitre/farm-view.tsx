@@ -12,6 +12,7 @@ import {
   type FarmStatus,
 } from "@/lib/pupitre/farm";
 import { searchItems, useItemNames, type CatalogItem } from "@/lib/pupitre/items";
+import { formatAccelerator } from "@/lib/pupitre/shortcuts";
 import { usePupitre, type FarmHistoryEntry } from "@/lib/pupitre/store";
 import type { FarmResource, FightLogEntry } from "@/lib/pupitre/farm";
 
@@ -36,6 +37,7 @@ export function FarmView() {
   const removeResource = usePupitre((state) => state.removeResource);
   const removeFarmHistory = usePupitre((state) => state.removeFarmHistory);
   const undoFightLoot = usePupitre((state) => state.undoFightLoot);
+  const shortcuts = usePupitre((state) => state.shortcuts);
   const [selected, setSelected] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
@@ -120,7 +122,9 @@ export function FarmView() {
                 </button>
               </div>
               <p className="mt-3 text-xs text-mist">
-                Dans l'exe, un bandeau suit la fenêtre Dofus. Ctrl+Maj+F6 démarre, F7 pause, F8 termine, F5 ajoute un combat.
+                Dans l'exe, un bandeau suit la fenêtre Dofus. {formatAccelerator(shortcuts.start)} démarre,{" "}
+                {formatAccelerator(shortcuts.pause)} pause, {formatAccelerator(shortcuts.stop)} termine,{" "}
+                {formatAccelerator(shortcuts.combat)} ajoute un combat. À changer dans l'onglet Raccourcis.
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button

@@ -7,6 +7,14 @@ const { GameNetReader } = require("./game-net/reader.cjs");
 
 const PORT = 47321;
 const DEFAULT_PLACEMENT = { right: 12, top: 48 };
+const DEFAULT_SHORTCUTS = {
+  overlay: "CommandOrControl+Shift+F9",
+  start: "CommandOrControl+Shift+F6",
+  pause: "CommandOrControl+Shift+F7",
+  stop: "CommandOrControl+Shift+F8",
+  reset: "CommandOrControl+Shift+F10",
+  combat: "CommandOrControl+Shift+F5",
+};
 
 function outputRoot() {
   if (app.isPackaged) return path.join(process.resourcesPath, "output");
@@ -66,8 +74,74 @@ function savePlacement(placement) {
   }
 }
 
+function shortcutsFile() {
+  return path.join(app.getPath("userData"), "shortcuts.json");
+}
+
+function cleanShortcuts(map) {
+  const clean = {};
+  for (const [action, fallback] of Object.entries(DEFAULT_SHORTCUTS)) {
+    const value = map && typeof map === "object" ? map[action] : undefined;
+    clean[action] = typeof value === "string" ? value.slice(0, 80) : fallback;
+  }
+  return clean;
+}
+
+function loadShortcuts() {
+  try {
+    return cleanShortcuts(JSON.parse(fs.readFileSync(shortcutsFile(), "utf8")));
+  } catch {
+    return cleanShortcuts(null);
+  }
+}
+
+function saveShortcuts(map) {
+  try {
+    fs.writeFileSync(shortcutsFile(), JSON.stringify(map));
+  } catch {
+    // The desk keeps its own copy; the file only matters before the desk loads.
+  }
+}
+
+function registerShortcuts(map, run) {
+  globalShortcut.unregisterAll();
+  const status = {};
+  const taken = new Set();
+  for (const [action, accelerator] of Object.entries(map)) {
+    if (!accelerator) {
+      status[action] = "empty";
+      continue;
+    }
+    const key = accelerator.toLowerCase();
+    if (taken.has(key)) {
+      status[action] = "duplicate";
+      continue;
+    }
+    taken.add(key);
+    let ok = false;
+    try {
+      ok = globalShortcut.register(accelerator, () => run(action));
+    } catch {
+      ok = false;
+    }
+    status[action] = ok ? "ok" : "failed";
+  }
+  return status;
+}
+
 function followDofus(overlay) {
-  const state = { game: null, placement: loadPlacement(), dragging: false };
+  const state = { game: null, placement: loadPlacement(), dragging: false, hiddenByUser: false };
+
+  const toggle = () => {
+    if (overlay.isDestroyed()) return;
+    state.hiddenByUser = !state.hiddenByUser;
+    if (state.hiddenByUser) {
+      overlay.hide();
+    } else if (process.platform !== "win32" || state.game) {
+      place();
+      overlay.showInactive();
+    }
+  };
 
   const place = () => {
     if (!state.game || overlay.isDestroyed()) return;
@@ -101,8 +175,10 @@ function followDofus(overlay) {
   });
 
   if (process.platform !== "win32") {
-    overlay.once("ready-to-show", () => overlay.showInactive());
-    return null;
+    overlay.once("ready-to-show", () => {
+      if (!state.hiddenByUser) overlay.showInactive();
+    });
+    return { watcher: null, toggle };
   }
 
   // The script sits inside app.asar in the packaged exe, where powershell.exe cannot open it by path.
@@ -138,12 +214,12 @@ function followDofus(overlay) {
     if (state.dragging) return;
     place();
     if (front === 1) {
-      if (!overlay.isVisible()) overlay.showInactive();
+      if (!state.hiddenByUser && !overlay.isVisible()) overlay.showInactive();
     } else {
       overlay.hide();
     }
   });
-  return child;
+  return { watcher: child, toggle };
 }
 
 // Passive, read-only: tshark (Wireshark + Npcap) copies the game's packets; nothing is
@@ -247,16 +323,15 @@ app.whenReady().then(async () => {
   });
   overlay.setAlwaysOnTop(true, "screen-saver");
   overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  const watcher = followDofus(overlay);
-  const shortcuts = [
-    ["CommandOrControl+Shift+F6", "start"],
-    ["CommandOrControl+Shift+F7", "pause"],
-    ["CommandOrControl+Shift+F8", "stop"],
-    ["CommandOrControl+Shift+F5", "combat"],
-  ];
-  for (const [accelerator, command] of shortcuts) {
-    globalShortcut.register(accelerator, () => sendFarm(command, overlay, desk));
-  }
+  const { watcher, toggle } = followDofus(overlay);
+  const runShortcut = (action) => (action === "overlay" ? toggle() : sendFarm(action, overlay, desk));
+  registerShortcuts(loadShortcuts(), runShortcut);
+  ipcMain.handle("shortcuts:set", (event, map) => {
+    if (event.sender !== desk.webContents) return null;
+    const clean = cleanShortcuts(map);
+    saveShortcuts(clean);
+    return registerShortcuts(clean, runShortcut);
+  });
 
   network = readGameNetwork(desk);
   await desk.loadURL(`http://127.0.0.1:${PORT}/`);

@@ -12,6 +12,9 @@ contextBridge.exposeInMainWorld("pupitre", {
   overlayDragEnd() {
     ipcRenderer.send("overlay:drag-end");
   },
+  shortcuts: {
+    set: (map) => ipcRenderer.invoke("shortcuts:set", map),
+  },
   net: {
     getState: () => ipcRenderer.invoke("net:get-state"),
     startCapture: () => ipcRenderer.invoke("net:capture-start"),
