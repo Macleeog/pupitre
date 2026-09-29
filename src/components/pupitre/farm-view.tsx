@@ -13,6 +13,7 @@ import {
 } from "@/lib/pupitre/farm";
 import { searchItems, useItemNames, type CatalogItem } from "@/lib/pupitre/items";
 import { formatAccelerator } from "@/lib/pupitre/shortcuts";
+import { HistoryCharts } from "@/components/pupitre/history-view";
 import { usePupitre, type FarmHistoryEntry } from "@/lib/pupitre/store";
 import type { FarmResource, FightLogEntry } from "@/lib/pupitre/farm";
 
@@ -300,7 +301,10 @@ export function FarmView() {
           <FightLog entries={farm.fightLog ?? []} resources={farm.resources} onUndo={undoFightLoot} />
           <section>
             <h3 className="mb-2 text-xs font-medium tracking-widest text-mist uppercase">Historique</h3>
-            <HistoryList entries={history} onRemove={removeFarmHistory} />
+            <div className="flex flex-col gap-3">
+              <HistoryCharts entries={history} />
+              <HistoryList entries={history} onRemove={removeFarmHistory} />
+            </div>
           </section>
     </div>
   );
