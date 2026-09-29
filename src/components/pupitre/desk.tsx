@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { BringToFront, CircleDot, ClipboardType, Table2 } from "lucide-react";
+import { BringToFront, CircleDot, ClipboardType } from "lucide-react";
 import { classById } from "@/lib/pupitre/classes";
 import { usePupitre, type DeskTab, type ServerMode } from "@/lib/pupitre/store";
 import { Sigil } from "@/components/pupitre/sigil";
 import { TourView } from "@/components/pupitre/tour-view";
 import { WheelView } from "@/components/pupitre/wheel-view";
-import { RunesView } from "@/components/pupitre/runes-view";
 import { TextsView } from "@/components/pupitre/texts-view";
 import { FarmView } from "@/components/pupitre/farm-view";
 import { bindFarmHotkeys, bindFarmSync } from "@/lib/pupitre/farm-sync";
@@ -13,7 +12,6 @@ import { bindFarmHotkeys, bindFarmSync } from "@/lib/pupitre/farm-sync";
 const TABS: { id: DeskTab; label: string; icon: typeof BringToFront }[] = [
   { id: "tour", label: "Tour", icon: BringToFront },
   { id: "roue", label: "Roue", icon: CircleDot },
-  { id: "runes", label: "Runes", icon: Table2 },
   { id: "textes", label: "Textes", icon: ClipboardType },
 ];
 
@@ -27,7 +25,7 @@ export function Desk() {
   const characters = usePupitre((state) => state.characters);
   const focusId = usePupitre((state) => state.focusId);
   const focus = characters.find((character) => character.id === focusId) ?? null;
-  const onTour = tab !== "roue" && tab !== "runes" && tab !== "textes";
+  const onTour = tab !== "roue" && tab !== "textes";
   const frame = onTour ? "max-w-6xl" : "max-w-3xl";
 
   useEffect(() => {
@@ -107,7 +105,6 @@ export function Desk() {
           </div>
         ) : null}
         {tab === "roue" ? <WheelView /> : null}
-        {tab === "runes" ? <RunesView /> : null}
         {tab === "textes" ? <TextsView /> : null}
         <About />
       </main>
@@ -116,7 +113,7 @@ export function Desk() {
         className="fixed inset-x-0 bottom-0 z-20 border-t border-edge bg-moss/95 backdrop-blur"
         aria-label="Sections"
       >
-        <div className={"mx-auto grid grid-cols-4 px-2 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom))] " + frame}>
+        <div className={"mx-auto grid grid-cols-3 px-2 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom))] " + frame}>
           {TABS.map((item) => {
             const Icon = item.icon;
             const active = item.id === "tour" ? onTour : tab === item.id;

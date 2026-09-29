@@ -14,7 +14,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Pupitre, application pour Dofus 3 : ordre de passage, roue, poids des runes et compteur de farm.",
+          "Pupitre, application pour Dofus 3 : ordre de passage, roue, textes et compteur de farm.",
       },
       { name: "theme-color", content: "#101614" },
     ],

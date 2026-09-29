@@ -10,10 +10,9 @@ import {
   type FarmSession,
   type FarmSnapshot,
 } from "@/lib/pupitre/farm";
-import type { RuneFamilyId, RuneGrade } from "@/lib/pupitre/runes";
 
 export type ServerMode = "classique" | "mono";
-export type DeskTab = "tour" | "roue" | "runes" | "textes";
+export type DeskTab = "tour" | "roue" | "textes";
 export type PulseKind = "turn" | "trade" | "invite" | "pm";
 
 export type Character = {
@@ -60,11 +59,6 @@ type PupitreState = {
   journal: JournalEntry[];
   texts: QuickText[];
   pins: RoutePin[];
-  family: "all" | RuneFamilyId;
-  query: string;
-  handId: string;
-  grade: RuneGrade;
-  sink: string;
   farm: FarmSession;
   farmHistory: FarmHistoryEntry[];
   setMode: (mode: ServerMode) => void;
@@ -84,11 +78,6 @@ type PupitreState = {
   addPin: (place: string) => void;
   toggleArrival: (pinId: string, characterId: string) => void;
   removePin: (id: string) => void;
-  setFamily: (family: PupitreState["family"]) => void;
-  setQuery: (query: string) => void;
-  setHand: (id: string, grade?: RuneGrade) => void;
-  setGrade: (grade: RuneGrade) => void;
-  setSink: (sink: string) => void;
   patchFarm: (patch: Partial<Pick<FarmSession, "zone" | "notes" | "keys" | "other" | "jackpot">>) => void;
   startFarm: () => void;
   pauseFarm: () => void;
@@ -141,11 +130,6 @@ export const usePupitre = create<PupitreState>()(
       journal: [],
       texts: DEFAULT_TEXTS,
       pins: [{ id: "pin-exemple", place: "Zaap, coin de la place", done: [] }],
-      family: "all",
-      query: "",
-      handId: "vita",
-      grade: "ra",
-      sink: "0",
       farm: EMPTY_FARM,
       farmHistory: [],
       setMode: (mode) => set({ mode }),
@@ -255,11 +239,6 @@ export const usePupitre = create<PupitreState>()(
           }),
         })),
       removePin: (id) => set((state) => ({ pins: state.pins.filter((pin) => pin.id !== id) })),
-      setFamily: (family) => set({ family }),
-      setQuery: (query) => set({ query }),
-      setHand: (id, grade) => set({ handId: id, grade: grade ?? "rune" }),
-      setGrade: (grade) => set({ grade }),
-      setSink: (sink) => set({ sink: sink.replace(/[^\d.,]/g, "").slice(0, 8) }),
       patchFarm: (patch) =>
         set((state) => ({
           farm: {
@@ -404,9 +383,6 @@ export const usePupitre = create<PupitreState>()(
         journal: state.journal,
         texts: state.texts,
         pins: state.pins,
-        handId: state.handId,
-        grade: state.grade,
-        sink: state.sink,
         farm: state.farm,
         farmHistory: state.farmHistory,
       }),

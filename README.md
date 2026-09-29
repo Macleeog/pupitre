@@ -1,6 +1,6 @@
 # Pupitre
 
-Second écran pour Dofus 3 : ordre de passage, roue des personnages, table des runes Unity et textes à coller dans le chat.
+Second écran pour Dofus 3 : ordre de passage, roue des personnages, textes à coller dans le chat et compteur de farm.
 
 Ce n’est pas le client de jeu. Pupitre ne lit pas la mémoire de Dofus et ne passe pas une fenêtre au premier plan. Indépendant d’Ankama. Dofus est une marque d’Ankama.
 
