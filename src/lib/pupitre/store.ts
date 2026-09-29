@@ -1,10 +1,19 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ClassId } from "@/lib/pupitre/classes";
+import {
+  digitsOnly,
+  EMPTY_FARM,
+  elapsedMs,
+  snapshot,
+  type FarmResource,
+  type FarmSession,
+  type FarmSnapshot,
+} from "@/lib/pupitre/farm";
 import type { RuneEdition, RuneFamilyId, RuneGrade } from "@/lib/pupitre/runes";
 
 export type ServerMode = "classique" | "mono";
-export type DeskTab = "tour" | "roue" | "runes" | "textes";
+export type DeskTab = "tour" | "roue" | "runes" | "textes" | "farm";
 export type PulseKind = "turn" | "trade" | "invite" | "pm";
 
 export type Character = {
@@ -33,6 +42,16 @@ export type RoutePin = {
   done: string[];
 };
 
+export type FarmHistoryEntry = FarmSnapshot & {
+  id: string;
+  zone: string;
+  notes: string;
+  startedAt: number | null;
+  endedAt: number;
+  combats: number;
+  donjons: number;
+};
+
 type PupitreState = {
   mode: ServerMode;
   tab: DeskTab;
@@ -47,6 +66,8 @@ type PupitreState = {
   handId: string;
   grade: RuneGrade;
   sink: string;
+  farm: FarmSession;
+  farmHistory: FarmHistoryEntry[];
   setMode: (mode: ServerMode) => void;
   setTab: (tab: DeskTab) => void;
   addCharacter: (name: string, classId: ClassId) => void;
@@ -70,6 +91,16 @@ type PupitreState = {
   setHand: (id: string, grade?: RuneGrade) => void;
   setGrade: (grade: RuneGrade) => void;
   setSink: (sink: string) => void;
+  patchFarm: (patch: Partial<Pick<FarmSession, "zone" | "notes" | "keys" | "other" | "jackpot">>) => void;
+  startFarm: () => void;
+  pauseFarm: () => void;
+  finishFarm: () => void;
+  addCombat: () => void;
+  addDonjon: () => void;
+  addResource: () => void;
+  patchResource: (id: string, patch: Partial<Pick<FarmResource, "name" | "qty" | "price">>) => void;
+  removeResource: (id: string) => void;
+  removeFarmHistory: (id: string) => void;
 };
 
 const EXAMPLE: Character[] = [
@@ -115,6 +146,8 @@ export const usePupitre = create<PupitreState>()(
       handId: "vita",
       grade: "ra",
       sink: "0",
+      farm: EMPTY_FARM,
+      farmHistory: [],
       setMode: (mode) => set({ mode }),
       setTab: (tab) => set({ tab }),
       addCharacter: (name, classId) => {
@@ -228,6 +261,129 @@ export const usePupitre = create<PupitreState>()(
       setHand: (id, grade) => set({ handId: id, grade: grade ?? "rune" }),
       setGrade: (grade) => set({ grade }),
       setSink: (sink) => set({ sink: sink.replace(/[^\d.,]/g, "").slice(0, 8) }),
+      patchFarm: (patch) =>
+        set((state) => ({
+          farm: {
+            ...state.farm,
+            ...patch,
+            keys: patch.keys !== undefined ? digitsOnly(patch.keys) : state.farm.keys,
+            other: patch.other !== undefined ? digitsOnly(patch.other) : state.farm.other,
+            jackpot: patch.jackpot !== undefined ? digitsOnly(patch.jackpot) : state.farm.jackpot,
+            zone: patch.zone !== undefined ? patch.zone.slice(0, 48) : state.farm.zone,
+            notes: patch.notes !== undefined ? patch.notes.slice(0, 180) : state.farm.notes,
+          },
+        })),
+      startFarm: () =>
+        set((state) => {
+          const now = Date.now();
+          if (state.farm.status === "running") return state;
+          if (state.farm.status === "paused") {
+            return {
+              farm: { ...state.farm, status: "running", segmentStartedAt: now },
+            };
+          }
+          const fresh = state.farm.status === "done";
+          return {
+            farm: {
+              ...state.farm,
+              status: "running",
+              startedAt: now,
+              segmentStartedAt: now,
+              accumulatedMs: 0,
+              combats: fresh ? 0 : state.farm.combats,
+              donjons: fresh ? 0 : state.farm.donjons,
+              jackpot: fresh ? "" : state.farm.jackpot,
+              resources: fresh
+                ? state.farm.resources.map((resource) => ({ ...resource, qty: "" }))
+                : state.farm.resources,
+            },
+          };
+        }),
+      pauseFarm: () =>
+        set((state) => {
+          if (state.farm.status !== "running" || state.farm.segmentStartedAt === null) return state;
+          return {
+            farm: {
+              ...state.farm,
+              status: "paused",
+              accumulatedMs: elapsedMs(state.farm, Date.now()),
+              segmentStartedAt: null,
+            },
+          };
+        }),
+      finishFarm: () =>
+        set((state) => {
+          if (state.farm.status !== "running" && state.farm.status !== "paused") return state;
+          const endedAt = Date.now();
+          const elapsed = elapsedMs(state.farm, endedAt);
+          const totals = snapshot(state.farm, elapsed);
+          const entry: FarmHistoryEntry = {
+            id: uid("farm"),
+            zone: state.farm.zone.trim() || "Sans zone",
+            notes: state.farm.notes.trim(),
+            startedAt: state.farm.startedAt,
+            endedAt,
+            combats: state.farm.combats,
+            donjons: state.farm.donjons,
+            ...totals,
+          };
+          return {
+            farm: {
+              ...state.farm,
+              status: "done",
+              accumulatedMs: elapsed,
+              segmentStartedAt: null,
+            },
+            farmHistory: [entry, ...state.farmHistory].slice(0, 40),
+          };
+        }),
+      addCombat: () =>
+        set((state) => {
+          if (state.farm.status !== "running" && state.farm.status !== "paused") return state;
+          return { farm: { ...state.farm, combats: state.farm.combats + 1 } };
+        }),
+      addDonjon: () =>
+        set((state) => {
+          if (state.farm.status !== "running" && state.farm.status !== "paused") return state;
+          return { farm: { ...state.farm, donjons: state.farm.donjons + 1 } };
+        }),
+      addResource: () =>
+        set((state) => ({
+          farm: {
+            ...state.farm,
+            resources: [
+              ...state.farm.resources,
+              { id: uid("res"), name: "", qty: "", price: "" },
+            ],
+          },
+        })),
+      patchResource: (id, patch) =>
+        set((state) => ({
+          farm: {
+            ...state.farm,
+            resources: state.farm.resources.map((resource) =>
+              resource.id === id
+                ? {
+                    ...resource,
+                    name: patch.name !== undefined ? patch.name.slice(0, 40) : resource.name,
+                    qty: patch.qty !== undefined ? digitsOnly(patch.qty) : resource.qty,
+                    price: patch.price !== undefined ? digitsOnly(patch.price) : resource.price,
+                  }
+                : resource,
+            ),
+          },
+        })),
+      removeResource: (id) =>
+        set((state) => ({
+          farm: {
+            ...state.farm,
+            resources: state.farm.resources.filter((resource) => resource.id !== id),
+          },
+        })),
+      removeFarmHistory: (id) =>
+        set((state) => ({
+          farmHistory: state.farmHistory.filter((entry) => entry.id !== id),
+        })),
     }),
     {
       name: "pupitre-dofus3",
@@ -243,6 +399,8 @@ export const usePupitre = create<PupitreState>()(
         handId: state.handId,
         grade: state.grade,
         sink: state.sink,
+        farm: state.farm,
+        farmHistory: state.farmHistory,
       }),
     },
   ),

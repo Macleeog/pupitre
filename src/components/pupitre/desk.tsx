@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BringToFront, CircleDot, ClipboardType, Table2 } from "lucide-react";
+import { BringToFront, CircleDot, ClipboardType, Table2, Timer } from "lucide-react";
 import { classById } from "@/lib/pupitre/classes";
 import { usePupitre, type DeskTab, type ServerMode } from "@/lib/pupitre/store";
 import { Sigil } from "@/components/pupitre/sigil";
@@ -7,12 +7,14 @@ import { TourView } from "@/components/pupitre/tour-view";
 import { WheelView } from "@/components/pupitre/wheel-view";
 import { RunesView } from "@/components/pupitre/runes-view";
 import { TextsView } from "@/components/pupitre/texts-view";
+import { FarmView } from "@/components/pupitre/farm-view";
 
 const TABS: { id: DeskTab; label: string; icon: typeof BringToFront }[] = [
   { id: "tour", label: "Tour", icon: BringToFront },
   { id: "roue", label: "Roue", icon: CircleDot },
   { id: "runes", label: "Runes", icon: Table2 },
   { id: "textes", label: "Textes", icon: ClipboardType },
+  { id: "farm", label: "Farm", icon: Timer },
 ];
 
 export function Desk() {
@@ -25,6 +27,7 @@ export function Desk() {
   const characters = usePupitre((state) => state.characters);
   const focusId = usePupitre((state) => state.focusId);
   const focus = characters.find((character) => character.id === focusId) ?? null;
+  const frame = tab === "farm" ? "max-w-6xl" : "max-w-3xl";
 
   useEffect(() => {
     void usePupitre.persist.rehydrate();
@@ -56,7 +59,7 @@ export function Desk() {
 
   return (
     <div className="min-h-dvh bg-pine text-fog">
-      <header className="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 pt-5">
+      <header className={"mx-auto flex w-full flex-col gap-4 px-4 pt-5 " + frame}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-xs font-medium tracking-widest text-lamp uppercase">Dofus 3</p>
@@ -89,11 +92,12 @@ export function Desk() {
         )}
       </header>
 
-      <main className="mx-auto w-full max-w-3xl px-4 pt-5 pb-28">
+      <main className={"mx-auto w-full px-4 pt-5 pb-28 " + frame}>
         {tab === "tour" ? <TourView /> : null}
         {tab === "roue" ? <WheelView /> : null}
         {tab === "runes" ? <RunesView /> : null}
         {tab === "textes" ? <TextsView /> : null}
+        {tab === "farm" ? <FarmView /> : null}
         <About />
       </main>
 
@@ -101,7 +105,7 @@ export function Desk() {
         className="fixed inset-x-0 bottom-0 z-20 border-t border-edge bg-moss/95 backdrop-blur"
         aria-label="Sections"
       >
-        <div className="mx-auto grid max-w-3xl grid-cols-4 px-2 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom))]">
+        <div className={"mx-auto grid grid-cols-5 px-2 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom))] " + frame}>
           {TABS.map((item) => {
             const Icon = item.icon;
             const active = tab === item.id;
@@ -163,7 +167,7 @@ function About() {
         <p className="mt-2 max-w-prose">
           Multifus, sur Dofus Rétro, amène tout seul la fenêtre du personnage dont c'est le tour.
           Un site ne peut pas lire le client Unity ni passer une fenêtre au premier plan. Pupitre garde
-          la roue, l'ordre de passage, la table des runes 3.0 et les textes à coller dans le chat.
+          la roue, l'ordre de passage, la table des runes 3.0, les textes à coller et un compteur de farm manuel.
           Indépendant d'Ankama et de l'auteur de Multifus. Dofus est une marque d'Ankama.
         </p>
       ) : null}
