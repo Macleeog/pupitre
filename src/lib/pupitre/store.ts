@@ -8,6 +8,7 @@ import {
   elapsedMs,
   snapshot,
   type FarmResource,
+  type FightLogEntry,
   type FarmSession,
   type FarmSnapshot,
 } from "@/lib/pupitre/farm";
@@ -43,6 +44,8 @@ export type RoutePin = {
 };
 
 export type FightLootItem = { itemId: number; quantity: number };
+
+const FIGHT_LOG_SIZE = 10;
 
 export type FarmHistoryEntry = FarmSnapshot & {
   id: string;
@@ -93,6 +96,7 @@ type PupitreState = {
   addDonjon: () => void;
   addResource: () => void;
   addFightLoot: (kamas: number, items: FightLootItem[]) => string[];
+  undoFightLoot: (id: string) => void;
   patchResource: (
     id: string,
     patch: Partial<Pick<FarmResource, "name" | "qty" | "price" | "itemId" | "icon" | "typeName" | "level">>,
@@ -119,6 +123,10 @@ const DEFAULT_TEXTS: QuickText[] = [
 
 function uid(prefix: string): string {
   return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function clearedResources(resources: FarmResource[]): FarmResource[] {
+  return resources.map((resource) => ({ ...resource, qty: "" }));
 }
 
 function nextId(characters: Character[], current: string | null): string | null {
@@ -284,9 +292,8 @@ export const usePupitre = create<PupitreState>()(
               donjons: fresh ? 0 : state.farm.donjons,
               kamas: fresh ? 0 : (state.farm.kamas ?? 0),
               jackpot: fresh ? "" : state.farm.jackpot,
-              resources: fresh
-                ? state.farm.resources.map((resource) => ({ ...resource, qty: "" }))
-                : state.farm.resources,
+              resources: fresh ? clearedResources(state.farm.resources) : state.farm.resources,
+              fightLog: fresh ? [] : (state.farm.fightLog ?? []),
             },
           };
         }),
@@ -357,7 +364,7 @@ export const usePupitre = create<PupitreState>()(
             const index = resources.findIndex((resource) => resource.itemId === itemId);
             if (index >= 0) {
               const current = resources[index]!;
-              resources[index] = { ...current, qty: String(parseKamas(current.qty) + quantity) };
+              resources[index] = { ...current, qty: String(parseKamas(current.qty) + quantity), fromFight: true };
             } else {
               const id = uid("res");
               created.push(id);
@@ -370,13 +377,43 @@ export const usePupitre = create<PupitreState>()(
                 icon: "",
                 typeName: "",
                 level: null,
+                fromFight: true,
               });
             }
           }
-          return { farm: { ...state.farm, kamas: (state.farm.kamas ?? 0) + kamas, resources } };
+          const entry: FightLogEntry = { id: uid("fight"), at: Date.now(), kamas, items };
+          return {
+            farm: {
+              ...state.farm,
+              kamas: (state.farm.kamas ?? 0) + kamas,
+              resources,
+              fightLog: [entry, ...(state.farm.fightLog ?? [])].slice(0, FIGHT_LOG_SIZE),
+            },
+          };
         });
         return created;
       },
+      undoFightLoot: (id) =>
+        set((state) => {
+          const entry = state.farm.fightLog?.find((fight) => fight.id === id);
+          if (!entry) return state;
+          const resources = state.farm.resources.flatMap((resource) => {
+            const taken = entry.items
+              .filter((item) => item.itemId === resource.itemId)
+              .reduce((sum, item) => sum + item.quantity, 0);
+            if (taken === 0) return [resource];
+            const left = parseKamas(resource.qty) - taken;
+            return left > 0 ? [{ ...resource, qty: String(left) }] : [];
+          });
+          return {
+            farm: {
+              ...state.farm,
+              kamas: Math.max(0, (state.farm.kamas ?? 0) - entry.kamas),
+              resources,
+              fightLog: (state.farm.fightLog ?? []).filter((fight) => fight.id !== id),
+            },
+          };
+        }),
       patchResource: (id, patch) =>
         set((state) => ({
           farm: {

@@ -9,6 +9,14 @@ export type FarmResource = {
   icon: string;
   typeName: string;
   level: number | null;
+  fromFight?: boolean;
+};
+
+export type FightLogEntry = {
+  id: string;
+  at: number;
+  kamas: number;
+  items: { itemId: number; quantity: number }[];
 };
 
 export type FarmSession = {
@@ -22,6 +30,7 @@ export type FarmSession = {
   donjons: number;
   kamas: number;
   resources: FarmResource[];
+  fightLog?: FightLogEntry[];
   keys: string;
   other: string;
   jackpot: string;
@@ -49,6 +58,7 @@ export const EMPTY_FARM: FarmSession = {
   donjons: 0,
   kamas: 0,
   resources: [],
+  fightLog: [],
   keys: "",
   other: "",
   jackpot: "",
