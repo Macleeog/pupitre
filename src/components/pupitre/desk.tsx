@@ -72,6 +72,9 @@ export function Desk() {
             <p className="mt-2 max-w-sm text-sm text-mist">
               L'application de la team. Tu confirmes le tour, la roue dit qui mettre devant.
             </p>
+            <p className="mt-2 max-w-sm text-xs text-mist">
+              Fan site. Aucun lien avec Ankama. Dofus est une marque d'Ankama.
+            </p>
           </div>
           {focus ? (
             <div className="hidden shrink-0 items-center gap-2 rounded-full border border-edge bg-moss py-1 pr-3 pl-1 sm:flex">
@@ -201,9 +204,9 @@ function About() {
       </button>
       {open ? (
         <p className="mt-2 max-w-prose">
-          Pupitre est l'application bureau. L'exe pose un bandeau sur la fenêtre Dofus et accepte des raccourcis
-          pour démarrer, pauser ou terminer la session. Il ne lit pas la connexion du jeu et n'envoie rien au serveur.
-          Indépendant d'Ankama. Dofus est une marque d'Ankama.
+          Pupitre est un fan site. Il n'est pas lié, approuvé ni soutenu par Ankama. Dofus, Dofus Touch et
+          Ankama sont des marques d'Ankama. L'exe pose un bandeau sur la fenêtre du jeu et accepte des raccourcis
+          pour la session. Il ne lit pas la connexion et n'envoie rien au serveur.
         </p>
       ) : null}
     </section>

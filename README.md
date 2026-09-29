@@ -1,10 +1,16 @@
 # Pupitre
 
-Second écran pour Dofus 3 : ordre de passage, roue des personnages, textes à coller dans le chat et compteur de farm.
+**Fan site. Pupitre n’est pas lié à Ankama.**
 
-Ce n’est pas le client de jeu. Pupitre ne lit pas la mémoire de Dofus et n’envoie rien au serveur. Indépendant d’Ankama. Dofus est une marque d’Ankama.
+Dofus, Dofus Touch et Ankama sont des marques d’Ankama. Ce projet n’est pas approuvé, affilié ni soutenu par Ankama. Aucun logo, personnage ou visuel officiel n’est utilisé. C’est un outil de fans, rien d’autre.
 
-Inspiré du pupitre [Multifus](https://github.com/viclafouch/multifus) (Dofus Rétro), réécrit pour le client Unity.
+This is a fan site, not an Ankama product. Dofus and Ankama are trademarks of Ankama.
+
+Second écran pour Dofus 3 : ordre de passage, roue des personnages, textes à coller dans le chat et compteur de farm. Le front est en React (TanStack Start). Il n’y a pas de backend Rust : le bureau est un exécutable Electron, et les données restent sur la machine.
+
+Ce n’est pas le client de jeu. Pupitre ne lit pas la mémoire de Dofus et n’envoie rien au serveur.
+
+Inspiré du pupitre [Multifus](https://github.com/viclafouch/multifus) (Dofus Rétro), réécrit pour le client Unity. L’aspect bois, parchemin et or est original. Il n’utilise pas l’art du jeu.
 
 ## Pour commencer
 

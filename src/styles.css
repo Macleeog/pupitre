@@ -1,21 +1,21 @@
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,640&family=Outfit:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,640&family=Nunito:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", ui-serif, Georgia, serif;
-  --color-pine: #101614;
-  --color-moss: #18211c;
-  --color-canopy: #24302a;
-  --color-edge: #314039;
-  --color-fog: #e7efe4;
-  --color-mist: #93a396;
-  --color-paper: #f4f1e6;
-  --color-ink: #14201a;
-  --color-lamp: #d7e36a;
-  --color-lamp-ink: #1c2408;
-  --color-clay: #e07a4c;
-  --radius-card: 1.25rem;
+  --color-pine: #1a120c;
+  --color-moss: #2c1d12;
+  --color-canopy: #3d2918;
+  --color-edge: #6e4b28;
+  --color-fog: #f4e7cc;
+  --color-mist: #c4a882;
+  --color-paper: #f6ead0;
+  --color-ink: #2a1a10;
+  --color-lamp: #e0a33a;
+  --color-lamp-ink: #2a1604;
+  --color-clay: #c45a32;
+  --radius-card: 1.15rem;
 }
 
 @layer base {
@@ -30,7 +30,9 @@
   }
 
   body {
-    background: var(--color-pine);
+    background:
+      radial-gradient(ellipse 80% 45% at 50% -10%, #4a3018 0%, transparent 60%),
+      #1a120c;
     color: var(--color-fog);
     font-family: var(--font-sans);
     line-height: 1.5;

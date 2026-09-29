@@ -14,9 +14,9 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Pupitre, application pour Dofus 3 : ordre de passage, roue, textes et compteur de farm.",
+          "Fan site indépendant. Pupitre n'est pas lié à Ankama. Dofus est une marque d'Ankama.",
       },
-      { name: "theme-color", content: "#101614" },
+      { name: "theme-color", content: "#1a120c" },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },

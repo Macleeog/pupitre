@@ -116,7 +116,7 @@ app.whenReady().then(async () => {
     minWidth: 390,
     minHeight: 640,
     title: "Pupitre",
-    backgroundColor: "#101614",
+    backgroundColor: "#1a120c",
     autoHideMenuBar: true,
     webPreferences: webPreferences(),
   });
