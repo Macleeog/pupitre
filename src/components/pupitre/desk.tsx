@@ -156,15 +156,15 @@ function GettingStarted() {
         rel="noreferrer"
         className="mt-3 inline-flex min-h-11 items-center rounded-full bg-lamp px-4 text-sm font-medium text-lamp-ink"
       >
-        Télécharger Pupitre.exe
+        Télécharger le zip
       </a>
       <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-fog">
-        <li>Télécharge le fichier, environ 100 Mo.</li>
+        <li>Télécharge le zip, environ 100 Mo. Si Chrome dit « Opening when complete », le fichier est déjà là : ferme la bulle.</li>
+        <li>Extrais le zip, puis ouvre Pupitre.exe qui est dedans. Ne le lance pas depuis Chrome.</li>
         <li>
           Si Windows affiche SmartScreen, choisis Informations complémentaires, puis Exécuter quand même. L'exe n'est
-          pas signé.
+          pas signé. Dofus n'est pas obligatoire.
         </li>
-        <li>Double-clic. La fenêtre s'ouvre toute seule. Dofus n'est pas obligatoire : le bandeau se pose seulement si une fenêtre du jeu est ouverte.</li>
       </ol>
     </section>
   );

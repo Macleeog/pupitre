@@ -1,6 +1,6 @@
 {
   "name": "pupitre",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -98,9 +98,10 @@
     ],
     "win": {
       "target": [
-        "portable"
+        "zip"
       ],
-      "signAndEditExecutable": false
+      "signAndEditExecutable": false,
+      "artifactName": "Pupitre-${version}-windows.${ext}"
     }
   },
   "devDependencies": {

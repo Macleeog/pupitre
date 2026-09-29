@@ -13,9 +13,9 @@ Inspiré du pupitre [Multifus](https://github.com/viclafouch/multifus) (Dofus R�
 
 Il faut Windows 10 ou 11, 64 bits. Rien d’autre : pas de Node, pas de compte Pupitre, pas de droit administrateur. Dofus n’a pas besoin d’être ouvert, sauf pour le bandeau qui suit la fenêtre du jeu. Internet sert au téléchargement et à la recherche d’objets (DofusDB). Le reste reste sur la machine.
 
-1. Télécharge [Pupitre.exe](https://github.com/Macleeog/pupitre/releases/latest) (environ 100 Mo). Le fichier s’appelle `Pupitre.x.y.z.exe`.
-2. Si Windows SmartScreen bloque le lancement, choisis **Informations complémentaires**, puis **Exécuter quand même**. L’exe n’est pas signé.
-3. Double-clic. La fenêtre s’ouvre toute seule.
+1. Télécharge [Pupitre pour Windows (zip)](https://github.com/Macleeog/pupitre/releases/latest) (environ 100 Mo).
+2. Si Chrome affiche « Opening when complete » à 100/100 Mo, le téléchargement est fini. Ferme la bulle. N’ouvre pas le fichier depuis Chrome.
+3. Extrais le zip, puis double-clique sur `Pupitre.exe` dans le dossier. Si SmartScreen bloque : **Informations complémentaires**, puis **Exécuter quand même**. L’exe n’est pas signé.
 
 Dans l’exe, le bandeau de session suit la première fenêtre dont le titre contient Dofus.
 
