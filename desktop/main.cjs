@@ -1,9 +1,11 @@
-const { app, BrowserWindow, dialog, globalShortcut, screen } = require("electron");
+const { app, BrowserWindow, dialog, globalShortcut, ipcMain, screen } = require("electron");
 const { spawn } = require("node:child_process");
+const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
 
 const PORT = 47321;
+const DEFAULT_PLACEMENT = { right: 12, top: 48 };
 
 function outputRoot() {
   if (app.isPackaged) return path.join(process.resourcesPath, "output");
@@ -41,11 +43,72 @@ function sendFarm(command, overlay, desk) {
   if (target && !target.isDestroyed()) target.webContents.send("farm-command", command);
 }
 
+function placementFile() {
+  return path.join(app.getPath("userData"), "overlay.json");
+}
+
+function loadPlacement() {
+  try {
+    const saved = JSON.parse(fs.readFileSync(placementFile(), "utf8"));
+    if (Number.isFinite(saved.right) && Number.isFinite(saved.top)) return { right: saved.right, top: saved.top };
+  } catch {
+    // First launch or unreadable file: fall back to the default corner.
+  }
+  return { ...DEFAULT_PLACEMENT };
+}
+
+function savePlacement(placement) {
+  try {
+    fs.writeFileSync(placementFile(), JSON.stringify(placement));
+  } catch {
+    // Placement is a convenience; losing it must not break the overlay.
+  }
+}
+
 function followDofus(overlay) {
-  if (process.platform !== "win32") return null;
+  const state = { game: null, placement: loadPlacement(), dragging: false };
+
+  const place = () => {
+    if (!state.game || overlay.isDestroyed()) return;
+    const [width, height] = overlay.getSize();
+    const top = Math.min(Math.max(0, state.placement.top), Math.max(0, state.game.height - height));
+    const right = Math.min(Math.max(0, state.placement.right), Math.max(0, state.game.width - width));
+    overlay.setPosition(
+      Math.round(state.game.x + state.game.width - width - right),
+      Math.round(state.game.y + top),
+    );
+  };
+
+  ipcMain.on("overlay:move-by", (event, dx, dy) => {
+    if (event.sender !== overlay.webContents || !Number.isFinite(dx) || !Number.isFinite(dy)) return;
+    state.dragging = true;
+    const [x, y] = overlay.getPosition();
+    overlay.setPosition(Math.round(x + dx), Math.round(y + dy));
+  });
+
+  ipcMain.on("overlay:drag-end", (event) => {
+    if (event.sender !== overlay.webContents) return;
+    state.dragging = false;
+    if (!state.game) return;
+    const bounds = overlay.getBounds();
+    state.placement = {
+      right: Math.round(state.game.x + state.game.width - bounds.x - bounds.width),
+      top: Math.round(bounds.y - state.game.y),
+    };
+    savePlacement(state.placement);
+    place();
+  });
+
+  if (process.platform !== "win32") {
+    overlay.once("ready-to-show", () => overlay.showInactive());
+    return null;
+  }
+
+  // The script sits inside app.asar in the packaged exe, where powershell.exe cannot open it by path.
+  const script = fs.readFileSync(path.join(__dirname, "follow-dofus.ps1"), "utf8");
   const child = spawn(
     "powershell.exe",
-    ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", path.join(__dirname, "follow-dofus.ps1")],
+    ["-NoProfile", "-ExecutionPolicy", "Bypass", "-EncodedCommand", Buffer.from(script, "utf16le").toString("base64")],
     { windowsHide: true, stdio: ["ignore", "pipe", "ignore"] },
   );
   let last = "";
@@ -54,20 +117,30 @@ function followDofus(overlay) {
     buffer += String(chunk);
     const lines = buffer.split(/\r?\n/);
     buffer = lines.pop() ?? "";
-    const line = lines.at(-1);
-    if (!line || line === "none" || line === last || overlay.isDestroyed()) return;
-    const parts = line.split(",").map((part) => Number(part));
-    if (parts.length !== 4 || parts.some((part) => !Number.isFinite(part))) return;
+    const line = lines.at(-1)?.trim();
+    if (!line || line === last || overlay.isDestroyed()) return;
     last = line;
-    const [left, top, right, bottom] = parts;
-    const dip = screen.screenToDipRect(overlay, {
+    if (line === "none") {
+      state.game = null;
+      if (!state.dragging) overlay.hide();
+      return;
+    }
+    const parts = line.split(",").map((part) => Number(part));
+    if (parts.length !== 5 || parts.some((part) => !Number.isFinite(part))) return;
+    const [left, top, right, bottom, front] = parts;
+    state.game = screen.screenToDipRect(null, {
       x: left,
       y: top,
       width: Math.max(1, right - left),
       height: Math.max(1, bottom - top),
     });
-    const [width] = overlay.getSize();
-    overlay.setPosition(Math.round(dip.x + dip.width - width - 12), Math.round(dip.y + 48));
+    if (state.dragging) return;
+    place();
+    if (front === 1) {
+      if (!overlay.isVisible()) overlay.showInactive();
+    } else {
+      overlay.hide();
+    }
   });
   return child;
 }
@@ -129,10 +202,13 @@ app.whenReady().then(async () => {
     skipTaskbar: true,
     resizable: false,
     hasShadow: false,
+    show: false,
+    focusable: false,
     backgroundColor: "#00000000",
     webPreferences: webPreferences(),
   });
   overlay.setAlwaysOnTop(true, "screen-saver");
+  overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   const watcher = followDofus(overlay);
 
   const shortcuts = [
