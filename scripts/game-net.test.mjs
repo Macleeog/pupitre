@@ -304,6 +304,32 @@ test("hôtel des ventes : un prix unitaire par objet, le moins cher des lots", (
   assert.equal(readMarket({ type: "isb", value }), null);
 });
 
+// Prices looked up in buy mode, capture of 2026-09-29 23:11: Aile Atrophiée de Tofu Dodu
+// (lots de 1, 10 et 100) et Aile de Vortex (pas de lot de 100).
+const TOFU = hex("a12df3cc03ffc72100");
+const VORTEX = hex("f0e721efdbe8020000");
+
+function itemPrices(itemId, lots) {
+  const entry = lots
+    ? [bytesField(2, Buffer.concat([intField(2, itemId), intField(3, 104), intField(5, 53896), bytesField(6, lots)]))]
+    : [];
+  return Buffer.concat([intField(1, itemId), ...entry, intField(3, 104)]);
+}
+
+test("hôtel des ventes : prix du marché par lot de 1, 10 et 100", () => {
+  assert.deepEqual(readMarket({ type: "jzn", value: itemPrices(13725, TOFU) }), {
+    source: "search",
+    prices: [{ itemId: 13725, unitPrice: 5499 }],
+  });
+  // 553 968 le lot de 1 est moins cher à l'unité que 5 909 999 le lot de 10 ; pas de lot de 100.
+  assert.deepEqual(readMarket({ type: "jzn", value: itemPrices(15715, VORTEX) }).prices, [
+    { itemId: 15715, unitPrice: 553968 },
+  ]);
+  // Plus aucun prix : le client a cessé de suivre cet objet.
+  assert.deepEqual(readMarket({ type: "jzn", value: itemPrices(15715, null) }).prices, []);
+  assert.deepEqual(readMarket({ type: "jzn", value: itemPrices(15715, hex("000000")) }).prices, []);
+});
+
 test("lecteur : la mise en vente à l'HDV envoie les prix", () => {
   const events = [];
   const reader = new GameNetReader({ capturesDir: os.tmpdir(), onEvent: (e) => events.push(e) });

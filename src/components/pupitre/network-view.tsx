@@ -232,8 +232,9 @@ function MarketCard({ now }: { now: number }) {
         </ul>
       ) : null}
       <p className="mt-3 text-xs text-mist">
-        Ouvre le mode vente de l'hôtel des ventes : Pupitre lit le prix de tes objets en vente (le moins cher par
-        unité quand tu vends par lots) et l'applique à tes ressources. Un prix tapé à la main n'est jamais remplacé.
+        À l'hôtel des ventes, Pupitre lit les prix que le jeu t'affiche : ceux de tes objets en vente, et ceux du
+        marché quand tu consultes un objet en mode achat. Il garde le lot le moins cher par unité et l'applique à tes
+        ressources. Un prix tapé à la main n'est jamais remplacé.
       </p>
     </section>
   );

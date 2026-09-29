@@ -6,10 +6,10 @@ const KNOWN_TYPES = new Set([
   "iva", "ivf", "iyo", "ize", "jfp", "jon", "joo", "jop", "joq", "jou", "jpo", "jpp", "jpt",
   "jpw", "jpx", "jqb", "jqy", "jqz", "jrj", "jro", "jrs", "jue", "juh", "jul", "jun", "juo",
   "jus", "juu", "juz", "jva", "jvj", "jvk", "jvn", "jvt", "jvv", "jwc", "jwd", "jwe", "jxh",
-  "jxl", "jxu", "jxw", "jyf", "jyk", "jyl", "jym", "jyn", "jyo", "jyq", "jzi", "kby", "ket",
-  "kiy", "kkc", "kkf", "kkg", "kki", "kkr", "knz", "kob", "kqf", "krf", "krk", "krn", "kru",
-  "kty", "kua", "kub", "kuh", "kui", "kul", "kum", "kun", "kuo", "kuq", "lob", "loc", "log",
-  "loh", "lok", "loq", "lsz", "lxd",
+  "jpq", "jxl", "jxu", "jxw", "jyf", "jyk", "jyl", "jym", "jyn", "jyo", "jyq", "jzi", "jzn",
+  "kby", "kde", "kdr", "ket", "kev", "kiy", "kkc", "kkf", "kkg", "kki", "kkr", "knz", "kob",
+  "kqf", "krf", "krk", "krn", "kru", "kty", "kua", "kub", "kuh", "kui", "kul", "kum", "kun",
+  "kuo", "kuq", "lob", "loc", "log", "loh", "lok", "loq", "lsz", "lxd",
 ]);
 
 const MIN_MESSAGES = 300;

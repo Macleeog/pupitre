@@ -296,8 +296,7 @@ export function FarmView() {
           </div>
           <p className="text-sm text-mist">
             Les objets viennent du catalogue Dofus 3 (DofusDB). Dans l'exe, l'onglet Réseau ajoute seul les combats, les
-            kamas et le butin, et reprend tes prix quand tu ouvres le mode vente de l'hôtel des ventes. Un prix tapé à la
-            main reste le tien.
+            kamas et le butin, et reprend les prix que tu vois à l'hôtel des ventes. Un prix tapé à la main reste le tien.
           </p>
           <FightLog entries={farm.fightLog ?? []} resources={farm.resources} onUndo={undoFightLoot} />
           <section>
@@ -396,7 +395,7 @@ function ResourceName({
           {resource.priceFrom === "hdv" ? (
             <span
               className="inline-flex items-center gap-1 rounded-full border border-edge px-1.5 text-fog"
-              title="Prix repris de ta mise en vente à l'hôtel des ventes. Tape un prix pour garder le tien."
+              title="Prix lu à l'hôtel des ventes. Tape un prix pour garder le tien."
             >
               <Store className="size-3" aria-hidden="true" />
               HDV
