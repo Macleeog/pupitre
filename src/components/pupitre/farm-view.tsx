@@ -33,7 +33,6 @@ export function FarmView() {
   const patchResource = usePupitre((state) => state.patchResource);
   const removeResource = usePupitre((state) => state.removeResource);
   const removeFarmHistory = usePupitre((state) => state.removeFarmHistory);
-  const [pane, setPane] = useState<"live" | "history">("live");
   const [selected, setSelected] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
@@ -50,34 +49,7 @@ export function FarmView() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 rounded-full border border-edge bg-moss p-1">
-        <button
-          type="button"
-          onClick={() => setPane("live")}
-          className={
-            "min-h-11 rounded-full text-sm font-medium " +
-            (pane === "live" ? "bg-lamp text-lamp-ink" : "text-mist")
-          }
-        >
-          Session en cours
-        </button>
-        <button
-          type="button"
-          onClick={() => setPane("history")}
-          className={
-            "min-h-11 rounded-full text-sm font-medium " +
-            (pane === "history" ? "bg-lamp text-lamp-ink" : "text-mist")
-          }
-        >
-          Historique
-        </button>
-      </div>
-
-      {pane === "history" ? (
-        <HistoryList entries={history} onRemove={removeFarmHistory} />
-      ) : (
-        <>
-          <div className="grid gap-3 lg:grid-cols-3">
+      <div className="grid gap-3 lg:grid-cols-3">
             <section className="rounded-card border border-edge bg-moss p-4">
               <label className="text-xs font-medium tracking-widest text-mist uppercase" htmlFor="farm-zone">
                 Zone / donjon
@@ -304,8 +276,10 @@ export function FarmView() {
             </section>
           </div>
           <p className="text-sm text-mist">Compteur manuel. Aucune lecture du jeu : tu notes les drops et les prix.</p>
-        </>
-      )}
+          <section>
+            <h3 className="mb-2 text-xs font-medium tracking-widest text-mist uppercase">Historique</h3>
+            <HistoryList entries={history} onRemove={removeFarmHistory} />
+          </section>
     </div>
   );
 }

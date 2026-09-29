@@ -13,7 +13,7 @@ import {
 import type { RuneEdition, RuneFamilyId, RuneGrade } from "@/lib/pupitre/runes";
 
 export type ServerMode = "classique" | "mono";
-export type DeskTab = "tour" | "roue" | "runes" | "textes" | "farm";
+export type DeskTab = "tour" | "roue" | "runes" | "textes";
 export type PulseKind = "turn" | "trade" | "invite" | "pm";
 
 export type Character = {
