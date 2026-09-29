@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BringToFront, CircleDot, ClipboardType } from "lucide-react";
+import { BringToFront, CircleDot, ClipboardType, Radio } from "lucide-react";
 import { classById } from "@/lib/pupitre/classes";
 import { usePupitre, type DeskTab, type ServerMode } from "@/lib/pupitre/store";
 import { Sigil } from "@/components/pupitre/sigil";
@@ -7,12 +7,15 @@ import { TourView } from "@/components/pupitre/tour-view";
 import { WheelView } from "@/components/pupitre/wheel-view";
 import { TextsView } from "@/components/pupitre/texts-view";
 import { FarmView } from "@/components/pupitre/farm-view";
+import { NetworkView } from "@/components/pupitre/network-view";
+import { bindGameEvents } from "@/lib/pupitre/game-net";
 import { bindFarmHotkeys, bindFarmSync } from "@/lib/pupitre/farm-sync";
 
 const TABS: { id: DeskTab; label: string; icon: typeof BringToFront }[] = [
   { id: "tour", label: "Tour", icon: BringToFront },
   { id: "roue", label: "Roue", icon: CircleDot },
   { id: "textes", label: "Textes", icon: ClipboardType },
+  { id: "reseau", label: "Réseau", icon: Radio },
 ];
 
 export function Desk() {
@@ -25,16 +28,18 @@ export function Desk() {
   const characters = usePupitre((state) => state.characters);
   const focusId = usePupitre((state) => state.focusId);
   const focus = characters.find((character) => character.id === focusId) ?? null;
-  const onTour = tab !== "roue" && tab !== "textes";
-  const frame = onTour ? "max-w-6xl" : "max-w-3xl";
+  const onTour = tab === "tour";
+  const frame = onTour || tab === "reseau" ? "max-w-6xl" : "max-w-3xl";
 
   useEffect(() => {
     void usePupitre.persist.rehydrate();
     const unbindSync = bindFarmSync();
     const unbindKeys = bindFarmHotkeys();
+    const unbindGame = bindGameEvents();
     return () => {
       unbindSync();
       unbindKeys();
+      unbindGame();
     };
   }, []);
 
@@ -110,6 +115,7 @@ export function Desk() {
         ) : null}
         {tab === "roue" ? <WheelView /> : null}
         {tab === "textes" ? <TextsView /> : null}
+        {tab === "reseau" ? <NetworkView /> : null}
         <About />
       </main>
 
@@ -117,7 +123,7 @@ export function Desk() {
         className="fixed inset-x-0 bottom-0 z-20 border-t border-edge bg-moss/95 backdrop-blur"
         aria-label="Sections"
       >
-        <div className={"mx-auto grid grid-cols-3 px-2 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom))] " + frame}>
+        <div className={"mx-auto grid grid-cols-4 px-2 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom))] " + frame}>
           {TABS.map((item) => {
             const Icon = item.icon;
             const active = item.id === "tour" ? onTour : tab === item.id;
@@ -206,7 +212,8 @@ function About() {
         <p className="mt-2 max-w-prose">
           Pupitre est un fan site. Il n'est pas lié, approuvé ni soutenu par Ankama. Dofus, Dofus Touch et
           Ankama sont des marques d'Ankama. L'exe pose un bandeau sur la fenêtre du jeu et accepte des raccourcis
-          pour la session. Il ne lit pas la connexion et n'envoie rien au serveur.
+          pour la session. Avec Wireshark installé, il lit en lecture seule les messages du jeu (onglet Réseau) :
+          il ne les modifie pas et n'envoie rien au serveur.
         </p>
       ) : null}
     </section>
