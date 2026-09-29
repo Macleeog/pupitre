@@ -18,7 +18,7 @@ function fighterOrder(payload) {
   for (const entry of payload.get(1) ?? []) {
     if (entry.wireType !== 2) continue;
     const id = varintField(messageField(parseMessage(entry.raw), 2), 1);
-    if (id !== undefined) ids.push(id.toString());
+    if (id !== undefined && id !== NO_FIGHTER) ids.push(id.toString());
   }
   return ids;
 }

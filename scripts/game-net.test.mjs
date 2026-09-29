@@ -117,6 +117,19 @@ test("combat : début, tours, fin comptée une fois en multicompte", () => {
   assert.equal(events.filter((e) => e.type === "fight-end").length, 2);
 });
 
+test("combat réel : le combattant -1 du jeu n'est pas compté", () => {
+  const events = [];
+  const fights = createFightTracker((e) => events.push(e));
+  fights.handle("2", { type: "jvt", value: order(27038515495n, 18446744073709551615n) }, 1000);
+  fights.handle("2", { type: "jwd", value: intField(7, 18446744073709551615n) }, 1100);
+  fights.handle("2", { type: "jwd", value: intField(7, 27038515495n) }, 1200);
+  assert.equal(events[0].fighters, 1);
+  assert.deepEqual(
+    events.slice(1).map((e) => e.fighterId),
+    ["27038515495"],
+  );
+});
+
 test("filtre de capture limité aux serveurs de jeu", () => {
   assert.equal(captureFilter([]), "tcp port 5555");
   assert.equal(
