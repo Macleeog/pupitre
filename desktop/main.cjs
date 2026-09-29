@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog } = require("electron");
+const { app, BrowserWindow, dialog, globalShortcut, screen } = require("electron");
 const { spawn } = require("node:child_process");
 const http = require("node:http");
 const path = require("node:path");
@@ -25,6 +25,51 @@ function waitForServer() {
     };
     tick();
   });
+}
+
+function webPreferences() {
+  return {
+    preload: path.join(__dirname, "preload.cjs"),
+    contextIsolation: true,
+    nodeIntegration: false,
+    sandbox: true,
+  };
+}
+
+function sendFarm(command, overlay, desk) {
+  const target = overlay && !overlay.isDestroyed() ? overlay : desk;
+  if (target && !target.isDestroyed()) target.webContents.send("farm-command", command);
+}
+
+function followDofus(overlay) {
+  if (process.platform !== "win32") return null;
+  const child = spawn(
+    "powershell.exe",
+    ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", path.join(__dirname, "follow-dofus.ps1")],
+    { windowsHide: true, stdio: ["ignore", "pipe", "ignore"] },
+  );
+  let last = "";
+  let buffer = "";
+  child.stdout.on("data", (chunk) => {
+    buffer += String(chunk);
+    const lines = buffer.split(/\r?\n/);
+    buffer = lines.pop() ?? "";
+    const line = lines.at(-1);
+    if (!line || line === "none" || line === last || overlay.isDestroyed()) return;
+    const parts = line.split(",").map((part) => Number(part));
+    if (parts.length !== 4 || parts.some((part) => !Number.isFinite(part))) return;
+    last = line;
+    const [left, top, right, bottom] = parts;
+    const dip = screen.screenToDipRect(overlay, {
+      x: left,
+      y: top,
+      width: Math.max(1, right - left),
+      height: Math.max(1, bottom - top),
+    });
+    const [width] = overlay.getSize();
+    overlay.setPosition(Math.round(dip.x + dip.width - width - 12), Math.round(dip.y + 48));
+  });
+  return child;
 }
 
 app.whenReady().then(async () => {
@@ -65,7 +110,7 @@ app.whenReady().then(async () => {
     return;
   }
 
-  const window = new BrowserWindow({
+  const desk = new BrowserWindow({
     width: 1100,
     height: 820,
     minWidth: 390,
@@ -73,9 +118,45 @@ app.whenReady().then(async () => {
     title: "Pupitre",
     backgroundColor: "#101614",
     autoHideMenuBar: true,
+    webPreferences: webPreferences(),
   });
-  await window.loadURL(`http://127.0.0.1:${PORT}/`);
-  window.on("closed", shutdown);
+  const overlay = new BrowserWindow({
+    width: 300,
+    height: 150,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    resizable: false,
+    hasShadow: false,
+    backgroundColor: "#00000000",
+    webPreferences: webPreferences(),
+  });
+  overlay.setAlwaysOnTop(true, "screen-saver");
+  const watcher = followDofus(overlay);
+
+  const shortcuts = [
+    ["CommandOrControl+Shift+F6", "start"],
+    ["CommandOrControl+Shift+F7", "pause"],
+    ["CommandOrControl+Shift+F8", "stop"],
+    ["CommandOrControl+Shift+F5", "combat"],
+  ];
+  for (const [accelerator, command] of shortcuts) {
+    globalShortcut.register(accelerator, () => sendFarm(command, overlay, desk));
+  }
+
+  await desk.loadURL(`http://127.0.0.1:${PORT}/`);
+  await overlay.loadURL(`http://127.0.0.1:${PORT}/overlay`);
+  desk.on("closed", () => {
+    if (watcher && !watcher.killed) watcher.kill();
+    if (!overlay.isDestroyed()) overlay.close();
+    shutdown();
+    app.quit();
+  });
+});
+
+app.on("will-quit", () => {
+  globalShortcut.unregisterAll();
 });
 
 app.on("window-all-closed", () => {

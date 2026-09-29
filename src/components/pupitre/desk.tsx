@@ -8,6 +8,7 @@ import { WheelView } from "@/components/pupitre/wheel-view";
 import { RunesView } from "@/components/pupitre/runes-view";
 import { TextsView } from "@/components/pupitre/texts-view";
 import { FarmView } from "@/components/pupitre/farm-view";
+import { bindFarmHotkeys, bindFarmSync } from "@/lib/pupitre/farm-sync";
 
 const TABS: { id: DeskTab; label: string; icon: typeof BringToFront }[] = [
   { id: "tour", label: "Tour", icon: BringToFront },
@@ -31,6 +32,12 @@ export function Desk() {
 
   useEffect(() => {
     void usePupitre.persist.rehydrate();
+    const unbindSync = bindFarmSync();
+    const unbindKeys = bindFarmHotkeys();
+    return () => {
+      unbindSync();
+      unbindKeys();
+    };
   }, []);
 
   useEffect(() => {
@@ -169,9 +176,9 @@ function About() {
       </button>
       {open ? (
         <p className="mt-2 max-w-prose">
-          Pupitre est l'application bureau. Elle ne lit pas la mémoire du client Unity : pas de tour détecté tout seul,
-          pas de drops lus dans le jeu, pas de fenêtre amenée au premier plan. Le farm et l'ordre de passage se notent à la main.
-          Les objets et les poids de runes viennent du catalogue Dofus 3. Indépendant d'Ankama. Dofus est une marque d'Ankama.
+          Pupitre est l'application bureau. L'exe pose un bandeau sur la fenêtre Dofus et accepte des raccourcis
+          pour démarrer, pauser ou terminer la session. Il ne lit pas la connexion du jeu et n'envoie rien au serveur.
+          Indépendant d'Ankama. Dofus est une marque d'Ankama.
         </p>
       ) : null}
     </section>

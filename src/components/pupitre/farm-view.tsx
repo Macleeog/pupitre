@@ -118,6 +118,9 @@ export function FarmView() {
                   Terminer
                 </button>
               </div>
+              <p className="mt-3 text-xs text-mist">
+                Dans l'exe, un bandeau suit la fenêtre Dofus. Ctrl+Maj+F6 démarre, F7 pause, F8 termine, F5 ajoute un combat.
+              </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button
                   type="button"
