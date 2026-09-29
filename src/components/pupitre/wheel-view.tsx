@@ -130,7 +130,7 @@ export function WheelView() {
                   (active ? "border-lamp bg-lamp text-lamp-ink" : "border-edge bg-moss")
                 }
               >
-                <Sigil id={character.classId} className="size-5 shrink-0" />
+                <Sigil id={character.classId} className="size-7 shrink-0" />
                 <span className="min-w-0">
                   <span className="block truncate text-sm font-medium">{character.name}</span>
                   <span className={"block text-xs " + (active ? "text-lamp-ink/70" : "text-mist")}>

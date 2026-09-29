@@ -83,14 +83,13 @@ export function Desk() {
               L'application de la team. Tu confirmes le tour, la roue dit qui mettre devant.
             </p>
             <p className="mt-2 max-w-sm text-xs text-mist">
-              Fan site. Aucun lien avec Ankama. Dofus est une marque d'Ankama.
+              Fan site. Aucun lien avec Ankama. Dofus, ses symboles et illustrations de classes sont la propriété
+              d'Ankama.
             </p>
           </div>
           {focus ? (
             <div className="hidden shrink-0 items-center gap-2 rounded-full border border-edge bg-moss py-1 pr-3 pl-1 sm:flex">
-              <span className="flex size-9 items-center justify-center rounded-full bg-lamp text-lamp-ink">
-                <Sigil id={focus.classId} className="size-5" />
-              </span>
+              <Sigil id={focus.classId} className="size-9" />
               <span className="text-sm">
                 <span className="block leading-tight font-medium">{focus.name}</span>
                 <span className="text-mist">{classById(focus.classId).name}</span>

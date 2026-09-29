@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowDown, ArrowUp, ChevronRight, MapPin, Plus, Trash2 } from "lucide-react";
 import { CLASSES, classById, type ClassId } from "@/lib/pupitre/classes";
 import { usePupitre, type JournalEntry, type PulseKind } from "@/lib/pupitre/store";
-import { Sigil } from "@/components/pupitre/sigil";
+import { ClassArt, Sigil } from "@/components/pupitre/sigil";
 
 const PULSE_LABEL: Record<PulseKind, string> = {
   turn: "Tour",
@@ -27,13 +27,16 @@ export function TourView() {
 
   return (
     <div className="flex flex-col gap-4">
-      <article className="rounded-card bg-paper px-5 py-6 text-ink">
+      <article className="overflow-hidden rounded-card bg-paper px-5 py-6 text-ink">
+        {focus ? (
+          <ClassArt id={focus.classId} className="-mx-5 -mt-6 mb-4 h-32 w-[calc(100%+2.5rem)] max-w-none object-right sm:h-40" />
+        ) : null}
         <p className="text-xs font-medium tracking-widest text-ink/60 uppercase">Au premier plan</p>
         {focus ? (
           <>
             <div className="mt-3 flex items-center gap-3">
-              <span className="flex size-14 items-center justify-center rounded-full bg-ink text-paper">
-                <Sigil id={focus.classId} className="size-8" />
+              <span className="flex size-14 items-center justify-center rounded-full bg-ink/10">
+                <Sigil id={focus.classId} className="size-11" />
               </span>
               <div className="min-w-0">
                 <h2 className="font-display text-4xl leading-none sm:text-5xl">{focus.name}</h2>
@@ -99,7 +102,7 @@ export function TourView() {
                   className="flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left"
                 >
                   <span className="w-5 text-center text-sm text-mist">{index + 1}</span>
-                  <Sigil id={character.classId} className="size-5 shrink-0 text-lamp" />
+                  <Sigil id={character.classId} className="size-8 shrink-0" />
                   <span className="min-w-0">
                     <span className="block truncate font-medium">{character.name}</span>
                     <span className="block text-xs text-mist">{classById(character.classId).name}</span>
@@ -200,7 +203,18 @@ function AddCharacter() {
         maxLength={18}
         className="min-h-11 rounded-xl border border-edge bg-pine px-3 text-fog placeholder:text-mist"
       />
-      <div className="flex gap-2 overflow-x-auto pb-1" role="listbox" aria-label="Classe">
+      <div className="relative h-28 overflow-hidden rounded-2xl border border-edge bg-pine sm:h-36">
+        <ClassArt id={classId} className="absolute inset-0 size-full object-right" />
+        <div className="absolute inset-0 bg-gradient-to-r from-pine via-pine/70 to-transparent" />
+        <div className="relative flex h-full items-center gap-3 px-4">
+          <Sigil id={classId} className="size-12 drop-shadow" />
+          <div>
+            <p className="font-display text-2xl leading-none">{classById(classId).name}</p>
+            <p className="mt-1 text-sm text-mist">{classById(classId).hint}</p>
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-4 gap-2 sm:grid-cols-7" role="listbox" aria-label="Classe">
         {CLASSES.map((entry) => {
           const selected = entry.id === classId;
           return (
@@ -209,15 +223,17 @@ function AddCharacter() {
               type="button"
               role="option"
               aria-selected={selected}
-              aria-label={entry.name}
               title={entry.name}
               onClick={() => setClassId(entry.id)}
               className={
-                "flex size-11 shrink-0 items-center justify-center rounded-full border " +
-                (selected ? "border-lamp bg-lamp text-lamp-ink" : "border-edge text-fog")
+                "flex min-h-11 flex-col items-center gap-1 rounded-xl border px-1 py-2 " +
+                (selected ? "border-lamp bg-canopy" : "border-edge bg-pine hover:border-mist")
               }
             >
-              <Sigil id={entry.id} className="size-5" />
+              <Sigil id={entry.id} className="size-9" />
+              <span className={"w-full truncate text-center text-[11px] " + (selected ? "text-fog" : "text-mist")}>
+                {entry.name}
+              </span>
             </button>
           );
         })}
