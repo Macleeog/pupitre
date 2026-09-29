@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { FolderOpen, RotateCw, Swords, Circle, Square } from "lucide-react";
 import { useNetState } from "@/lib/pupitre/game-net";
+import { fetchItem } from "@/lib/pupitre/items";
 import { usePupitre } from "@/lib/pupitre/store";
-import type { GameEvent, NetState, NetStatus } from "@/pupitre-desktop";
+import type { FightEnd, GameEvent, NetState, NetStatus } from "@/pupitre-desktop";
 
 const STATUS: Record<NetStatus, { label: string; tone: string }> = {
   idle: { label: "En attente", tone: "border-edge text-mist" },
@@ -140,6 +141,8 @@ function Stat({ label, value }: { label: string; value: string }) {
 function FightCard({ state }: { state: NetState }) {
   const autoCombats = usePupitre((s) => s.autoCombats);
   const setAutoCombats = usePupitre((s) => s.setAutoCombats);
+  const autoLoot = usePupitre((s) => s.autoLoot);
+  const setAutoLoot = usePupitre((s) => s.setAutoLoot);
   return (
     <section className="rounded-card border border-edge bg-moss p-4">
       <div className="flex items-center gap-3">
@@ -165,11 +168,74 @@ function FightCard({ state }: { state: NetState }) {
         />
         Ajouter +1 combat à la session de farm à la fin de chaque combat
       </label>
+      <label className="flex min-h-11 cursor-pointer items-center gap-3 text-sm text-fog">
+        <input
+          type="checkbox"
+          checked={autoLoot}
+          onChange={(event) => setAutoLoot(event.target.checked)}
+          className="size-5 accent-[var(--color-lamp)]"
+        />
+        Ajouter les kamas et le butin aux ressources de la session
+      </label>
       <p className="mt-1 text-xs text-mist">
-        Seulement quand la session est en cours. En multicompte, un combat compte une fois.
+        Seulement quand la session est en cours. En multicompte, un combat compte une fois. Le butin de tous les
+        joueurs du combat est ajouté : en groupe avec d'autres joueurs, retire leur part à la main.
       </p>
+      {state.lastFightEnd ? <LastFight fight={state.lastFightEnd} seen={state.fightsSeen} /> : null}
     </section>
   );
+}
+
+function LastFight({ fight, seen }: { fight: FightEnd; seen: number }) {
+  const results = fight.results ?? [];
+  const names = useItemNames(results.flatMap((result) => result.items.map((item) => item.itemId)));
+  return (
+    <div className="mt-4 rounded-xl border border-edge bg-pine p-3">
+      <p className="text-xs font-medium tracking-widest text-mist uppercase">
+        Dernier combat · {clock(fight.at)}
+        {fight.durationMs ? ` · ${Math.round(fight.durationMs / 1000)} s` : ""} · {seen} vu{seen > 1 ? "s" : ""}
+      </p>
+      {results.length === 0 ? (
+        <p className="mt-2 text-sm text-mist">Pas de résultat lisible dans la fin de combat.</p>
+      ) : (
+        <ul className="mt-2 flex flex-col gap-2 text-sm">
+          {results.map((result) => (
+            <li key={result.fighterId}>
+              <p className="text-fog">
+                {numbers.format(result.xp)} XP · {numbers.format(result.kamas)} kamas
+              </p>
+              {result.items.length > 0 ? (
+                <p className="text-mist">
+                  {result.items
+                    .map((item) => `${item.quantity} × ${names.get(item.itemId) ?? `objet ${item.itemId}`}`)
+                    .join(", ")}
+                </p>
+              ) : (
+                <p className="text-mist">Pas de butin.</p>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function useItemNames(ids: number[]): Map<number, string> {
+  const key = [...new Set(ids)].sort((a, b) => a - b).join(",");
+  const [names, setNames] = useState(() => new Map<number, string>());
+  useEffect(() => {
+    if (!key) return;
+    let alive = true;
+    void Promise.all(key.split(",").map((id) => fetchItem(Number(id)))).then((items) => {
+      if (!alive) return;
+      setNames(new Map(items.flatMap((item) => (item ? [[item.id, item.name] as const] : []))));
+    });
+    return () => {
+      alive = false;
+    };
+  }, [key]);
+  return names;
 }
 
 function CaptureCard({ state, now }: { state: NetState; now: number }) {

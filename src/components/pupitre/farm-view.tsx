@@ -240,6 +240,7 @@ export function FarmView() {
             <section className="rounded-card border border-edge bg-moss p-4">
               <h3 className="text-xs font-medium tracking-widest text-mist uppercase">Rentabilité</h3>
               <p className="mt-2 text-lg font-medium">Valeur brute : {formatKamas(totals.gross)}</p>
+              <p className="mt-1 text-sm text-mist">Dont kamas des combats : {formatKamas(totals.kamas)}</p>
               <CostField
                 id="farm-keys"
                 label="Coût des clefs"
@@ -278,7 +279,8 @@ export function FarmView() {
             </section>
           </div>
           <p className="text-sm text-mist">
-            Compteur manuel. Les objets viennent du catalogue Dofus 3 (DofusDB). Le prix unitaire, c'est le tien.
+            Les objets viennent du catalogue Dofus 3 (DofusDB). Le prix unitaire, c'est le tien. Dans l'exe, l'onglet
+            Réseau peut ajouter seul les combats, les kamas et le butin de fin de combat.
           </p>
           <section>
             <h3 className="mb-2 text-xs font-medium tracking-widest text-mist uppercase">Historique</h3>

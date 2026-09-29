@@ -20,6 +20,7 @@ export type FarmSession = {
   accumulatedMs: number;
   combats: number;
   donjons: number;
+  kamas: number;
   resources: FarmResource[];
   keys: string;
   other: string;
@@ -28,6 +29,7 @@ export type FarmSession = {
 
 export type FarmSnapshot = {
   elapsedMs: number;
+  kamas: number;
   gross: number;
   keys: number;
   other: number;
@@ -45,6 +47,7 @@ export const EMPTY_FARM: FarmSession = {
   accumulatedMs: 0,
   combats: 0,
   donjons: 0,
+  kamas: 0,
   resources: [],
   keys: "",
   other: "",
@@ -66,15 +69,16 @@ export function elapsedMs(session: FarmSession, now: number): number {
 }
 
 export function snapshot(session: FarmSession, elapsed: number): FarmSnapshot {
-  const gross = session.resources.reduce(
-    (sum, resource) => sum + parseKamas(resource.qty) * parseKamas(resource.price),
-    0,
-  );
+  // Sessions saved before kamas were tracked have no such field.
+  const kamas = session.kamas ?? 0;
+  const gross =
+    kamas +
+    session.resources.reduce((sum, resource) => sum + parseKamas(resource.qty) * parseKamas(resource.price), 0);
   const keys = parseKamas(session.keys);
   const other = parseKamas(session.other);
   const jackpot = parseKamas(session.jackpot);
   const normal = gross - keys - other;
-  return { elapsedMs: elapsed, gross, keys, other, jackpot, normal, total: normal + jackpot };
+  return { elapsedMs: elapsed, kamas, gross, keys, other, jackpot, normal, total: normal + jackpot };
 }
 
 export function perHour(count: number, elapsed: number): number {

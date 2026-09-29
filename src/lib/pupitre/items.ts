@@ -67,3 +67,38 @@ export async function searchItems(query: string, signal: AbortSignal): Promise<C
     return a.level - b.level || a.name.localeCompare(b.name, "fr");
   });
 }
+
+const byId = new Map<number, Promise<CatalogItem | null>>();
+
+export function fetchItem(id: number): Promise<CatalogItem | null> {
+  let pending = byId.get(id);
+  if (!pending) {
+    pending = fetch(`https://api.dofusdb.fr/items/${id}?lang=fr`)
+      .then(async (response) => {
+        if (!response.ok) throw new Error("dofusdb");
+        const item = (await response.json()) as {
+          name?: Localized;
+          level?: number;
+          img?: string;
+          price?: number;
+          type?: { name?: Localized };
+        };
+        const name = french(item.name);
+        if (!name) return null;
+        return {
+          id,
+          name,
+          level: typeof item.level === "number" ? item.level : 0,
+          typeName: french(item.type?.name),
+          icon: typeof item.img === "string" ? item.img : "",
+          price: typeof item.price === "number" ? item.price : 0,
+        };
+      })
+      .catch(() => {
+        byId.delete(id);
+        return null;
+      });
+    byId.set(id, pending);
+  }
+  return pending;
+}

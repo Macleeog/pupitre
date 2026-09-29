@@ -4,6 +4,7 @@ import type { ClassId } from "@/lib/pupitre/classes";
 import {
   digitsOnly,
   EMPTY_FARM,
+  parseKamas,
   elapsedMs,
   snapshot,
   type FarmResource,
@@ -41,6 +42,8 @@ export type RoutePin = {
   done: string[];
 };
 
+export type FightLootItem = { itemId: number; quantity: number };
+
 export type FarmHistoryEntry = FarmSnapshot & {
   id: string;
   zone: string;
@@ -63,6 +66,8 @@ type PupitreState = {
   farmHistory: FarmHistoryEntry[];
   autoCombats: boolean;
   setAutoCombats: (autoCombats: boolean) => void;
+  autoLoot: boolean;
+  setAutoLoot: (autoLoot: boolean) => void;
   setMode: (mode: ServerMode) => void;
   setTab: (tab: DeskTab) => void;
   addCharacter: (name: string, classId: ClassId) => void;
@@ -87,6 +92,7 @@ type PupitreState = {
   addCombat: () => void;
   addDonjon: () => void;
   addResource: () => void;
+  addFightLoot: (kamas: number, items: FightLootItem[]) => string[];
   patchResource: (
     id: string,
     patch: Partial<Pick<FarmResource, "name" | "qty" | "price" | "itemId" | "icon" | "typeName" | "level">>,
@@ -136,6 +142,8 @@ export const usePupitre = create<PupitreState>()(
       farmHistory: [],
       autoCombats: true,
       setAutoCombats: (autoCombats) => set({ autoCombats }),
+      autoLoot: true,
+      setAutoLoot: (autoLoot) => set({ autoLoot }),
       setMode: (mode) => set({ mode }),
       setTab: (tab) => set({ tab }),
       addCharacter: (name, classId) => {
@@ -274,6 +282,7 @@ export const usePupitre = create<PupitreState>()(
               accumulatedMs: 0,
               combats: fresh ? 0 : state.farm.combats,
               donjons: fresh ? 0 : state.farm.donjons,
+              kamas: fresh ? 0 : (state.farm.kamas ?? 0),
               jackpot: fresh ? "" : state.farm.jackpot,
               resources: fresh
                 ? state.farm.resources.map((resource) => ({ ...resource, qty: "" }))
@@ -339,6 +348,35 @@ export const usePupitre = create<PupitreState>()(
             ],
           },
         })),
+      addFightLoot: (kamas, items) => {
+        const created: string[] = [];
+        set((state) => {
+          if (state.farm.status !== "running" && state.farm.status !== "paused") return state;
+          const resources = [...state.farm.resources];
+          for (const { itemId, quantity } of items) {
+            const index = resources.findIndex((resource) => resource.itemId === itemId);
+            if (index >= 0) {
+              const current = resources[index]!;
+              resources[index] = { ...current, qty: String(parseKamas(current.qty) + quantity) };
+            } else {
+              const id = uid("res");
+              created.push(id);
+              resources.push({
+                id,
+                name: `Objet ${itemId}`,
+                qty: String(quantity),
+                price: "",
+                itemId,
+                icon: "",
+                typeName: "",
+                level: null,
+              });
+            }
+          }
+          return { farm: { ...state.farm, kamas: (state.farm.kamas ?? 0) + kamas, resources } };
+        });
+        return created;
+      },
       patchResource: (id, patch) =>
         set((state) => ({
           farm: {
@@ -390,6 +428,7 @@ export const usePupitre = create<PupitreState>()(
         farm: state.farm,
         farmHistory: state.farmHistory,
         autoCombats: state.autoCombats,
+        autoLoot: state.autoLoot,
       }),
     },
   ),
