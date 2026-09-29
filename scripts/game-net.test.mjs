@@ -130,24 +130,28 @@ test("combat réel : le combattant -1 du jeu n'est pas compté", () => {
   );
 });
 
-test("fin de combat réelle : durée, XP, kamas et butin du joueur", () => {
-  const NONE = 18446744073709551615n;
-  const me = 27038515495n;
+const NONE = 18446744073709551615n;
+const ME = 27038515495n;
+
+function fightEnd(fighters) {
   const stack = (itemId, quantity) => Buffer.concat([intField(1, itemId), intField(4, quantity)]);
-  const xp = bytesField(4, Buffer.concat([intField(2, 378), bytesField(3, bytesField(1, Buffer.concat([intField(1, 125), intField(2, 1)])))]));
-  const player = Buffer.concat([
-    bytesField(1, Buffer.concat([xp, intField(5, 1), intField(6, me)])),
-    bytesField(
-      2,
-      Buffer.concat([
-        bytesField(2, Buffer.concat([intField(2, 489), bytesField(3, stack(17123, 1)), bytesField(3, stack(6900, 2)), bytesField(3, stack(287, 1))])),
-        intField(3, 3),
-      ]),
-    ),
-    intField(4, 2),
+  const entry = ({ id, xp = 0, kamas = 0, items = [] }) => {
+    const gain = bytesField(4, Buffer.concat([intField(2, 378), bytesField(3, bytesField(1, Buffer.concat([intField(1, xp), intField(2, 1)])))]));
+    const fighter = bytesField(1, Buffer.concat([...(xp ? [gain] : []), intField(5, 1), intField(6, id)]));
+    const stacks = items.map(([itemId, quantity]) => bytesField(3, stack(itemId, quantity)));
+    const loot = items.length || kamas
+      ? bytesField(2, Buffer.concat([bytesField(2, Buffer.concat([intField(2, 489), ...stacks])), intField(3, kamas)]))
+      : bytesField(2, Buffer.alloc(0));
+    return bytesField(5, Buffer.concat([fighter, loot, intField(4, 2)]));
+  };
+  return Buffer.concat([intField(4, 4222), ...fighters.map(entry), intField(6, NONE)]);
+}
+
+test("fin de combat réelle : durée, XP, kamas et butin du joueur", () => {
+  const payload = fightEnd([
+    { id: ME, xp: 125, kamas: 3, items: [[17123, 1], [6900, 2], [287, 1]] },
+    { id: NONE },
   ]);
-  const monsters = Buffer.concat([bytesField(1, Buffer.concat([intField(5, 1), intField(6, NONE)])), bytesField(2, Buffer.alloc(0))]);
-  const payload = Buffer.concat([intField(4, 4222), bytesField(5, player), bytesField(5, monsters), intField(6, NONE)]);
   const events = [];
   const fights = createFightTracker((e) => events.push(e));
   fights.handle("0", { type: "jwe", value: payload }, 5000);
@@ -166,10 +170,69 @@ test("fin de combat réelle : durée, XP, kamas et butin du joueur", () => {
             { itemId: 6900, quantity: 2 },
             { itemId: 287, quantity: 1 },
           ],
+          mine: true,
         },
       ],
+      ownFighterIds: [],
     },
   ]);
+});
+
+test("groupe de deux joueurs : seul le personnage qui joue depuis ce PC est à lui", () => {
+  const other = 30000000001n;
+  const events = [];
+  const fights = createFightTracker((e) => events.push(e));
+  const msg = (type, value = Buffer.alloc(0)) => ({ type, value });
+  fights.handle("0", msg("jvt", order(ME, other, NONE)), 1000);
+  fights.handle("0", msg("jwd", intField(7, other)), 1100);
+  fights.handle("0", msg("jwc", intField(1, other)), 1200);
+  fights.handle("0", msg("jwd", intField(7, ME)), 1300);
+  fights.handle("0", msg("jrj", intField(1, 12757)), 1400, "out");
+  fights.handle("0", msg("jvv"), 1500, "out");
+  fights.handle("0", msg("jwc", intField(1, ME)), 1600);
+  fights.handle("0", msg("jwd", intField(7, NONE)), 1700);
+  fights.handle("0", msg("jvv"), 1750, "out");
+  assert.deepEqual(fights.ownFighterIds(), ["27038515495"]);
+  fights.handle(
+    "0",
+    msg("jwe", fightEnd([
+      { id: ME, xp: 125, kamas: 3, items: [[17123, 1]] },
+      { id: other, xp: 90, kamas: 5, items: [[6900, 1]] },
+      { id: NONE },
+    ])),
+    9000,
+  );
+  const end = events.at(-1);
+  assert.equal(end.type, "fight-end");
+  assert.deepEqual(end.ownFighterIds, ["27038515495"]);
+  assert.deepEqual(
+    end.results.map((r) => [r.fighterId, r.mine]),
+    [
+      ["27038515495", true],
+      ["30000000001", false],
+    ],
+  );
+});
+
+test("sans personnage reconnu : un seul gagnant est crédité, plusieurs ne le sont pas", () => {
+  const events = [];
+  const fights = createFightTracker((e) => events.push(e));
+  fights.handle("0", { type: "jwe", value: fightEnd([{ id: ME, xp: 125, kamas: 3 }, { id: NONE }]) }, 1000);
+  fights.handle(
+    "0",
+    { type: "jwe", value: fightEnd([{ id: ME, xp: 125, kamas: 3 }, { id: 30000000001n, xp: 90 }]) },
+    9000,
+  );
+  assert.deepEqual(events[0].results.map((r) => r.mine), [true]);
+  assert.deepEqual(events[1].results.map((r) => r.mine), [false, false]);
+});
+
+test("lecteur : les requêtes sortantes pendant son tour désignent son personnage", () => {
+  const reader = new GameNetReader({ capturesDir: os.tmpdir() });
+  const jrj = framed(bytesField(1, Buffer.concat([bytesField(1, any("jrj", intField(1, 12757))), intField(2, 7)])));
+  reader.handleLine(["1700000000.5", "5555", "4", "100", "", framed(event("jwd", intField(7, ME))).toString("hex")].join("\t"));
+  reader.handleLine(["1700000001.0", "51000", "4", "900", "", jrj.toString("hex")].join("\t"));
+  assert.deepEqual(reader.snapshot().ownFighterIds, ["27038515495"]);
 });
 
 test("filtre de capture limité aux serveurs de jeu", () => {

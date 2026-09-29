@@ -9,6 +9,9 @@ const CODES = {
   turnEnd: "jwc",
   fightEnd: "jwe",
 };
+// Client requests only sent while it is the client's own turn (spell cast, end of turn),
+// seen in every capture of 2026-09-29.
+const OWN_TURN_REQUESTS = new Set(["jrj", "jvv"]);
 const NO_FIGHTER = 18446744073709551615n;
 const SAME_FIGHT_MS = 5000;
 const SAME_TURN_MS = 1000;
@@ -48,6 +51,17 @@ function fightResults(payload) {
   return results;
 }
 
+// Without a known own character, a lone rewarded fighter can only be the player (solo fight);
+// with several, nobody is credited.
+function markOwn(results, own) {
+  const known = results.some((result) => own.has(result.fighterId));
+  const rewarded = results.filter((result) => result.xp > 0 || result.kamas > 0 || result.items.length > 0);
+  return results.map((result) => ({
+    ...result,
+    mine: known ? own.has(result.fighterId) : rewarded.length === 1 && rewarded[0] === result,
+  }));
+}
+
 function fighterOrder(payload) {
   const ids = [];
   for (const entry of payload.get(1) ?? []) {
@@ -59,9 +73,12 @@ function fighterOrder(payload) {
 }
 
 // Several accounts in one fight each receive the same messages on their own connection:
-// events are merged so one fight counts once.
+// events are merged so one fight counts once. Each connection plays one character, which is
+// recognised when that connection acts during a turn.
 function createFightTracker(emit) {
   const active = new Map();
+  const currentTurn = new Map();
+  const own = new Set();
   let lastStart = -Infinity;
   let lastEnd = -Infinity;
   let lastTurn = { id: null, at: 0 };
@@ -77,7 +94,12 @@ function createFightTracker(emit) {
   };
 
   return {
-    handle(connection, message, at) {
+    handle(connection, message, at, direction = "in") {
+      if (direction === "out") {
+        const fighterId = currentTurn.get(connection);
+        if (fighterId && OWN_TURN_REQUESTS.has(message.type)) own.add(fighterId);
+        return;
+      }
       const payload = parseMessage(message.value);
       if (!payload) return;
       if (message.type === CODES.fightOrder) {
@@ -90,27 +112,37 @@ function createFightTracker(emit) {
           emit({ type: "fight-start", fighters: order.length, at });
         }
       } else if (message.type === CODES.turnStart) {
-        turn("turn-start", varintField(payload, 7), at);
+        const id = varintField(payload, 7);
+        if (id === undefined || id === NO_FIGHTER) currentTurn.delete(connection);
+        else currentTurn.set(connection, id.toString());
+        turn("turn-start", id, at);
       } else if (message.type === CODES.turnEnd) {
+        currentTurn.delete(connection);
         turn("turn-end", varintField(payload, 1), at);
       } else if (message.type === CODES.fightEnd) {
         active.delete(connection);
+        currentTurn.delete(connection);
         if (at - lastEnd > SAME_FIGHT_MS) {
           lastEnd = at;
           emit({
             type: "fight-end",
             at,
             durationMs: toNumber(varintField(payload, 4)),
-            results: fightResults(payload),
+            results: markOwn(fightResults(payload), own),
+            ownFighterIds: [...own],
           });
         }
       }
     },
     forget(connection) {
       active.delete(connection);
+      currentTurn.delete(connection);
     },
     inFight() {
       return active.size > 0;
+    },
+    ownFighterIds() {
+      return [...own];
     },
   };
 }

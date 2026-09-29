@@ -231,12 +231,10 @@ class GameNetReader {
         })}\n`,
       );
     }
-    if (inbound) {
-      try {
-        this.fights.handle(stream, message, at);
-      } catch {
-        // A malformed payload must never stop the reader.
-      }
+    try {
+      this.fights.handle(stream, message, at, direction);
+    } catch {
+      // A malformed payload must never stop the reader.
     }
   }
 
@@ -282,6 +280,7 @@ class GameNetReader {
       lastFightEvent: this.lastFightEvent,
       lastFightEnd: this.lastFightEnd,
       fightsSeen: this.fightsSeen,
+      ownFighterIds: this.fights.ownFighterIds(),
     };
   }
 
