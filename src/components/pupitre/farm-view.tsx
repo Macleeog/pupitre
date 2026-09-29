@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Swords, Trash2, Undo2 } from "lucide-react";
+import { Eraser, Plus, Swords, Trash2, Undo2 } from "lucide-react";
 import {
   averageMs,
   elapsedMs,
@@ -30,6 +30,7 @@ export function FarmView() {
   const startFarm = usePupitre((state) => state.startFarm);
   const pauseFarm = usePupitre((state) => state.pauseFarm);
   const finishFarm = usePupitre((state) => state.finishFarm);
+  const resetFarm = usePupitre((state) => state.resetFarm);
   const addCombat = usePupitre((state) => state.addCombat);
   const addDonjon = usePupitre((state) => state.addDonjon);
   const addResource = usePupitre((state) => state.addResource);
@@ -51,6 +52,13 @@ export function FarmView() {
   const totals = snapshot(farm, elapsed);
   const counting = farm.status === "running" || farm.status === "paused";
   const hours = elapsed / 3_600_000;
+  const sessionEmpty =
+    farm.status === "idle" &&
+    farm.combats === 0 &&
+    farm.donjons === 0 &&
+    (farm.kamas ?? 0) === 0 &&
+    !farm.jackpot &&
+    farm.resources.every((resource) => !resource.qty);
 
   return (
     <div className="flex flex-col gap-4">
@@ -124,7 +132,8 @@ export function FarmView() {
               <p className="mt-3 text-xs text-mist">
                 Dans l'exe, un bandeau suit la fenêtre Dofus. {formatAccelerator(shortcuts.start)} démarre,{" "}
                 {formatAccelerator(shortcuts.pause)} pause, {formatAccelerator(shortcuts.stop)} termine,{" "}
-                {formatAccelerator(shortcuts.combat)} ajoute un combat. À changer dans l'onglet Raccourcis.
+                {formatAccelerator(shortcuts.combat)} ajoute un combat, {formatAccelerator(shortcuts.reset)} efface. À
+                changer dans l'onglet Raccourcis.
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button
@@ -144,6 +153,7 @@ export function FarmView() {
                   +1 donjon
                 </button>
               </div>
+              <ClearSession empty={sessionEmpty} onClear={resetFarm} />
             </section>
 
             <section className="rounded-card border border-edge bg-moss p-4">
@@ -593,5 +603,38 @@ function HistoryList({
         </li>
       ))}
     </ul>
+  );
+}
+
+function ClearSession({ empty, onClear }: { empty: boolean; onClear: () => void }) {
+  const [armed, setArmed] = useState(false);
+
+  useEffect(() => {
+    if (!armed) return;
+    const timer = window.setTimeout(() => setArmed(false), 3000);
+    return () => window.clearTimeout(timer);
+  }, [armed]);
+
+  return (
+    <button
+      type="button"
+      disabled={empty}
+      onClick={() => {
+        if (!armed) {
+          setArmed(true);
+          return;
+        }
+        setArmed(false);
+        onClear();
+      }}
+      title="Remet la durée, les combats, les kamas et les quantités à zéro, sans ranger la session dans l'historique."
+      className={
+        "mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border text-sm disabled:opacity-40 " +
+        (armed ? "border-clay bg-clay/20 text-fog" : "border-clay/40 text-clay")
+      }
+    >
+      <Eraser className="size-4" aria-hidden="true" />
+      {armed ? "Confirmer l'effacement" : "Effacer la session"}
+    </button>
   );
 }
