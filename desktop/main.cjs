@@ -72,6 +72,43 @@ function followDofus(overlay) {
   return child;
 }
 
+// Capture reseau PASSIVE (lecture seule) : opt-in via PUPITRE_SNIFFER=1.
+// Necessite Wireshark (tshark + Npcap). Relaie chaque message JSON aux fenetres.
+function followTraffic(targets) {
+  if (process.platform !== "win32" || process.env.PUPITRE_SNIFFER !== "1") return null;
+  const child = spawn(
+    process.execPath,
+    [
+      path.join(__dirname, "pupitre-sniffer.cjs"),
+      "--iface",
+      process.env.PUPITRE_IFACE || "Wi-Fi",
+      "--port",
+      process.env.PUPITRE_PORT || "5555",
+    ],
+    { env: { ...process.env, ELECTRON_RUN_AS_NODE: "1" }, windowsHide: true, stdio: ["ignore", "pipe", "ignore"] },
+  );
+  let buffer = "";
+  child.stdout.on("data", (chunk) => {
+    buffer += String(chunk);
+    const lines = buffer.split(/\r?\n/);
+    buffer = lines.pop() ?? "";
+    for (const line of lines) {
+      if (!line) continue;
+      let message;
+      try {
+        message = JSON.parse(line);
+      } catch {
+        continue;
+      }
+      for (const win of targets) {
+        if (win && !win.isDestroyed()) win.webContents.send("game-message", message);
+      }
+    }
+  });
+  child.on("error", () => {});
+  return child;
+}
+
 app.whenReady().then(async () => {
   const root = outputRoot();
   const entry = path.join(root, "server", "index.mjs");
@@ -91,8 +128,10 @@ app.whenReady().then(async () => {
   child.stdout.on("data", (chunk) => logs.push(String(chunk)));
   child.stderr.on("data", (chunk) => logs.push(String(chunk)));
 
+  let traffic = null;
   const shutdown = () => {
     if (!child.killed) child.kill();
+    if (traffic && !traffic.killed) traffic.kill();
   };
   app.on("before-quit", shutdown);
   child.on("exit", (code) => {
@@ -134,6 +173,7 @@ app.whenReady().then(async () => {
   });
   overlay.setAlwaysOnTop(true, "screen-saver");
   const watcher = followDofus(overlay);
+  traffic = followTraffic([desk, overlay]);
 
   const shortcuts = [
     ["CommandOrControl+Shift+F6", "start"],
