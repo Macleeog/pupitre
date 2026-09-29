@@ -19,18 +19,25 @@ Il faut Windows 10 ou 11, 64 bits. Rien d’autre : pas de Node, pas de compte P
 
 Dans l’exe, le bandeau de session suit la fenêtre Dofus au premier plan (ou la première ouverte) et ne s’affiche que quand Dofus est devant. Glisse-le où tu veux : sa place par rapport à la fenêtre du jeu est retenue.
 
+Raccourcis par défaut, modifiables dans l'onglet **Raccourcis** (bouton Modifier, puis la combinaison ; Échap annule) :
+
 | Touche | Action |
 |---|---|
+| Ctrl+Maj+F9 | Afficher / masquer le bandeau |
 | Ctrl+Maj+F6 | Démarrer la session |
 | Ctrl+Maj+F7 | Pause |
 | Ctrl+Maj+F8 | Terminer |
+| Ctrl+Maj+F10 | Remettre la session à zéro, sans l'historique |
 | Ctrl+Maj+F5 | +1 combat |
+
+Si une combinaison est déjà prise par une autre application, l'onglet le signale. Les raccourcis sont aussi gardés dans `%APPDATA%\Pupitre\shortcuts.json`, pour marcher dès le lancement.
 
 ## Lecture du réseau (onglet Réseau)
 
 Optionnel. Avec [Wireshark](https://www.wireshark.org/download.html) installé (garde Npcap coché), l'exe lit en lecture seule les messages du jeu, ceux dont le type commence par `type.ankama.com/`. Il ne modifie ni la connexion ni le fichier `hosts`, et n'envoie rien.
 
 - **Combats** : début, tours et fin de combat sont détectés. La session de farm peut compter +1 combat toute seule (une fois par combat, même en multicompte).
+- **Butin** : à la fin du combat, les kamas et les objets de tes personnages vont dans les ressources de la session. Pupitre reconnaît un personnage quand il lance un sort ou passe son tour depuis ce PC. Avant ça, il crédite seulement un gagnant unique (combat solo) ; à plusieurs, il affiche « butin non attribué » et n'ajoute rien. Les lignes venues d'un combat portent le badge « combat », restent modifiables, et « Butin des derniers combats » permet d'annuler un combat (kamas et objets, pas le compteur de combats).
 - **Capturer les paquets** : enregistre chaque message décodé dans `%APPDATA%\Pupitre\packet-captures\capture-….ndjson`, une ligne JSON par message.
 
 Les codes des messages de combat (`desktop/game-net/fights.cjs`) viennent de Blitzkrieg 1.42 (licence MIT). Ankama les renomme aux mises à jour : une capture permet de retrouver les nouveaux.

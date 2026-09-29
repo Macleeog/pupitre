@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Swords, Trash2, Undo2 } from "lucide-react";
 import {
   averageMs,
   elapsedMs,
@@ -11,9 +11,10 @@ import {
   snapshot,
   type FarmStatus,
 } from "@/lib/pupitre/farm";
-import { searchItems, type CatalogItem } from "@/lib/pupitre/items";
+import { searchItems, useItemNames, type CatalogItem } from "@/lib/pupitre/items";
+import { formatAccelerator } from "@/lib/pupitre/shortcuts";
 import { usePupitre, type FarmHistoryEntry } from "@/lib/pupitre/store";
-import type { FarmResource } from "@/lib/pupitre/farm";
+import type { FarmResource, FightLogEntry } from "@/lib/pupitre/farm";
 
 const STATUS_LABEL: Record<FarmStatus, string> = {
   idle: "Prêt à démarrer",
@@ -35,6 +36,8 @@ export function FarmView() {
   const patchResource = usePupitre((state) => state.patchResource);
   const removeResource = usePupitre((state) => state.removeResource);
   const removeFarmHistory = usePupitre((state) => state.removeFarmHistory);
+  const undoFightLoot = usePupitre((state) => state.undoFightLoot);
+  const shortcuts = usePupitre((state) => state.shortcuts);
   const [selected, setSelected] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
@@ -119,7 +122,9 @@ export function FarmView() {
                 </button>
               </div>
               <p className="mt-3 text-xs text-mist">
-                Dans l'exe, un bandeau suit la fenêtre Dofus. Ctrl+Maj+F6 démarre, F7 pause, F8 termine, F5 ajoute un combat.
+                Dans l'exe, un bandeau suit la fenêtre Dofus. {formatAccelerator(shortcuts.start)} démarre,{" "}
+                {formatAccelerator(shortcuts.pause)} pause, {formatAccelerator(shortcuts.stop)} termine,{" "}
+                {formatAccelerator(shortcuts.combat)} ajoute un combat. À changer dans l'onglet Raccourcis.
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button
@@ -240,6 +245,7 @@ export function FarmView() {
             <section className="rounded-card border border-edge bg-moss p-4">
               <h3 className="text-xs font-medium tracking-widest text-mist uppercase">Rentabilité</h3>
               <p className="mt-2 text-lg font-medium">Valeur brute : {formatKamas(totals.gross)}</p>
+              <p className="mt-1 text-sm text-mist">Dont kamas des combats : {formatKamas(totals.kamas)}</p>
               <CostField
                 id="farm-keys"
                 label="Coût des clefs"
@@ -278,8 +284,10 @@ export function FarmView() {
             </section>
           </div>
           <p className="text-sm text-mist">
-            Compteur manuel. Les objets viennent du catalogue Dofus 3 (DofusDB). Le prix unitaire, c'est le tien.
+            Les objets viennent du catalogue Dofus 3 (DofusDB). Le prix unitaire, c'est le tien. Dans l'exe, l'onglet
+            Réseau peut ajouter seul les combats, les kamas et le butin de fin de combat.
           </p>
+          <FightLog entries={farm.fightLog ?? []} resources={farm.resources} onUndo={undoFightLoot} />
           <section>
             <h3 className="mb-2 text-xs font-medium tracking-widest text-mist uppercase">Historique</h3>
             <HistoryList entries={history} onRemove={removeFarmHistory} />
@@ -359,9 +367,20 @@ function ResourceName({
           className="min-h-11 min-w-0 flex-1 rounded-lg bg-transparent px-2"
         />
       </div>
-      {linked ? (
-        <p className="px-2 text-xs text-mist">
-          {[resource.typeName, resource.level != null ? `niv. ${resource.level}` : ""].filter(Boolean).join(" · ")}
+      {linked || resource.fromFight ? (
+        <p className="flex flex-wrap items-center gap-x-2 px-2 text-xs text-mist">
+          {resource.fromFight ? (
+            <span
+              className="inline-flex items-center gap-1 rounded-full border border-lamp/50 px-1.5 text-lamp"
+              title="Ajouté ou augmenté par la fin d'un combat. Quantité et prix restent modifiables."
+            >
+              <Swords className="size-3" aria-hidden="true" />
+              combat
+            </span>
+          ) : null}
+          {linked
+            ? [resource.typeName, resource.level != null ? `niv. ${resource.level}` : ""].filter(Boolean).join(" · ")
+            : null}
         </p>
       ) : null}
       {editing && hits.length > 0 ? (
@@ -404,6 +423,59 @@ function ResourceName({
         </ul>
       ) : null}
     </div>
+  );
+}
+
+function FightLog({
+  entries,
+  resources,
+  onUndo,
+}: {
+  entries: FightLogEntry[];
+  resources: FarmResource[];
+  onUndo: (id: string) => void;
+}) {
+  const fetched = useItemNames(entries.flatMap((entry) => entry.items.map((item) => item.itemId)));
+  if (entries.length === 0) return null;
+  const nameOf = (itemId: number) =>
+    resources.find((resource) => resource.itemId === itemId && resource.name)?.name ??
+    fetched.get(itemId) ??
+    `Objet ${itemId}`;
+  return (
+    <section className="rounded-card border border-edge bg-moss p-4">
+      <h3 className="text-xs font-medium tracking-widest text-mist uppercase">Butin des derniers combats</h3>
+      <p className="mt-1 text-xs text-mist">
+        Annuler retire les kamas et les objets de ce combat des ressources. Le compteur de combats ne bouge pas :
+        corrige-le à la main si besoin.
+      </p>
+      <ul className="mt-3 flex flex-col gap-2">
+        {entries.map((entry) => (
+          <li key={entry.id} className="flex items-start justify-between gap-3 rounded-xl border border-edge bg-pine p-3">
+            <div className="min-w-0 text-sm">
+              <p className="text-fog">
+                {new Date(entry.at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                {" · "}
+                {formatKamas(entry.kamas)}
+              </p>
+              <p className="text-mist">
+                {entry.items.length > 0
+                  ? entry.items.map((item) => `${item.quantity} × ${nameOf(item.itemId)}`).join(", ")
+                  : "Pas d'objet."}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onUndo(entry.id)}
+              title="Retire le butin et les kamas de ce combat, sans toucher au nombre de combats."
+              className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-full border border-edge px-3 text-sm text-fog"
+            >
+              <Undo2 className="size-4" aria-hidden="true" />
+              Annuler
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

@@ -31,10 +31,11 @@ export function bindFarmSync(): () => void {
 }
 
 export function applyFarmCommand(command: FarmCommand) {
-  const { startFarm, pauseFarm, finishFarm, addCombat } = usePupitre.getState();
+  const { startFarm, pauseFarm, finishFarm, resetFarm, addCombat } = usePupitre.getState();
   if (command === "start") startFarm();
   if (command === "pause") pauseFarm();
   if (command === "stop") finishFarm();
+  if (command === "reset") resetFarm();
   if (command === "combat") addCombat();
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BringToFront, CircleDot, ClipboardType, Radio } from "lucide-react";
+import { BringToFront, CircleDot, ClipboardType, Keyboard, Radio } from "lucide-react";
 import { classById } from "@/lib/pupitre/classes";
 import { usePupitre, type DeskTab, type ServerMode } from "@/lib/pupitre/store";
 import { Sigil } from "@/components/pupitre/sigil";
@@ -8,14 +8,17 @@ import { WheelView } from "@/components/pupitre/wheel-view";
 import { TextsView } from "@/components/pupitre/texts-view";
 import { FarmView } from "@/components/pupitre/farm-view";
 import { NetworkView } from "@/components/pupitre/network-view";
+import { ShortcutsView } from "@/components/pupitre/shortcuts-view";
 import { bindGameEvents } from "@/lib/pupitre/game-net";
 import { bindFarmHotkeys, bindFarmSync } from "@/lib/pupitre/farm-sync";
+import { bindShortcuts } from "@/lib/pupitre/shortcuts";
 
 const TABS: { id: DeskTab; label: string; icon: typeof BringToFront }[] = [
   { id: "tour", label: "Tour", icon: BringToFront },
   { id: "roue", label: "Roue", icon: CircleDot },
   { id: "textes", label: "Textes", icon: ClipboardType },
   { id: "reseau", label: "Réseau", icon: Radio },
+  { id: "raccourcis", label: "Raccourcis", icon: Keyboard },
 ];
 
 export function Desk() {
@@ -36,7 +39,9 @@ export function Desk() {
     const unbindSync = bindFarmSync();
     const unbindKeys = bindFarmHotkeys();
     const unbindGame = bindGameEvents();
+    const unbindShortcuts = bindShortcuts();
     return () => {
+      unbindShortcuts();
       unbindSync();
       unbindKeys();
       unbindGame();
@@ -116,6 +121,7 @@ export function Desk() {
         {tab === "roue" ? <WheelView /> : null}
         {tab === "textes" ? <TextsView /> : null}
         {tab === "reseau" ? <NetworkView /> : null}
+        {tab === "raccourcis" ? <ShortcutsView /> : null}
         <About />
       </main>
 
@@ -123,7 +129,7 @@ export function Desk() {
         className="fixed inset-x-0 bottom-0 z-20 border-t border-edge bg-moss/95 backdrop-blur"
         aria-label="Sections"
       >
-        <div className={"mx-auto grid grid-cols-4 px-2 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom))] " + frame}>
+        <div className={"mx-auto grid grid-cols-5 px-2 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom))] " + frame}>
           {TABS.map((item) => {
             const Icon = item.icon;
             const active = item.id === "tour" ? onTour : tab === item.id;

@@ -79,10 +79,16 @@ class GameNetReader {
     this.streams = new Map();
     this.fights = createFightTracker((event) => {
       this.lastFightEvent = event;
+      if (event.type === "fight-end") {
+        this.lastFightEnd = event;
+        this.fightsSeen += 1;
+      }
       this.dirty = true;
       this.onEvent?.(event);
     });
     this.lastFightEvent = null;
+    this.lastFightEnd = null;
+    this.fightsSeen = 0;
     this.capture = null;
     this.status = "idle";
     this.detail = "";
@@ -225,12 +231,10 @@ class GameNetReader {
         })}\n`,
       );
     }
-    if (inbound) {
-      try {
-        this.fights.handle(stream, message, at);
-      } catch {
-        // A malformed payload must never stop the reader.
-      }
+    try {
+      this.fights.handle(stream, message, at, direction);
+    } catch {
+      // A malformed payload must never stop the reader.
     }
   }
 
@@ -274,6 +278,9 @@ class GameNetReader {
       capturesDir: this.capturesDir,
       inFight: this.fights.inFight(),
       lastFightEvent: this.lastFightEvent,
+      lastFightEnd: this.lastFightEnd,
+      fightsSeen: this.fightsSeen,
+      ownFighterIds: this.fights.ownFighterIds(),
     };
   }
 

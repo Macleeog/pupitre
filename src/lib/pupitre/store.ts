@@ -4,15 +4,18 @@ import type { ClassId } from "@/lib/pupitre/classes";
 import {
   digitsOnly,
   EMPTY_FARM,
+  parseKamas,
   elapsedMs,
   snapshot,
   type FarmResource,
+  type FightLogEntry,
   type FarmSession,
   type FarmSnapshot,
 } from "@/lib/pupitre/farm";
+import type { ShortcutAction, ShortcutMap, ShortcutStatus } from "@/pupitre-desktop";
 
 export type ServerMode = "classique" | "mono";
-export type DeskTab = "tour" | "roue" | "textes" | "reseau";
+export type DeskTab = "tour" | "roue" | "textes" | "reseau" | "raccourcis";
 export type PulseKind = "turn" | "trade" | "invite" | "pm";
 
 export type Character = {
@@ -41,6 +44,19 @@ export type RoutePin = {
   done: string[];
 };
 
+export type FightLootItem = { itemId: number; quantity: number };
+
+export const DEFAULT_SHORTCUTS: ShortcutMap = {
+  overlay: "CommandOrControl+Shift+F9",
+  start: "CommandOrControl+Shift+F6",
+  pause: "CommandOrControl+Shift+F7",
+  stop: "CommandOrControl+Shift+F8",
+  reset: "CommandOrControl+Shift+F10",
+  combat: "CommandOrControl+Shift+F5",
+};
+
+const FIGHT_LOG_SIZE = 10;
+
 export type FarmHistoryEntry = FarmSnapshot & {
   id: string;
   zone: string;
@@ -63,6 +79,13 @@ type PupitreState = {
   farmHistory: FarmHistoryEntry[];
   autoCombats: boolean;
   setAutoCombats: (autoCombats: boolean) => void;
+  autoLoot: boolean;
+  setAutoLoot: (autoLoot: boolean) => void;
+  shortcuts: ShortcutMap;
+  shortcutStatus: Partial<Record<ShortcutAction, ShortcutStatus>>;
+  setShortcut: (action: ShortcutAction, accelerator: string) => void;
+  resetShortcuts: () => void;
+  setShortcutStatus: (status: Partial<Record<ShortcutAction, ShortcutStatus>>) => void;
   setMode: (mode: ServerMode) => void;
   setTab: (tab: DeskTab) => void;
   addCharacter: (name: string, classId: ClassId) => void;
@@ -84,9 +107,12 @@ type PupitreState = {
   startFarm: () => void;
   pauseFarm: () => void;
   finishFarm: () => void;
+  resetFarm: () => void;
   addCombat: () => void;
   addDonjon: () => void;
   addResource: () => void;
+  addFightLoot: (kamas: number, items: FightLootItem[]) => string[];
+  undoFightLoot: (id: string) => void;
   patchResource: (
     id: string,
     patch: Partial<Pick<FarmResource, "name" | "qty" | "price" | "itemId" | "icon" | "typeName" | "level">>,
@@ -115,6 +141,10 @@ function uid(prefix: string): string {
   return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
+function clearedResources(resources: FarmResource[]): FarmResource[] {
+  return resources.map((resource) => ({ ...resource, qty: "" }));
+}
+
 function nextId(characters: Character[], current: string | null): string | null {
   if (characters.length === 0) return null;
   const index = characters.findIndex((character) => character.id === current);
@@ -136,6 +166,14 @@ export const usePupitre = create<PupitreState>()(
       farmHistory: [],
       autoCombats: true,
       setAutoCombats: (autoCombats) => set({ autoCombats }),
+      autoLoot: true,
+      setAutoLoot: (autoLoot) => set({ autoLoot }),
+      shortcuts: DEFAULT_SHORTCUTS,
+      shortcutStatus: {},
+      setShortcut: (action, accelerator) =>
+        set((state) => ({ shortcuts: { ...state.shortcuts, [action]: accelerator.slice(0, 80) } })),
+      resetShortcuts: () => set({ shortcuts: DEFAULT_SHORTCUTS }),
+      setShortcutStatus: (shortcutStatus) => set({ shortcutStatus }),
       setMode: (mode) => set({ mode }),
       setTab: (tab) => set({ tab }),
       addCharacter: (name, classId) => {
@@ -274,10 +312,10 @@ export const usePupitre = create<PupitreState>()(
               accumulatedMs: 0,
               combats: fresh ? 0 : state.farm.combats,
               donjons: fresh ? 0 : state.farm.donjons,
+              kamas: fresh ? 0 : (state.farm.kamas ?? 0),
               jackpot: fresh ? "" : state.farm.jackpot,
-              resources: fresh
-                ? state.farm.resources.map((resource) => ({ ...resource, qty: "" }))
-                : state.farm.resources,
+              resources: fresh ? clearedResources(state.farm.resources) : state.farm.resources,
+              fightLog: fresh ? [] : (state.farm.fightLog ?? []),
             },
           };
         }),
@@ -319,6 +357,27 @@ export const usePupitre = create<PupitreState>()(
             farmHistory: [entry, ...state.farmHistory].slice(0, 40),
           };
         }),
+      resetFarm: () =>
+        set((state) => {
+          const now = Date.now();
+          const running = state.farm.status === "running";
+          const paused = state.farm.status === "paused";
+          return {
+            farm: {
+              ...state.farm,
+              status: running ? "running" : paused ? "paused" : "idle",
+              startedAt: running || paused ? now : null,
+              segmentStartedAt: running ? now : null,
+              accumulatedMs: 0,
+              combats: 0,
+              donjons: 0,
+              kamas: 0,
+              jackpot: "",
+              resources: clearedResources(state.farm.resources),
+              fightLog: [],
+            },
+          };
+        }),
       addCombat: () =>
         set((state) => {
           if (state.farm.status !== "running" && state.farm.status !== "paused") return state;
@@ -339,6 +398,65 @@ export const usePupitre = create<PupitreState>()(
             ],
           },
         })),
+      addFightLoot: (kamas, items) => {
+        const created: string[] = [];
+        set((state) => {
+          if (state.farm.status !== "running" && state.farm.status !== "paused") return state;
+          const resources = [...state.farm.resources];
+          for (const { itemId, quantity } of items) {
+            const index = resources.findIndex((resource) => resource.itemId === itemId);
+            if (index >= 0) {
+              const current = resources[index]!;
+              resources[index] = { ...current, qty: String(parseKamas(current.qty) + quantity), fromFight: true };
+            } else {
+              const id = uid("res");
+              created.push(id);
+              resources.push({
+                id,
+                name: `Objet ${itemId}`,
+                qty: String(quantity),
+                price: "",
+                itemId,
+                icon: "",
+                typeName: "",
+                level: null,
+                fromFight: true,
+              });
+            }
+          }
+          const entry: FightLogEntry = { id: uid("fight"), at: Date.now(), kamas, items };
+          return {
+            farm: {
+              ...state.farm,
+              kamas: (state.farm.kamas ?? 0) + kamas,
+              resources,
+              fightLog: [entry, ...(state.farm.fightLog ?? [])].slice(0, FIGHT_LOG_SIZE),
+            },
+          };
+        });
+        return created;
+      },
+      undoFightLoot: (id) =>
+        set((state) => {
+          const entry = state.farm.fightLog?.find((fight) => fight.id === id);
+          if (!entry) return state;
+          const resources = state.farm.resources.flatMap((resource) => {
+            const taken = entry.items
+              .filter((item) => item.itemId === resource.itemId)
+              .reduce((sum, item) => sum + item.quantity, 0);
+            if (taken === 0) return [resource];
+            const left = parseKamas(resource.qty) - taken;
+            return left > 0 ? [{ ...resource, qty: String(left) }] : [];
+          });
+          return {
+            farm: {
+              ...state.farm,
+              kamas: Math.max(0, (state.farm.kamas ?? 0) - entry.kamas),
+              resources,
+              fightLog: (state.farm.fightLog ?? []).filter((fight) => fight.id !== id),
+            },
+          };
+        }),
       patchResource: (id, patch) =>
         set((state) => ({
           farm: {
@@ -390,7 +508,13 @@ export const usePupitre = create<PupitreState>()(
         farm: state.farm,
         farmHistory: state.farmHistory,
         autoCombats: state.autoCombats,
+        autoLoot: state.autoLoot,
+        shortcuts: state.shortcuts,
       }),
+      merge: (persisted, current) => {
+        const saved = (persisted ?? {}) as Partial<PupitreState>;
+        return { ...current, ...saved, shortcuts: { ...DEFAULT_SHORTCUTS, ...saved.shortcuts } };
+      },
     },
   ),
 );

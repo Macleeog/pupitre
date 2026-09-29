@@ -1,12 +1,28 @@
-export type FarmCommand = "start" | "pause" | "stop" | "combat";
+export type FarmCommand = "start" | "pause" | "stop" | "reset" | "combat";
+
+export type ShortcutAction = "overlay" | FarmCommand;
+
+export type ShortcutMap = Record<ShortcutAction, string>;
+
+export type ShortcutStatus = "ok" | "empty" | "duplicate" | "failed";
 
 export type NetStatus = "idle" | "unsupported" | "missing" | "starting" | "listening" | "stopped" | "error";
 
 export type NetDirection = "in" | "out";
 
+export type FightResult = {
+  fighterId: string;
+  xp: number;
+  kamas: number;
+  items: { itemId: number; quantity: number }[];
+  mine?: boolean;
+};
+
+export type FightEnd = Extract<GameEvent, { type: "fight-end" }>;
+
 export type GameEvent =
   | { type: "fight-start"; fighters: number; at: number }
-  | { type: "fight-end"; at: number }
+  | { type: "fight-end"; at: number; durationMs?: number; results?: FightResult[]; ownFighterIds?: string[] }
   | { type: "turn-start" | "turn-end"; fighterId: string; at: number };
 
 export type NetState = {
@@ -26,6 +42,9 @@ export type NetState = {
   capturesDir: string;
   inFight: boolean;
   lastFightEvent: GameEvent | null;
+  lastFightEnd: FightEnd | null;
+  fightsSeen: number;
+  ownFighterIds?: string[];
 };
 
 declare global {
@@ -34,6 +53,9 @@ declare global {
       onFarmCommand: (handler: (command: FarmCommand) => void) => () => void;
       overlayMoveBy?: (dx: number, dy: number) => void;
       overlayDragEnd?: () => void;
+      shortcuts?: {
+        set: (map: ShortcutMap) => Promise<Record<ShortcutAction, ShortcutStatus>>;
+      };
       net?: {
         getState: () => Promise<NetState | null>;
         startCapture: () => Promise<string | null>;
