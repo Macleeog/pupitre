@@ -12,7 +12,7 @@ import {
 } from "@/lib/pupitre/farm";
 
 export type ServerMode = "classique" | "mono";
-export type DeskTab = "tour" | "roue" | "textes";
+export type DeskTab = "tour" | "roue" | "textes" | "reseau";
 export type PulseKind = "turn" | "trade" | "invite" | "pm";
 
 export type Character = {
@@ -61,6 +61,8 @@ type PupitreState = {
   pins: RoutePin[];
   farm: FarmSession;
   farmHistory: FarmHistoryEntry[];
+  autoCombats: boolean;
+  setAutoCombats: (autoCombats: boolean) => void;
   setMode: (mode: ServerMode) => void;
   setTab: (tab: DeskTab) => void;
   addCharacter: (name: string, classId: ClassId) => void;
@@ -132,6 +134,8 @@ export const usePupitre = create<PupitreState>()(
       pins: [{ id: "pin-exemple", place: "Zaap, coin de la place", done: [] }],
       farm: EMPTY_FARM,
       farmHistory: [],
+      autoCombats: true,
+      setAutoCombats: (autoCombats) => set({ autoCombats }),
       setMode: (mode) => set({ mode }),
       setTab: (tab) => set({ tab }),
       addCharacter: (name, classId) => {
@@ -385,6 +389,7 @@ export const usePupitre = create<PupitreState>()(
         pins: state.pins,
         farm: state.farm,
         farmHistory: state.farmHistory,
+        autoCombats: state.autoCombats,
       }),
     },
   ),

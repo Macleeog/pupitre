@@ -12,4 +12,21 @@ contextBridge.exposeInMainWorld("pupitre", {
   overlayDragEnd() {
     ipcRenderer.send("overlay:drag-end");
   },
+  net: {
+    getState: () => ipcRenderer.invoke("net:get-state"),
+    startCapture: () => ipcRenderer.invoke("net:capture-start"),
+    stopCapture: () => ipcRenderer.invoke("net:capture-stop"),
+    restart: () => ipcRenderer.invoke("net:restart"),
+    openFolder: () => ipcRenderer.invoke("net:open-folder"),
+    onState(handler) {
+      const listener = (_event, state) => handler(state);
+      ipcRenderer.on("net:state", listener);
+      return () => ipcRenderer.removeListener("net:state", listener);
+    },
+    onGameEvent(handler) {
+      const listener = (_event, gameEvent) => handler(gameEvent);
+      ipcRenderer.on("game-event", listener);
+      return () => ipcRenderer.removeListener("game-event", listener);
+    },
+  },
 });
