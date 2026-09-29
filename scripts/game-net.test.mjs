@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url);
 const { FrameStream, decodeFrame, readVarint } = require("../desktop/game-net/decode.cjs");
 const { createFightTracker } = require("../desktop/game-net/fights.cjs");
 const { GameNetReader, captureFilter } = require("../desktop/game-net/reader.cjs");
+const { KNOWN_TYPES, codesHealth } = require("../desktop/game-net/known-types.cjs");
 
 const hex = (s) => Buffer.from(s.replace(/\s+/g, ""), "hex");
 
@@ -233,6 +234,37 @@ test("lecteur : les requêtes sortantes pendant son tour désignent son personna
   reader.handleLine(["1700000000.5", "5555", "4", "100", "", framed(event("jwd", intField(7, ME))).toString("hex")].join("\t"));
   reader.handleLine(["1700000001.0", "51000", "4", "900", "", jrj.toString("hex")].join("\t"));
   assert.deepEqual(reader.snapshot().ownFighterIds, ["27038515495"]);
+});
+
+test("personnage mémorisé : reconnu dès le premier combat, même sans jouer son tour", () => {
+  const saved = [];
+  const events = [];
+  const first = createFightTracker(() => {}, { onOwnFighter: (ids) => saved.push(ids) });
+  first.handle("0", { type: "jwd", value: intField(7, ME) }, 1000);
+  first.handle("0", { type: "jrj", value: Buffer.alloc(0) }, 1100, "out");
+  first.handle("0", { type: "jrj", value: Buffer.alloc(0) }, 1200, "out");
+  assert.deepEqual(saved, [["27038515495"]]);
+
+  const next = createFightTracker((e) => events.push(e), { ownFighterIds: saved.at(-1) });
+  next.handle(
+    "0",
+    { type: "jwe", value: fightEnd([{ id: ME, xp: 125, kamas: 3 }, { id: 30000000001n, xp: 90, kamas: 5 }]) },
+    9000,
+  );
+  assert.deepEqual(events[0].results.map((r) => r.mine), [true, false]);
+
+  next.forgetOwn();
+  assert.deepEqual(next.ownFighterIds(), []);
+});
+
+test("codes du jeu : alerte seulement quand la plupart des types sont inconnus", () => {
+  const known = [...KNOWN_TYPES].slice(0, 20);
+  const renamed = Array.from({ length: 20 }, (_, i) => `z${String.fromCharCode(97 + i)}q`);
+  assert.equal(codesHealth(known, 50).state, "unknown");
+  assert.equal(codesHealth(known, 1000).state, "ok");
+  assert.equal(codesHealth([...known.slice(0, 15), "abc", "abd", "abe"], 1000).state, "ok");
+  assert.equal(codesHealth(renamed, 1000).state, "stale");
+  assert.equal(codesHealth([...renamed, ...known.slice(0, 3)], 1000).state, "stale");
 });
 
 test("filtre de capture limité aux serveurs de jeu", () => {

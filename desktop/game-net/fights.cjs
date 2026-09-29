@@ -75,10 +75,10 @@ function fighterOrder(payload) {
 // Several accounts in one fight each receive the same messages on their own connection:
 // events are merged so one fight counts once. Each connection plays one character, which is
 // recognised when that connection acts during a turn.
-function createFightTracker(emit) {
+function createFightTracker(emit, { ownFighterIds = [], onOwnFighter } = {}) {
   const active = new Map();
   const currentTurn = new Map();
-  const own = new Set();
+  const own = new Set(ownFighterIds.map(String));
   let lastStart = -Infinity;
   let lastEnd = -Infinity;
   let lastTurn = { id: null, at: 0 };
@@ -97,7 +97,10 @@ function createFightTracker(emit) {
     handle(connection, message, at, direction = "in") {
       if (direction === "out") {
         const fighterId = currentTurn.get(connection);
-        if (fighterId && OWN_TURN_REQUESTS.has(message.type)) own.add(fighterId);
+        if (fighterId && OWN_TURN_REQUESTS.has(message.type) && !own.has(fighterId)) {
+          own.add(fighterId);
+          onOwnFighter?.([...own]);
+        }
         return;
       }
       const payload = parseMessage(message.value);
@@ -143,6 +146,10 @@ function createFightTracker(emit) {
     },
     ownFighterIds() {
       return [...own];
+    },
+    forgetOwn() {
+      own.clear();
+      onOwnFighter?.([]);
     },
   };
 }

@@ -5,6 +5,7 @@ const path = require("node:path");
 const readline = require("node:readline");
 const { FrameStream, toJson } = require("./decode.cjs");
 const { createFightTracker } = require("./fights.cjs");
+const { codesHealth } = require("./known-types.cjs");
 
 const GAME_PORTS = new Set([5555, 443]);
 const SERVERS = [
@@ -69,7 +70,7 @@ function captureFilter(addresses) {
 const FIELDS = ["frame.time_epoch", "tcp.srcport", "tcp.stream", "tcp.seq_raw", "tcp.seq", "tcp.payload"];
 
 class GameNetReader {
-  constructor({ capturesDir, onState, onEvent }) {
+  constructor({ capturesDir, onState, onEvent, ownFighterIds = [], onOwnFighters }) {
     this.capturesDir = capturesDir;
     this.onState = onState;
     this.onEvent = onEvent;
@@ -85,6 +86,12 @@ class GameNetReader {
       }
       this.dirty = true;
       this.onEvent?.(event);
+    }, {
+      ownFighterIds,
+      onOwnFighter: (ids) => {
+        this.dirty = true;
+        onOwnFighters?.(ids);
+      },
     });
     this.lastFightEvent = null;
     this.lastFightEnd = null;
@@ -281,7 +288,13 @@ class GameNetReader {
       lastFightEnd: this.lastFightEnd,
       fightsSeen: this.fightsSeen,
       ownFighterIds: this.fights.ownFighterIds(),
+      codes: codesHealth([...this.types.keys()], this.counters.messages),
     };
+  }
+
+  forgetOwnFighters() {
+    this.fights.forgetOwn();
+    this.flush();
   }
 
   flush() {
