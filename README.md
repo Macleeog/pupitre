@@ -17,7 +17,7 @@ Il faut Windows 10 ou 11, 64 bits. Rien d’autre : pas de Node, pas de compte P
 2. Si Chrome affiche « Opening when complete » à 100/100 Mo, le téléchargement est fini. Ferme la bulle. N’ouvre pas le fichier depuis Chrome.
 3. Extrais le zip, puis double-clique sur `Pupitre.exe` dans le dossier. Si SmartScreen bloque : **Informations complémentaires**, puis **Exécuter quand même**. L’exe n’est pas signé.
 
-Dans l’exe, le bandeau de session suit la première fenêtre dont le titre contient Dofus.
+Dans l’exe, le bandeau de session suit la fenêtre Dofus au premier plan (ou la première ouverte) et ne s’affiche que quand Dofus est devant. Glisse-le où tu veux : sa place par rapport à la fenêtre du jeu est retenue.
 
 | Touche | Action |
 |---|---|
