@@ -25,12 +25,17 @@ export type FightEvent =
   | { type: "fight-end"; at: number; durationMs?: number; results?: FightResult[]; ownFighterIds?: string[] }
   | { type: "turn-start" | "turn-end"; fighterId: string; at: number };
 
-export type WantedMonster = { id: number; name: string; level: number };
+export type WantedKind = "wanted" | "archi";
+
+export type WantedMonster = { id: number; name: string; level: number; gfxId?: number; kind?: WantedKind };
+
+export type MapCoords = { x: number; y: number };
 
 export type WantedSighting = {
   type: "wanted-sighting";
   at: number;
   mapId: number | null;
+  coords?: MapCoords | null;
   monsters: WantedMonster[];
   text: string;
 };
@@ -82,8 +87,16 @@ declare global {
   interface Window {
     pupitre?: {
       onFarmCommand: (handler: (command: FarmCommand) => void) => () => void;
+      overlayDragStart?: () => void;
       overlayMoveBy?: (dx: number, dy: number) => void;
       overlayDragEnd?: () => void;
+      toast?: {
+        setCount: (count: number) => void;
+        moveBy?: (dx: number, dy: number) => void;
+        dragEnd?: () => void;
+        copy?: (text: string) => void;
+        onCoords?: (handler: (coords: MapCoords | null) => void) => () => void;
+      };
       shortcuts?: {
         set: (map: ShortcutMap) => Promise<Record<ShortcutAction, ShortcutStatus>>;
       };
@@ -106,6 +119,7 @@ declare global {
         forgetOwn: () => Promise<NetState | null>;
         setActive?: (active: boolean) => void;
         setWantedNotices?: (enabled: boolean) => void;
+        setArchiNotices?: (enabled: boolean) => void;
         onState: (handler: (state: NetState) => void) => () => void;
         onGameEvent: (handler: (event: GameEvent) => void) => () => void;
       };

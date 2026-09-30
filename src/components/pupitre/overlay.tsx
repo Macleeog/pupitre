@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent } from "react";
 import { elapsedMs, formatDuration, snapshot } from "@/lib/pupitre/farm";
 import { applyFarmCommand, bindFarmHotkeys, bindFarmSync } from "@/lib/pupitre/farm-sync";
 import { overlayCapacity, overlayStat } from "@/lib/pupitre/overlay";
-import { usePupitre } from "@/lib/pupitre/store";
+import { clampOverlayOpacity, usePupitre } from "@/lib/pupitre/store";
 
 const STATUS = { idle: "Prête", running: "En cours", paused: "En pause", done: "Terminée" } as const;
 
@@ -11,16 +11,21 @@ export function Overlay() {
   const fields = usePupitre((state) => state.overlayFields);
   const size = usePupitre((state) => state.overlaySize);
   const buttons = usePupitre((state) => state.overlayButtons);
+  const opacity = usePupitre((state) => state.overlayOpacity);
   const notices = usePupitre((state) => state.wantedNotices);
+  const archiNotices = usePupitre((state) => state.archiNotices);
   const [sighting, setSighting] = useState<{ at: number; text: string } | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
+  useLayoutEffect(() => {
+    // The shared page background is a gradient. This window is transparent so the game shows
+    // through the card; only the card itself carries the chosen opacity.
+    document.documentElement.style.background = "transparent";
+    document.body.style.background = "transparent";
+  }, []);
+
   useEffect(() => {
     void usePupitre.persist.rehydrate();
-    // The shared page background is a gradient with transparent stops. Painting it in this
-    // window would keep an alpha layer above the game, so the bandeau stays a flat colour.
-    document.documentElement.style.background = "#1a120c";
-    document.body.style.background = "#1a120c";
     const unbindSync = bindFarmSync();
     // Settings changed on the desk reach this window through shared storage, so its own saves
     // never write stale ones back. The farm is left out: it has its own channel.
@@ -30,17 +35,22 @@ export function Overlay() {
         const next = JSON.parse(event.newValue).state ?? {};
         const current = usePupitre.getState();
         const fields = (value: unknown) => (Array.isArray(value) ? value.join() : "");
+        const nextOpacity = clampOverlayOpacity(next.overlayOpacity);
         const sameFields =
           current.overlaySize === next.overlaySize &&
           current.overlayButtons === next.overlayButtons &&
+          current.overlayOpacity === nextOpacity &&
           fields(current.overlayFields) === fields(next.overlayFields) &&
-          current.wantedNotices === (next.wantedNotices !== false);
+          current.wantedNotices === (next.wantedNotices !== false) &&
+          current.archiNotices === (next.archiNotices !== false);
         if (sameFields) return;
         usePupitre.setState({
           overlayFields: next.overlayFields ?? current.overlayFields,
           overlaySize: next.overlaySize ?? current.overlaySize,
           overlayButtons: next.overlayButtons ?? current.overlayButtons,
+          overlayOpacity: nextOpacity,
           wantedNotices: next.wantedNotices !== false,
+          archiNotices: next.archiNotices !== false,
         });
       } catch {
         // A half-written value is replaced by the next write.
@@ -68,7 +78,8 @@ export function Overlay() {
     return () => window.clearInterval(timer);
   }, [farm.status, sighting]);
 
-  const wanted = notices !== false && sighting !== null && now - sighting.at < 10 * 60 * 1000;
+  const alerts = notices !== false || archiNotices !== false;
+  const wanted = alerts && sighting !== null && now - sighting.at < 10 * 60 * 1000;
   const elapsed = elapsedMs(farm, now);
   const totals = snapshot(farm, elapsed);
   const stats = fields.slice(0, overlayCapacity(size, buttons)).map((field) => overlayStat(field, farm, totals, elapsed));
@@ -76,10 +87,11 @@ export function Overlay() {
   const dragHandlers = useWindowDrag();
 
   return (
-    <div className="h-dvh bg-pine text-fog">
+    <div className="h-dvh text-fog">
       <section
         {...dragHandlers}
-        className="flex h-full cursor-grab touch-none select-none active:cursor-grabbing flex-col justify-between border border-lamp/50 bg-pine px-3 py-2">
+        style={{ backgroundColor: `rgba(26, 18, 12, ${opacity / 100})` }}
+        className="flex h-full cursor-grab touch-none select-none flex-col justify-between border border-lamp/50 px-3 py-2 active:cursor-grabbing [text-shadow:0_1px_2px_rgb(0_0_0/0.65)] [&_button]:[text-shadow:none]">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className={"truncate font-medium " + (large ? "text-base" : "text-sm")}>{farm.zone.trim() || "Session"}</p>
@@ -112,33 +124,39 @@ export function Overlay() {
   );
 }
 
-// The overlay window never takes focus (so Dofus keeps the keyboard), which rules out
-// -webkit-app-region dragging; the main process moves the window from pointer deltas instead.
+// Pointer deltas in CSS pixels. screenX is physical pixels and runs too fast at 150% scaling.
+// Buttons keep their own click; everything else moves the window. On release the main process
+// gives the keyboard back to Dofus.
 function useWindowDrag() {
-  const last = useRef<{ x: number; y: number } | null>(null);
+  const drag = useRef({ x: 0, y: 0, active: false });
 
   const onPointerDown = (event: PointerEvent<HTMLElement>) => {
     if (event.button !== 0 || (event.target as HTMLElement).closest("button")) return;
     event.currentTarget.setPointerCapture(event.pointerId);
-    last.current = { x: event.screenX, y: event.screenY };
+    drag.current = { x: 0, y: 0, active: true };
+    window.pupitre?.overlayDragStart?.();
   };
 
   const onPointerMove = (event: PointerEvent<HTMLElement>) => {
-    if (!last.current) return;
-    const dx = event.screenX - last.current.x;
-    const dy = event.screenY - last.current.y;
-    if (dx === 0 && dy === 0) return;
-    last.current = { x: event.screenX, y: event.screenY };
-    window.pupitre?.overlayMoveBy?.(dx, dy);
+    if (!drag.current.active) return;
+    drag.current.x += event.movementX;
+    drag.current.y += event.movementY;
+    const dx = Math.trunc(drag.current.x);
+    const dy = Math.trunc(drag.current.y);
+    drag.current.x -= dx;
+    drag.current.y -= dy;
+    if (dx !== 0 || dy !== 0) window.pupitre?.overlayMoveBy?.(dx, dy);
   };
 
   const onPointerEnd = (event: PointerEvent<HTMLElement>) => {
-    if (!last.current) return;
-    last.current = null;
+    const wasDragging = drag.current.active;
+    drag.current = { x: 0, y: 0, active: false };
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
-    window.pupitre?.overlayDragEnd?.();
+    const onButton = (event.target as HTMLElement).closest("button");
+    if (!wasDragging && !onButton) return;
+    window.setTimeout(() => window.pupitre?.overlayDragEnd?.(), 0);
   };
 
   return { onPointerDown, onPointerMove, onPointerUp: onPointerEnd, onPointerCancel: onPointerEnd };

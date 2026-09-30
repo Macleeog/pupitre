@@ -6,7 +6,7 @@ const readline = require("node:readline");
 const { FrameStream, toJson } = require("./decode.cjs");
 const { createFightTracker } = require("./fights.cjs");
 const { codesHealth } = require("./known-types.cjs");
-const { createWantedWatch } = require("./wanted.cjs");
+const { createWantedWatch, sentence } = require("./wanted.cjs");
 const { readMarket } = require("./market.cjs");
 
 const GAME_PORTS = new Set([5555, 443]);
@@ -141,11 +141,12 @@ function captureFilter(addresses) {
 const FIELDS = ["frame.time_epoch", "tcp.srcport", "tcp.stream", "tcp.seq_raw", "tcp.seq", "tcp.payload"];
 
 class GameNetReader {
-  constructor({ capturesDir, cacheFile = null, onState, onEvent, ownFighterIds = [], onOwnFighters }) {
+  constructor({ capturesDir, cacheFile = null, onState, onEvent, ownFighterIds = [], onOwnFighters, mapLookup = null }) {
     this.capturesDir = capturesDir;
     this.cacheFile = cacheFile;
     this.onState = onState;
     this.onEvent = onEvent;
+    this.mapLookup = mapLookup;
     this.child = null;
     this.timer = null;
     this.dirty = true;
@@ -171,11 +172,42 @@ class GameNetReader {
     this.lastMarket = null;
     this.lastWanted = null;
     this.wantedNotices = true;
+    this.archiNotices = true;
+    this.wantedToken = null;
     this.wanted = createWantedWatch((event) => {
-      if (event.type === "wanted-sighting") this.lastWanted = event;
-      if (event.type === "wanted-absent") this.lastWanted = null;
+      if (event.type === "wanted-absent") {
+        this.wantedToken = null;
+        this.lastWanted = null;
+        this.dirty = true;
+        this.onEvent?.(event);
+        return;
+      }
+      if (event.type !== "wanted-sighting") return;
+      // Both kinds are always detected; the two settings decide which ones are announced.
+      const monsters = event.monsters.filter((monster) =>
+        monster.kind === "archi" ? this.archiNotices !== false : this.wantedNotices !== false,
+      );
+      if (monsters.length === 0) return;
+      const sighting =
+        monsters.length === event.monsters.length ? event : { ...event, monsters, text: sentence(monsters) };
+      this.lastWanted = sighting;
       this.dirty = true;
-      this.onEvent?.(event);
+      this.onEvent?.(sighting);
+      if (!this.mapLookup || !sighting.mapId) return;
+      const token = sighting.at;
+      this.wantedToken = token;
+      Promise.resolve()
+        .then(() => this.mapLookup(sighting.mapId))
+        .then((coords) => {
+          if (this.wantedToken !== token || !coords) return;
+          const next = { ...sighting, coords };
+          this.lastWanted = next;
+          this.dirty = true;
+          this.onEvent?.(next);
+        })
+        .catch(() => {
+          // The alert still stands without coordinates.
+        });
     });
     this.capture = null;
     this.status = "idle";

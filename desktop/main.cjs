@@ -1,12 +1,16 @@
-const { app, BrowserWindow, dialog, globalShortcut, ipcMain, Notification, screen, shell } = require("electron");
+const { app, BrowserWindow, clipboard, dialog, globalShortcut, ipcMain, screen, shell } = require("electron");
 const { spawn } = require("node:child_process");
 const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
 const { GameNetReader } = require("./game-net/reader.cjs");
+const { lookupMapCoords, validCoords } = require("./game-net/map-coords.cjs");
 const { watchForUpdates } = require("./updates.cjs");
 
 const PORT = 47321;
+// The packaged exe carries the icon in its own resources; this is what the window and the taskbar
+// use when Pupitre runs unpackaged.
+const APP_ICON = path.join(__dirname, "icon.png");
 const DEFAULT_PLACEMENT = { right: 12, top: 48 };
 const OVERLAY_SIZES = {
   compact: { width: 300, height: 150 },
@@ -150,7 +154,63 @@ function moveOverlay(overlay, x, y) {
   const next = { x: Math.round(x), y: Math.round(y), ...overlaySize(overlay) };
   const current = overlay.getBounds();
   if (current.x === next.x && current.y === next.y && current.width === next.width && current.height === next.height) return;
-  overlay.setBounds(next);
+  // A window whose minimum size equals its maximum ignores setBounds position changes on Windows.
+  // Unlock for the move, then lock again so display scaling cannot grow the bandeau.
+  const { width, height } = overlaySize(overlay);
+  overlay.pupitreMoving = true;
+  try {
+    overlay.setMinimumSize(1, 1);
+    overlay.setMaximumSize(4000, 4000);
+    overlay.setBounds(next);
+    overlay.setMinimumSize(width, height);
+    overlay.setMaximumSize(width, height);
+  } finally {
+    overlay.pupitreMoving = false;
+  }
+}
+
+function windowHandle(win) {
+  const buf = win.getNativeWindowHandle();
+  const value = buf.length >= 8 ? buf.readBigUInt64LE(0) : BigInt(buf.readUInt32LE(0));
+  if (value === 0n) return 0n;
+  return value > 9223372036854775807n ? value - 18446744073709551616n : value;
+}
+
+// Windows only lets the foreground process move the foreground. The bandeau is foreground while
+// it is being dragged, so this attaches to that thread and hands the keyboard back to Dofus.
+function focusGame(hwnd) {
+  if (process.platform !== "win32" || typeof hwnd !== "bigint" || hwnd === 0n) return;
+  const signed = hwnd > 9223372036854775807n ? hwnd - 18446744073709551616n : hwnd;
+  if (signed < -9223372036854775808n || signed > 9223372036854775807n) return;
+  const script = `
+Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+public static class PupitreFocus {
+  [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+  [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
+  [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint pid);
+  [DllImport("kernel32.dll")] public static extern uint GetCurrentThreadId();
+  [DllImport("user32.dll")] public static extern bool AttachThreadInput(uint a, uint b, bool attach);
+  public static void Focus(long raw) {
+    IntPtr target = new IntPtr(raw);
+    IntPtr foreground = GetForegroundWindow();
+    uint pid;
+    uint foreThread = GetWindowThreadProcessId(foreground, out pid);
+    uint appThread = GetCurrentThreadId();
+    if (foreThread != 0 && foreThread != appThread) AttachThreadInput(foreThread, appThread, true);
+    SetForegroundWindow(target);
+    if (foreThread != 0 && foreThread != appThread) AttachThreadInput(foreThread, appThread, false);
+  }
+}
+'@
+[PupitreFocus]::Focus(${signed.toString()})
+`;
+  spawn(
+    "powershell.exe",
+    ["-NoProfile", "-ExecutionPolicy", "Bypass", "-EncodedCommand", Buffer.from(script, "utf16le").toString("base64")],
+    { windowsHide: true, stdio: "ignore" },
+  );
 }
 
 function lockOverlaySize(overlay, size) {
@@ -164,7 +224,7 @@ function lockOverlaySize(overlay, size) {
 }
 
 function followDofus(overlay) {
-  const state = { game: null, placement: loadPlacement(), dragging: false, hiddenByUser: false };
+  const state = { game: null, gameHwnd: 0n, placement: loadPlacement(), dragging: false, hiddenByUser: false };
   lockOverlaySize(overlay, state.placement.size);
 
   const resize = (size) => {
@@ -197,6 +257,11 @@ function followDofus(overlay) {
     moveOverlay(overlay, state.game.x + state.game.width - width - right, state.game.y + top);
   };
 
+  ipcMain.on("overlay:drag-start", (event) => {
+    if (event.sender !== overlay.webContents) return;
+    state.dragging = true;
+  });
+
   ipcMain.on("overlay:move-by", (event, dx, dy) => {
     if (event.sender !== overlay.webContents || !Number.isFinite(dx) || !Number.isFinite(dy)) return;
     state.dragging = true;
@@ -204,29 +269,39 @@ function followDofus(overlay) {
     moveOverlay(overlay, x + dx, y + dy);
   });
 
+  const releaseToGame = () => {
+    if (!overlay.isDestroyed()) overlay.blur();
+    focusGame(state.gameHwnd);
+  };
+
   ipcMain.on("overlay:drag-end", (event) => {
     if (event.sender !== overlay.webContents) return;
+    const wasDragging = state.dragging;
     state.dragging = false;
-    if (!state.game) return;
-    const bounds = overlay.getBounds();
-    state.placement = {
-      right: Math.round(state.game.x + state.game.width - bounds.x - bounds.width),
-      top: Math.round(bounds.y - state.game.y),
-      size: overlay.pupitreSize,
-    };
-    writeJson("overlay.json", state.placement);
-    place();
+    if (wasDragging && state.game) {
+      const bounds = overlay.getBounds();
+      state.placement = {
+        right: Math.round(state.game.x + state.game.width - bounds.x - bounds.width),
+        top: Math.round(bounds.y - state.game.y),
+        size: overlay.pupitreSize,
+      };
+      writeJson("overlay.json", state.placement);
+      place();
+    }
+    releaseToGame();
   });
 
   if (process.platform !== "win32") {
     overlay.once("ready-to-show", () => {
       if (!state.hiddenByUser) overlay.showInactive();
     });
-    return { watcher: null, toggle, resize };
+    return { watcher: null, toggle, resize, gameBounds: () => state.game, gameHandle: () => state.gameHwnd };
   }
 
   // The script sits inside app.asar in the packaged exe, where powershell.exe cannot open it by path.
-  const script = fs.readFileSync(path.join(__dirname, "follow-dofus.ps1"), "utf8");
+  const script = fs
+    .readFileSync(path.join(__dirname, "follow-dofus.ps1"), "utf8")
+    .replaceAll("__OVERLAY_HWND__", windowHandle(overlay).toString());
   const child = spawn(
     "powershell.exe",
     ["-NoProfile", "-ExecutionPolicy", "Bypass", "-EncodedCommand", Buffer.from(script, "utf16le").toString("base64")],
@@ -247,8 +322,9 @@ function followDofus(overlay) {
       return;
     }
     const parts = line.split(",").map((part) => Number(part));
-    if (parts.length !== 5 || parts.some((part) => !Number.isFinite(part))) return;
+    if (parts.length < 5 || parts.slice(0, 5).some((part) => !Number.isFinite(part))) return;
     const [left, top, right, bottom, front] = parts;
+    if (parts.length >= 6 && Number.isFinite(parts[5])) state.gameHwnd = BigInt(Math.trunc(parts[5]));
     state.game = screen.screenToDipRect(null, {
       x: left,
       y: top,
@@ -257,13 +333,16 @@ function followDofus(overlay) {
     });
     if (state.dragging) return;
     place();
-    if (front === 1) {
+    // The avis card is its own window. While it is up, a click on its cross must not
+    // make the bandeau think Dofus left the foreground and hide itself.
+    const toastUp = wantedToast && !wantedToast.isDestroyed() && wantedToast.isVisible();
+    if (front === 1 || toastUp) {
       if (!state.hiddenByUser && !overlay.isVisible()) overlay.showInactive();
     } else {
       overlay.hide();
     }
   });
-  return { watcher: child, toggle, resize };
+  return { watcher: child, toggle, resize, gameBounds: () => state.game, gameHandle: () => state.gameHwnd };
 }
 
 // Passive, read-only: tshark (Wireshark + Npcap) copies the game's packets; nothing is
@@ -278,9 +357,16 @@ function readGameNetwork(desk) {
     onState: (state) => toDesk("net:state", state),
     onEvent: (event) => {
       toDesk("game-event", event);
-      if (event.type === "wanted-sighting" && reader.wantedNotices !== false) notifyWanted(event.text);
+      if (event.type === "wanted-absent") {
+        clearTimeout(toastTimer);
+        toastQueued = null;
+        closeWantedToast();
+      }
+      // The reader already dropped the kinds the settings turned off.
+      if (event.type === "wanted-sighting") queueWantedToast(event);
     },
     cacheFile: path.join(app.getPath("userData"), "game-servers.json"),
+    mapLookup: (mapId) => lookupMapCoords(mapId, { cacheFile: path.join(app.getPath("userData"), "map-coords.json") }),
     ownFighterIds: loadOwnFighters(),
     onOwnFighters: (ids) => writeJson("own-fighters.json", ids),
   });
@@ -298,6 +384,9 @@ function readGameNetwork(desk) {
   });
   ipcMain.on("net:set-wanted-notices", (event, enabled) => {
     if (fromDesk(event) && typeof enabled === "boolean") reader.wantedNotices = enabled;
+  });
+  ipcMain.on("net:set-archi-notices", (event, enabled) => {
+    if (fromDesk(event) && typeof enabled === "boolean") reader.archiNotices = enabled;
   });
   ipcMain.handle("net:forget-own", (event) => {
     if (!fromDesk(event)) return null;
@@ -344,17 +433,167 @@ child.on("exit", (code) => {
   if (code && code !== 0) pushLog(`exit ${code}`);
 });
 
-function notifyWanted(text) {
-  if (!text || !Notification.isSupported()) return;
-  try {
-    new Notification({ title: "Avis de recherche", body: text }).show();
-  } catch {
-    // A desktop notification is optional; the desk still shows the alert.
-  }
+const TOAST_W = 148;
+const TOAST_H = 168;
+const TOAST_GAP = 8;
+let wantedToast = null;
+let toastPlacement = null;
+let toastShownAt = null;
+let toastTimer = null;
+let toastQueued = null;
+let gameView = { bounds: () => null, handle: () => 0n };
+
+function toastHeight(count) {
+  return TOAST_H * count + TOAST_GAP * Math.max(0, count - 1);
 }
+
+function loadToastPlacement() {
+  const saved = readJson("toast.json");
+  if (Number.isFinite(saved?.x) && Number.isFinite(saved?.y)) return { x: Math.round(saved.x), y: Math.round(saved.y) };
+  return null;
+}
+
+function wantedCards(monsters) {
+  if (!Array.isArray(monsters)) return [];
+  const cards = [];
+  for (const monster of monsters) {
+    if (cards.length >= 3) break;
+    if (!monster || typeof monster.name !== "string" || !Number.isFinite(monster.id)) continue;
+    const card = { id: monster.id, name: monster.name.slice(0, 48) };
+    if (Number.isFinite(monster.gfxId) && monster.gfxId > 0) card.gfxId = monster.gfxId;
+    if (monster.kind === "archi") card.kind = "archi";
+    cards.push(card);
+  }
+  return cards;
+}
+
+function placeWantedToast(win, count) {
+  const width = TOAST_W;
+  const height = toastHeight(count);
+  const game = gameView.bounds();
+  const area = screen.getPrimaryDisplay().workArea;
+  const x = toastPlacement ? toastPlacement.x : Math.round(game ? game.x + 16 : area.x + 16);
+  const y = toastPlacement ? toastPlacement.y : Math.round(game ? game.y + 16 : area.y + 16);
+  win.setMinimumSize(1, 1);
+  win.setMaximumSize(4000, 4000);
+  win.setBounds({ x, y, width, height });
+}
+
+function moveWantedToastBy(dx, dy) {
+  if (!wantedToast || wantedToast.isDestroyed()) return;
+  const bounds = wantedToast.getBounds();
+  const x = Math.round(bounds.x + dx);
+  const y = Math.round(bounds.y + dy);
+  wantedToast.setMinimumSize(1, 1);
+  wantedToast.setMaximumSize(4000, 4000);
+  wantedToast.setBounds({ x, y, width: bounds.width, height: bounds.height });
+  toastPlacement = { x, y };
+}
+
+function closeWantedToast(options = {}) {
+  const win = wantedToast;
+  if (!win || win.isDestroyed()) return;
+  const focused = win.isFocused();
+  wantedToast = null;
+  win.close();
+  if (focused && options.focus !== false) focusGame(gameView.handle());
+}
+
+function showWantedToast(event) {
+  const cards = wantedCards(event?.monsters);
+  const coords = validCoords(event?.coords);
+  if (cards.length === 0) {
+    closeWantedToast();
+    return;
+  }
+  if (wantedToast && !wantedToast.isDestroyed() && toastShownAt === event.at) {
+    if (coords) wantedToast.webContents.send("toast:coords", coords);
+    return;
+  }
+  toastShownAt = event.at;
+  const url = `http://127.0.0.1:${PORT}/avis?m=${encodeURIComponent(JSON.stringify({ cards, coords }))}`;
+  if (!wantedToast || wantedToast.isDestroyed()) {
+    const win = new BrowserWindow({
+      width: TOAST_W,
+      height: toastHeight(cards.length),
+      frame: false,
+      transparent: true,
+      thickFrame: false,
+      alwaysOnTop: true,
+      skipTaskbar: true,
+      resizable: false,
+      hasShadow: false,
+      show: false,
+      focusable: true,
+      backgroundColor: "#00000000",
+      webPreferences: webPreferences({ backgroundThrottling: false }),
+    });
+    wantedToast = win;
+    win.setAlwaysOnTop(true, "screen-saver");
+    win.on("closed", () => {
+      if (wantedToast === win) wantedToast = null;
+    });
+    placeWantedToast(win, cards.length);
+    win.once("ready-to-show", () => {
+      if (!win.isDestroyed()) win.showInactive();
+    });
+    void win.loadURL(url);
+    return;
+  }
+  placeWantedToast(wantedToast, cards.length);
+  void wantedToast.loadURL(url);
+  if (!wantedToast.isVisible()) wantedToast.showInactive();
+}
+
+// Coordinates arrive a moment after the sighting. Wait briefly so the card opens once, with /travel.
+function queueWantedToast(event) {
+  if (event.coords) {
+    clearTimeout(toastTimer);
+    toastQueued = null;
+    showWantedToast(event);
+    return;
+  }
+  toastQueued = event;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    if (toastQueued) showWantedToast(toastQueued);
+    toastQueued = null;
+  }, 1500);
+}
+
+ipcMain.on("toast:count", (event, count) => {
+  if (!wantedToast || wantedToast.isDestroyed() || event.sender !== wantedToast.webContents) return;
+  const next = Number(count);
+  if (!Number.isInteger(next) || next <= 0) {
+    closeWantedToast();
+    return;
+  }
+  placeWantedToast(wantedToast, Math.min(3, next));
+});
+
+ipcMain.on("toast:move-by", (event, dx, dy) => {
+  if (!wantedToast || wantedToast.isDestroyed() || event.sender !== wantedToast.webContents) return;
+  if (!Number.isFinite(dx) || !Number.isFinite(dy)) return;
+  moveWantedToastBy(dx, dy);
+});
+
+ipcMain.on("toast:drag-end", (event) => {
+  if (!wantedToast || wantedToast.isDestroyed() || event.sender !== wantedToast.webContents) return;
+  if (toastPlacement) writeJson("toast.json", toastPlacement);
+  if (wantedToast.isFocused()) {
+    wantedToast.blur();
+    focusGame(gameView.handle());
+  }
+});
+
+ipcMain.on("toast:copy", (_event, text) => {
+  if (typeof text !== "string" || !/^\/travel -?\d{1,4},-?\d{1,4}$/.test(text)) return;
+  clipboard.writeText(text);
+});
 
 app.whenReady().then(async () => {
   if (process.platform === "win32") app.setAppUserModelId("app.pupitre.desk");
+  toastPlacement = loadToastPlacement();
   let network = null;
   const shutdown = () => {
     if (!child.killed) child.kill();
@@ -379,30 +618,32 @@ app.whenReady().then(async () => {
     minWidth: 390,
     minHeight: 640,
     title: pupitreVersion() ? `Pupitre ${pupitreVersion()}` : "Pupitre",
+    icon: APP_ICON,
     backgroundColor: "#1a120c",
     show: false,
     autoHideMenuBar: true,
     webPreferences: webPreferences(),
   });
-  // Solid on purpose. A transparent always-on-top window is a layered window: Windows blends it
-  // over Dofus on every frame the game draws. An opaque rectangle stays a single compositor quad,
-  // and thickFrame off skips the extra frame shadow. The clock keeps real time while Dofus is in
-  // front; the desk window stays throttled.
+  // Layered on purpose: the card opacity is a slider, and partial alpha needs a transparent window.
+  // thickFrame off skips the extra frame shadow. The clock keeps real time while Dofus is in front;
+  // the desk window stays throttled. focusable so a click reaches the page (an unfocusable window
+  // drops pointer events on Windows). The keyboard is handed back to Dofus when the pointer goes up.
   const overlay = new BrowserWindow({
     ...OVERLAY_SIZES.compact,
     frame: false,
-    transparent: false,
+    transparent: true,
     thickFrame: false,
     alwaysOnTop: true,
     skipTaskbar: true,
     resizable: false,
     hasShadow: false,
     show: false,
-    focusable: false,
-    backgroundColor: "#1a120c",
+    focusable: true,
+    backgroundColor: "#00000000",
     webPreferences: webPreferences({ backgroundThrottling: false }),
   });
   overlay.on("resize", () => {
+    if (overlay.pupitreMoving) return;
     const [width, height] = overlay.getSize();
     const size = overlaySize(overlay);
     if (width === size.width && height === size.height) return;
@@ -411,7 +652,8 @@ app.whenReady().then(async () => {
   });
   overlay.setAlwaysOnTop(true, "screen-saver");
   overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  const { watcher, toggle, resize } = followDofus(overlay);
+  const { watcher, toggle, resize, gameBounds, gameHandle } = followDofus(overlay);
+  gameView = { bounds: gameBounds, handle: gameHandle };
   ipcMain.handle("overlay:get-size", (event) =>
     event.sender === desk.webContents || event.sender === overlay.webContents ? overlay.pupitreSize : null,
   );
@@ -432,6 +674,7 @@ app.whenReady().then(async () => {
   watchForUpdates(desk);
   await Promise.all([desk.loadURL(`http://127.0.0.1:${PORT}/`), overlay.loadURL(`http://127.0.0.1:${PORT}/overlay`)]);
   desk.on("closed", () => {
+    closeWantedToast({ focus: false });
     if (watcher && !watcher.killed) watcher.kill();
     if (!overlay.isDestroyed()) overlay.close();
     shutdown();

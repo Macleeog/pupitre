@@ -6,11 +6,33 @@ contextBridge.exposeInMainWorld("pupitre", {
     ipcRenderer.on("farm-command", listener);
     return () => ipcRenderer.removeListener("farm-command", listener);
   },
+  overlayDragStart() {
+    ipcRenderer.send("overlay:drag-start");
+  },
   overlayMoveBy(dx, dy) {
     ipcRenderer.send("overlay:move-by", dx, dy);
   },
   overlayDragEnd() {
     ipcRenderer.send("overlay:drag-end");
+  },
+  toast: {
+    setCount(count) {
+      ipcRenderer.send("toast:count", count);
+    },
+    moveBy(dx, dy) {
+      ipcRenderer.send("toast:move-by", dx, dy);
+    },
+    dragEnd() {
+      ipcRenderer.send("toast:drag-end");
+    },
+    copy(text) {
+      ipcRenderer.send("toast:copy", text);
+    },
+    onCoords(handler) {
+      const listener = (_event, coords) => handler(coords);
+      ipcRenderer.on("toast:coords", listener);
+      return () => ipcRenderer.removeListener("toast:coords", listener);
+    },
   },
   shortcuts: {
     set: (map) => ipcRenderer.invoke("shortcuts:set", map),
@@ -38,6 +60,7 @@ contextBridge.exposeInMainWorld("pupitre", {
     forgetOwn: () => ipcRenderer.invoke("net:forget-own"),
     setActive: (active) => ipcRenderer.send("net:set-active", active),
     setWantedNotices: (enabled) => ipcRenderer.send("net:set-wanted-notices", enabled),
+    setArchiNotices: (enabled) => ipcRenderer.send("net:set-archi-notices", enabled),
     onState(handler) {
       const listener = (_event, state) => handler(state);
       ipcRenderer.on("net:state", listener);

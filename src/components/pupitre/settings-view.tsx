@@ -44,23 +44,33 @@ function updateText(update: UpdateState | null): string {
 function WantedCard() {
   const enabled = usePupitre((state) => state.wantedNotices);
   const setEnabled = usePupitre((state) => state.setWantedNotices);
+  const archi = usePupitre((state) => state.archiNotices);
+  const setArchi = usePupitre((state) => state.setArchiNotices);
   return (
     <section className="rounded-card border border-edge bg-moss p-4">
-      <h2 className="font-medium text-fog">Avis de recherche</h2>
-      <label className="mt-3 flex min-h-11 cursor-pointer items-start gap-3 text-sm text-fog">
+      <h2 className="font-medium text-fog">Alertes sur la carte</h2>
+      <p className="mt-1 text-sm text-mist">
+        En arrivant sur une carte, Pupitre reconnaît les monstres du groupe. Une petite carte montre l'image, le nom
+        et /travel vers cette carte. Glisse-la où tu veux : l'endroit est retenu. Elle part au bout de 10 secondes,
+        ou si tu cliques la croix. La lecture reste allumée tant qu'une des cases est cochée.
+      </p>
+      <label className="mt-3 flex min-h-11 cursor-pointer items-center gap-3 text-sm text-fog">
         <input
           type="checkbox"
           checked={enabled !== false}
           onChange={(event) => setEnabled(event.target.checked)}
-          className="mt-0.5 size-5 accent-[var(--color-lamp)]"
+          className="size-5 accent-[var(--color-lamp)]"
         />
-        <span>
-          Prévenir quand il y en a un sur la carte
-          <span className="mt-1 block text-mist">
-            En arrivant sur une carte, Pupitre reconnaît les monstres du groupe. S'il y a un avis de recherche, une
-            notification s'affiche. La lecture reste allumée tant que cette case est cochée.
-          </span>
-        </span>
+        Prévenir pour les avis de recherche
+      </label>
+      <label className="flex min-h-11 cursor-pointer items-center gap-3 text-sm text-fog">
+        <input
+          type="checkbox"
+          checked={archi !== false}
+          onChange={(event) => setArchi(event.target.checked)}
+          className="size-5 accent-[var(--color-lamp)]"
+        />
+        Prévenir pour les archimonstres
       </label>
     </section>
   );
@@ -135,6 +145,8 @@ function OverlayCard() {
   const setSize = usePupitre((state) => state.setOverlaySize);
   const buttons = usePupitre((state) => state.overlayButtons);
   const setButtons = usePupitre((state) => state.setOverlayButtons);
+  const opacity = usePupitre((state) => state.overlayOpacity);
+  const setOpacity = usePupitre((state) => state.setOverlayOpacity);
   const capacity = overlayCapacity(size, buttons);
   return (
     <section className="rounded-card border border-edge bg-moss p-4">
@@ -157,6 +169,32 @@ function OverlayCard() {
             <span className="block text-xs">{entry.hint}</span>
           </button>
         ))}
+      </div>
+      <div className="mt-4">
+        <div className="flex items-baseline justify-between gap-3">
+          <label htmlFor="overlay-opacity" className="text-sm font-medium text-fog">
+            Opacité
+          </label>
+          <span className="text-sm text-mist">{opacity} % opaque</span>
+        </div>
+        <input
+          id="overlay-opacity"
+          type="range"
+          min={20}
+          max={100}
+          step={1}
+          value={opacity}
+          onChange={(event) => setOpacity(Number(event.target.value))}
+          aria-valuemin={20}
+          aria-valuemax={100}
+          aria-valuenow={opacity}
+          aria-valuetext={`${opacity} % opaque`}
+          className="mt-1 h-11 w-full cursor-pointer accent-[var(--color-lamp)]"
+        />
+        <div className="flex justify-between text-xs text-mist">
+          <span>Transparent</span>
+          <span>Opaque</span>
+        </div>
       </div>
       <ul className="mt-3 grid gap-1 sm:grid-cols-2">
         {OVERLAY_FIELDS.map((field) => {
@@ -191,7 +229,8 @@ function OverlayCard() {
       </ul>
       <p className="mt-2 text-xs text-mist">
         Le {size === "compact" ? "petit" : "grand"} bandeau affiche {capacity} info{capacity > 1 ? "s" : ""}
-        {buttons ? " avec les boutons" : " sans les boutons"}. Il garde sa taille quand tu le déplaces.
+        {buttons ? " avec les boutons" : " sans les boutons"}. Glisse-le sur la fenêtre du jeu pour le
+        déplacer. À 100 % il cache le jeu, à 50 % le jeu se voit à travers, à 20 % il est très transparent.
       </p>
     </section>
   );

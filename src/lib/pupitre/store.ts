@@ -28,6 +28,12 @@ export const OVERLAY_FIELDS: { id: OverlayField; label: string }[] = [
 ];
 
 export const DEFAULT_OVERLAY_FIELDS: OverlayField[] = ["rate", "combats"];
+
+export function clampOverlayOpacity(value: unknown): number {
+  const n = typeof value === "number" ? Math.round(value) : 80;
+  if (!Number.isFinite(n)) return 80;
+  return Math.min(100, Math.max(20, n));
+}
 export type Character = {
   id: string;
   name: string;
@@ -71,9 +77,11 @@ type PupitreState = {
   overlayFields: OverlayField[];
   overlaySize: OverlaySize;
   overlayButtons: boolean;
+  overlayOpacity: number;
   toggleOverlayField: (field: OverlayField) => void;
   setOverlaySize: (size: OverlaySize) => void;
   setOverlayButtons: (overlayButtons: boolean) => void;
+  setOverlayOpacity: (overlayOpacity: number) => void;
   farm: FarmSession;
   farmHistory: FarmHistoryEntry[];
   autoCombats: boolean;
@@ -82,6 +90,8 @@ type PupitreState = {
   setAutoLoot: (autoLoot: boolean) => void;
   wantedNotices: boolean;
   setWantedNotices: (wantedNotices: boolean) => void;
+  archiNotices: boolean;
+  setArchiNotices: (archiNotices: boolean) => void;
   lastWanted: WantedSighting | null;
   setLastWanted: (lastWanted: WantedSighting | null) => void;
   shortcuts: ShortcutMap;
@@ -125,6 +135,7 @@ export const usePupitre = create<PupitreState>()(
       overlayFields: DEFAULT_OVERLAY_FIELDS,
       overlaySize: "compact",
       overlayButtons: true,
+      overlayOpacity: 80,
       toggleOverlayField: (field) =>
         set((state) => ({
           overlayFields: state.overlayFields.includes(field)
@@ -135,6 +146,7 @@ export const usePupitre = create<PupitreState>()(
         })),
       setOverlaySize: (overlaySize) => set({ overlaySize }),
       setOverlayButtons: (overlayButtons) => set({ overlayButtons }),
+      setOverlayOpacity: (overlayOpacity) => set({ overlayOpacity: clampOverlayOpacity(overlayOpacity) }),
       farm: EMPTY_FARM,
       farmHistory: [],
       autoCombats: true,
@@ -143,6 +155,8 @@ export const usePupitre = create<PupitreState>()(
       setAutoLoot: (autoLoot) => set({ autoLoot }),
       wantedNotices: true,
       setWantedNotices: (wantedNotices) => set({ wantedNotices }),
+      archiNotices: true,
+      setArchiNotices: (archiNotices) => set({ archiNotices }),
       lastWanted: null,
       setLastWanted: (lastWanted) => set({ lastWanted }),
       shortcuts: DEFAULT_SHORTCUTS,
@@ -409,11 +423,13 @@ export const usePupitre = create<PupitreState>()(
         overlayFields: state.overlayFields,
         overlaySize: state.overlaySize,
         overlayButtons: state.overlayButtons,
+        overlayOpacity: state.overlayOpacity,
         farm: state.farm,
         farmHistory: state.farmHistory,
         autoCombats: state.autoCombats,
         autoLoot: state.autoLoot,
         wantedNotices: state.wantedNotices,
+        archiNotices: state.archiNotices,
         shortcuts: state.shortcuts,
         hdvPrices: state.hdvPrices,
       }),
@@ -435,6 +451,8 @@ export const usePupitre = create<PupitreState>()(
           me,
           shortcuts: { ...DEFAULT_SHORTCUTS, ...saved.shortcuts },
           wantedNotices: saved.wantedNotices !== false,
+          archiNotices: saved.archiNotices !== false,
+          overlayOpacity: clampOverlayOpacity(saved.overlayOpacity),
           lastWanted: null,
         };
       },
