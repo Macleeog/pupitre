@@ -65,7 +65,13 @@ async function nameNewResources(resourceIds: string[]) {
 // Only the desk window listens: the overlay mirrors the farm through BroadcastChannel,
 // so counting in both would add every fight twice.
 export function bindGameEvents(): () => void {
+  const channel = new BroadcastChannel("pupitre-wanted");
   const off = window.pupitre?.net?.onGameEvent((event) => {
+    if (event.type === "wanted-sighting" || event.type === "wanted-absent") {
+      channel.postMessage(event);
+      usePupitre.getState().setLastWanted(event.type === "wanted-sighting" ? event : null);
+      return;
+    }
     if (event.type === "hdv-prices") {
       usePupitre.getState().applyHdvPrices(event.prices, event.at);
       return;
@@ -79,5 +85,8 @@ export function bindGameEvents(): () => void {
       if (loot.kamas > 0 || loot.items.length > 0) void nameNewResources(addFightLoot(loot.kamas, loot.items));
     }
   });
-  return () => off?.();
+  return () => {
+    off?.();
+    channel.close();
+  };
 }

@@ -73,6 +73,7 @@ export function NetworkView() {
       <StatusCard state={state} now={now} />
       {state.codes?.state === "stale" ? <StaleCodes share={state.codes.knownShare ?? 0} /> : null}
       <FightCard state={state} />
+      <WantedNotice now={now} />
       <MarketCard now={now} />
       <CaptureCard state={state} now={now} />
       {state.status === "missing" || state.status === "error" || state.status === "unsupported" ? <SetupHelp /> : null}
@@ -188,6 +189,21 @@ function OwnFighters({ ids }: { ids: string[] }) {
         </button>
       ) : null}
     </div>
+  );
+}
+
+function WantedNotice({ now }: { now: number }) {
+  const sighting = usePupitre((state) => state.lastWanted);
+  const fresh = sighting !== null && now - sighting.at < 10 * 60 * 1000;
+  return (
+    <section className="rounded-card border border-edge bg-moss p-4">
+      <h2 className="font-medium text-fog">Avis de recherche</h2>
+      <p className="mt-1 text-sm text-mist">
+        {fresh && sighting
+          ? `${sighting.text} Repéré ${ago(sighting.at, now)}.`
+          : "Aucun sur la carte actuelle. Pupitre prévient en arrivant sur une carte qui en a un."}
+      </p>
+    </section>
   );
 }
 

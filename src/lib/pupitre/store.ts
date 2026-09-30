@@ -12,7 +12,7 @@ import {
   type FarmSession,
   type FarmSnapshot,
 } from "@/lib/pupitre/farm";
-import type { OverlaySize, ShortcutAction, ShortcutMap, ShortcutStatus } from "@/pupitre-desktop";
+import type { OverlaySize, ShortcutAction, ShortcutMap, ShortcutStatus, WantedSighting } from "@/pupitre-desktop";
 
 export type DeskTab = "session" | "reseau" | "reglages";
 
@@ -80,6 +80,10 @@ type PupitreState = {
   setAutoCombats: (autoCombats: boolean) => void;
   autoLoot: boolean;
   setAutoLoot: (autoLoot: boolean) => void;
+  wantedNotices: boolean;
+  setWantedNotices: (wantedNotices: boolean) => void;
+  lastWanted: WantedSighting | null;
+  setLastWanted: (lastWanted: WantedSighting | null) => void;
   shortcuts: ShortcutMap;
   shortcutStatus: Partial<Record<ShortcutAction, ShortcutStatus>>;
   setShortcut: (action: ShortcutAction, accelerator: string) => void;
@@ -137,6 +141,10 @@ export const usePupitre = create<PupitreState>()(
       setAutoCombats: (autoCombats) => set({ autoCombats }),
       autoLoot: true,
       setAutoLoot: (autoLoot) => set({ autoLoot }),
+      wantedNotices: true,
+      setWantedNotices: (wantedNotices) => set({ wantedNotices }),
+      lastWanted: null,
+      setLastWanted: (lastWanted) => set({ lastWanted }),
       shortcuts: DEFAULT_SHORTCUTS,
       shortcutStatus: {},
       setShortcut: (action, accelerator) =>
@@ -405,6 +413,7 @@ export const usePupitre = create<PupitreState>()(
         farmHistory: state.farmHistory,
         autoCombats: state.autoCombats,
         autoLoot: state.autoLoot,
+        wantedNotices: state.wantedNotices,
         shortcuts: state.shortcuts,
         hdvPrices: state.hdvPrices,
       }),
@@ -420,7 +429,14 @@ export const usePupitre = create<PupitreState>()(
           saved.me !== undefined
             ? saved.me
             : (mine.find((character) => character.id === focusId) ?? mine[0] ?? null);
-        return { ...current, ...rest, me, shortcuts: { ...DEFAULT_SHORTCUTS, ...saved.shortcuts } };
+        return {
+          ...current,
+          ...rest,
+          me,
+          shortcuts: { ...DEFAULT_SHORTCUTS, ...saved.shortcuts },
+          wantedNotices: saved.wantedNotices !== false,
+          lastWanted: null,
+        };
       },
     },
   ),

@@ -6,6 +6,7 @@ const readline = require("node:readline");
 const { FrameStream, toJson } = require("./decode.cjs");
 const { createFightTracker } = require("./fights.cjs");
 const { codesHealth } = require("./known-types.cjs");
+const { createWantedWatch } = require("./wanted.cjs");
 const { readMarket } = require("./market.cjs");
 
 const GAME_PORTS = new Set([5555, 443]);
@@ -168,6 +169,14 @@ class GameNetReader {
     this.lastFightEnd = null;
     this.fightsSeen = 0;
     this.lastMarket = null;
+    this.lastWanted = null;
+    this.wantedNotices = true;
+    this.wanted = createWantedWatch((event) => {
+      if (event.type === "wanted-sighting") this.lastWanted = event;
+      if (event.type === "wanted-absent") this.lastWanted = null;
+      this.dirty = true;
+      this.onEvent?.(event);
+    });
     this.capture = null;
     this.status = "idle";
     this.detail = "";
@@ -356,6 +365,7 @@ class GameNetReader {
     }
     try {
       this.fights.handle(stream, message, at, direction);
+      this.wanted.handle(message, at);
       const market = inbound ? readMarket(message) : null;
       if (market && market.prices.length > 0) {
         this.lastMarket = { at, source: market.source, items: market.prices.length };
@@ -413,6 +423,7 @@ class GameNetReader {
       ownFighterIds: this.fights.ownFighterIds(),
       codes: codesHealth([...this.types.keys()], this.counters.messages),
       lastMarket: this.lastMarket,
+      lastWanted: this.lastWanted,
     };
   }
 

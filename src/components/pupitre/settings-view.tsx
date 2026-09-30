@@ -11,6 +11,7 @@ const RELEASES = "https://github.com/Macleeog/pupitre/releases";
 export function SettingsView() {
   return (
     <div className="flex flex-col gap-4">
+      <WantedCard />
       <UpdatesCard />
       <OverlayCard />
       <ShortcutsView />
@@ -38,6 +39,31 @@ function updateText(update: UpdateState | null): string {
     default:
       return "Pupitre cherche les nouvelles versions au lancement, puis toutes les 4 heures.";
   }
+}
+
+function WantedCard() {
+  const enabled = usePupitre((state) => state.wantedNotices);
+  const setEnabled = usePupitre((state) => state.setWantedNotices);
+  return (
+    <section className="rounded-card border border-edge bg-moss p-4">
+      <h2 className="font-medium text-fog">Avis de recherche</h2>
+      <label className="mt-3 flex min-h-11 cursor-pointer items-start gap-3 text-sm text-fog">
+        <input
+          type="checkbox"
+          checked={enabled !== false}
+          onChange={(event) => setEnabled(event.target.checked)}
+          className="mt-0.5 size-5 accent-[var(--color-lamp)]"
+        />
+        <span>
+          Prévenir quand il y en a un sur la carte
+          <span className="mt-1 block text-mist">
+            En arrivant sur une carte, Pupitre reconnaît les monstres du groupe. S'il y a un avis de recherche, une
+            notification s'affiche. La lecture reste allumée tant que cette case est cochée.
+          </span>
+        </span>
+      </label>
+    </section>
+  );
 }
 
 function UpdatesCard() {
