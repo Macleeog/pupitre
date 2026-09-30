@@ -3,7 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const CHECK_EVERY_MS = 4 * 60 * 60 * 1000;
-const RELEASES = "https://github.com/Macleeog/pupitre-releases/releases";
+const RELEASES = "https://github.com/Macleeog/pupitre/releases";
 
 // Updates come from the GitHub releases (latest.yml, written by electron-builder). Only a copy
 // installed by the setup can replace itself; an extracted zip is told to install once.
@@ -59,12 +59,11 @@ function watchForUpdates(desk) {
   });
 }
 
-// A private source repo answers 404 on the releases feed, and GitHub hides that it exists.
-// The raw message includes headers and is useless on the settings card.
+// A private repo answers 404 on the releases feed. The raw message includes headers.
 function readableUpdateError(error) {
   const message = String(error?.message ?? error);
   if (/404/.test(message)) {
-    return "La page des téléchargements ne répond pas. Installe Pupitre-Setup une fois depuis cette page : ensuite la recherche repart.";
+    return "La page des versions ne répond pas pour le moment. Réessaie plus tard.";
   }
   return message.replace(/\s+/g, " ").slice(0, 180);
 }
