@@ -8,6 +8,8 @@ function validCoords(coords) {
   const y = coords?.y;
   if (!Number.isInteger(x) || !Number.isInteger(y)) return null;
   if (x < -256 || x > 256 || y < -256 || y > 256) return null;
+  const world = coords.world;
+  if (Number.isInteger(world) && world > 1 && world <= 64) return { x, y, world };
   return { x, y };
 }
 

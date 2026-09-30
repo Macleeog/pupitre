@@ -189,11 +189,13 @@ class GameNetReader {
       );
       if (monsters.length === 0) return;
       const sighting =
-        monsters.length === event.monsters.length ? event : { ...event, monsters, text: sentence(monsters) };
+        monsters.length === event.monsters.length
+          ? event
+          : { ...event, monsters, text: sentence(monsters, event.coords) };
       this.lastWanted = sighting;
       this.dirty = true;
       this.onEvent?.(sighting);
-      if (!this.mapLookup || !sighting.mapId) return;
+      if (sighting.coords || !this.mapLookup || !sighting.mapId) return;
       const token = sighting.at;
       this.wantedToken = token;
       Promise.resolve()
