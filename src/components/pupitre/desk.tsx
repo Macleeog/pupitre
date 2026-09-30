@@ -12,6 +12,7 @@ import { bindFarmHotkeys, bindFarmSync } from "@/lib/pupitre/farm-sync";
 import { bindShortcuts } from "@/lib/pupitre/shortcuts";
 import { useUpdateState } from "@/lib/pupitre/updates";
 import { APP_VERSION } from "@/lib/pupitre/version";
+import { WantedSquares, type WantedCard } from "@/components/pupitre/wanted-toast";
 
 const TABS: { id: DeskTab; label: string; icon: typeof Timer }[] = [
   { id: "session", label: "Session", icon: Timer },
@@ -131,19 +132,17 @@ export function Desk() {
 function WantedBanner() {
   const sighting = usePupitre((state) => state.lastWanted);
   const enabled = usePupitre((state) => state.wantedNotices);
-  const [now, setNow] = useState(() => Date.now());
+  const [desktop, setDesktop] = useState(false);
   useEffect(() => {
-    if (!sighting) return;
-    const timer = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(timer);
-  }, [sighting]);
-  if (enabled === false || !sighting || now - sighting.at > 10 * 60 * 1000) return null;
-  return (
-    <div className="rounded-card border border-lamp/60 bg-canopy px-4 py-3 text-sm text-fog">
-      <p className="font-medium">Avis de recherche</p>
-      <p className="mt-0.5">{sighting.text}</p>
-    </div>
-  );
+    setDesktop(Boolean(window.pupitre?.toast));
+  }, []);
+  if (desktop || enabled === false || !sighting || Date.now() - sighting.at > 10_000) return null;
+  const monsters: WantedCard[] = sighting.monsters.slice(0, 3).map((monster) => ({
+    id: monster.id,
+    name: monster.name,
+    gfxId: monster.gfxId,
+  }));
+  return <WantedSquares key={sighting.at} monsters={monsters} />;
 }
 
 function UpdateBanner({ onOpen }: { onOpen: () => void }) {

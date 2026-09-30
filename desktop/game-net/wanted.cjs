@@ -134,7 +134,12 @@ function createWantedWatch(emit) {
         type: "wanted-sighting",
         at,
         mapId,
-        monsters: found.map((monster) => ({ id: monster.id, name: monster.name, level: monster.level })),
+        monsters: found.map((monster) => ({
+          id: monster.id,
+          name: monster.name,
+          level: monster.level,
+          gfxId: monster.gfxId,
+        })),
         text: sentence(found),
       });
       return;

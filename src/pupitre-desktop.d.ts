@@ -25,7 +25,7 @@ export type FightEvent =
   | { type: "fight-end"; at: number; durationMs?: number; results?: FightResult[]; ownFighterIds?: string[] }
   | { type: "turn-start" | "turn-end"; fighterId: string; at: number };
 
-export type WantedMonster = { id: number; name: string; level: number };
+export type WantedMonster = { id: number; name: string; level: number; gfxId?: number };
 
 export type WantedSighting = {
   type: "wanted-sighting";
@@ -85,6 +85,9 @@ declare global {
       overlayDragStart?: () => void;
       overlayMoveBy?: (dx: number, dy: number) => void;
       overlayDragEnd?: () => void;
+      toast?: {
+        setCount: (count: number) => void;
+      };
       shortcuts?: {
         set: (map: ShortcutMap) => Promise<Record<ShortcutAction, ShortcutStatus>>;
       };

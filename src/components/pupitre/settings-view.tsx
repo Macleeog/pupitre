@@ -58,7 +58,8 @@ function WantedCard() {
           Prévenir quand il y en a un sur la carte
           <span className="mt-1 block text-mist">
             En arrivant sur une carte, Pupitre reconnaît les monstres du groupe. S'il y a un avis de recherche, une
-            notification s'affiche. La lecture reste allumée tant que cette case est cochée.
+            petite carte montre son image et son nom. Elle part au bout de 10 secondes, ou si tu cliques la croix.
+            La lecture reste allumée tant que cette case est cochée.
           </span>
         </span>
       </label>

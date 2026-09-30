@@ -434,6 +434,7 @@ test("avis de recherche : Ka'Youloud est signalé à l'arrivée sur la carte, un
   assert.equal(events[0].type, "wanted-sighting");
   assert.equal(events[0].text, "Ka'Youloud est sur cette carte.");
   assert.equal(events[0].monsters[0].id, 4737);
+  assert.equal(events[0].monsters[0].gfxId, 1541);
   assert.equal(events[0].mapId, 174851076);
   watch.handle({ type: "jpo", value: kayouloud }, 2000);
   assert.equal(events.length, 1);

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, globalShortcut, ipcMain, Notification, screen, shell } = require("electron");
+const { app, BrowserWindow, dialog, globalShortcut, ipcMain, screen, shell } = require("electron");
 const { spawn } = require("node:child_process");
 const fs = require("node:fs");
 const http = require("node:http");
@@ -291,7 +291,7 @@ function followDofus(overlay) {
     overlay.once("ready-to-show", () => {
       if (!state.hiddenByUser) overlay.showInactive();
     });
-    return { watcher: null, toggle, resize };
+    return { watcher: null, toggle, resize, gameBounds: () => state.game, gameHandle: () => state.gameHwnd };
   }
 
   // The script sits inside app.asar in the packaged exe, where powershell.exe cannot open it by path.
@@ -329,13 +329,16 @@ function followDofus(overlay) {
     });
     if (state.dragging) return;
     place();
-    if (front === 1) {
+    // The avis card is its own window. While it is up, a click on its cross must not
+    // make the bandeau think Dofus left the foreground and hide itself.
+    const toastUp = wantedToast && !wantedToast.isDestroyed() && wantedToast.isVisible();
+    if (front === 1 || toastUp) {
       if (!state.hiddenByUser && !overlay.isVisible()) overlay.showInactive();
     } else {
       overlay.hide();
     }
   });
-  return { watcher: child, toggle, resize };
+  return { watcher: child, toggle, resize, gameBounds: () => state.game, gameHandle: () => state.gameHwnd };
 }
 
 // Passive, read-only: tshark (Wireshark + Npcap) copies the game's packets; nothing is
@@ -350,7 +353,8 @@ function readGameNetwork(desk) {
     onState: (state) => toDesk("net:state", state),
     onEvent: (event) => {
       toDesk("game-event", event);
-      if (event.type === "wanted-sighting" && reader.wantedNotices !== false) notifyWanted(event.text);
+      if (event.type === "wanted-absent") closeWantedToast();
+      if (event.type === "wanted-sighting" && reader.wantedNotices !== false) showWantedToast(event.monsters);
     },
     cacheFile: path.join(app.getPath("userData"), "game-servers.json"),
     ownFighterIds: loadOwnFighters(),
@@ -416,14 +420,99 @@ child.on("exit", (code) => {
   if (code && code !== 0) pushLog(`exit ${code}`);
 });
 
-function notifyWanted(text) {
-  if (!text || !Notification.isSupported()) return;
-  try {
-    new Notification({ title: "Avis de recherche", body: text }).show();
-  } catch {
-    // A desktop notification is optional; the desk still shows the alert.
-  }
+const TOAST_CARD = 128;
+const TOAST_GAP = 8;
+let wantedToast = null;
+let gameView = { bounds: () => null, handle: () => 0n };
+
+function toastHeight(count) {
+  return TOAST_CARD * count + TOAST_GAP * Math.max(0, count - 1);
 }
+
+function wantedCards(monsters) {
+  if (!Array.isArray(monsters)) return [];
+  const cards = [];
+  for (const monster of monsters) {
+    if (cards.length >= 3) break;
+    if (!monster || typeof monster.name !== "string" || !Number.isFinite(monster.id)) continue;
+    const card = { id: monster.id, name: monster.name.slice(0, 48) };
+    if (Number.isFinite(monster.gfxId) && monster.gfxId > 0) card.gfxId = monster.gfxId;
+    cards.push(card);
+  }
+  return cards;
+}
+
+function placeWantedToast(win, count) {
+  const width = TOAST_CARD;
+  const height = toastHeight(count);
+  const game = gameView.bounds();
+  const area = screen.getPrimaryDisplay().workArea;
+  const x = Math.round(game ? game.x + 16 : area.x + 16);
+  const y = Math.round(game ? game.y + 16 : area.y + 16);
+  win.setMinimumSize(1, 1);
+  win.setMaximumSize(4000, 4000);
+  win.setBounds({ x, y, width, height });
+}
+
+function closeWantedToast(options = {}) {
+  const win = wantedToast;
+  if (!win || win.isDestroyed()) return;
+  const focused = win.isFocused();
+  wantedToast = null;
+  win.close();
+  if (focused && options.focus !== false) focusGame(gameView.handle());
+}
+
+function showWantedToast(monsters) {
+  const cards = wantedCards(monsters);
+  if (cards.length === 0) {
+    closeWantedToast();
+    return;
+  }
+  const url = `http://127.0.0.1:${PORT}/avis?m=${encodeURIComponent(JSON.stringify(cards))}`;
+  if (!wantedToast || wantedToast.isDestroyed()) {
+    const win = new BrowserWindow({
+      width: TOAST_CARD,
+      height: toastHeight(cards.length),
+      frame: false,
+      transparent: true,
+      thickFrame: false,
+      alwaysOnTop: true,
+      skipTaskbar: true,
+      resizable: false,
+      movable: false,
+      hasShadow: false,
+      show: false,
+      focusable: true,
+      backgroundColor: "#00000000",
+      webPreferences: webPreferences({ backgroundThrottling: false }),
+    });
+    wantedToast = win;
+    win.setAlwaysOnTop(true, "screen-saver");
+    win.on("closed", () => {
+      if (wantedToast === win) wantedToast = null;
+    });
+    placeWantedToast(win, cards.length);
+    win.once("ready-to-show", () => {
+      if (!win.isDestroyed()) win.showInactive();
+    });
+    void win.loadURL(url);
+    return;
+  }
+  placeWantedToast(wantedToast, cards.length);
+  void wantedToast.loadURL(url);
+  if (!wantedToast.isVisible()) wantedToast.showInactive();
+}
+
+ipcMain.on("toast:count", (event, count) => {
+  if (!wantedToast || wantedToast.isDestroyed() || event.sender !== wantedToast.webContents) return;
+  const next = Number(count);
+  if (!Number.isInteger(next) || next <= 0) {
+    closeWantedToast();
+    return;
+  }
+  placeWantedToast(wantedToast, Math.min(3, next));
+});
 
 app.whenReady().then(async () => {
   if (process.platform === "win32") app.setAppUserModelId("app.pupitre.desk");
@@ -484,7 +573,8 @@ app.whenReady().then(async () => {
   });
   overlay.setAlwaysOnTop(true, "screen-saver");
   overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  const { watcher, toggle, resize } = followDofus(overlay);
+  const { watcher, toggle, resize, gameBounds, gameHandle } = followDofus(overlay);
+  gameView = { bounds: gameBounds, handle: gameHandle };
   ipcMain.handle("overlay:get-size", (event) =>
     event.sender === desk.webContents || event.sender === overlay.webContents ? overlay.pupitreSize : null,
   );
@@ -505,6 +595,7 @@ app.whenReady().then(async () => {
   watchForUpdates(desk);
   await Promise.all([desk.loadURL(`http://127.0.0.1:${PORT}/`), overlay.loadURL(`http://127.0.0.1:${PORT}/overlay`)]);
   desk.on("closed", () => {
+    closeWantedToast({ focus: false });
     if (watcher && !watcher.killed) watcher.kill();
     if (!overlay.isDestroyed()) overlay.close();
     shutdown();

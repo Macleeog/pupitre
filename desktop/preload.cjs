@@ -15,6 +15,11 @@ contextBridge.exposeInMainWorld("pupitre", {
   overlayDragEnd() {
     ipcRenderer.send("overlay:drag-end");
   },
+  toast: {
+    setCount(count) {
+      ipcRenderer.send("toast:count", count);
+    },
+  },
   shortcuts: {
     set: (map) => ipcRenderer.invoke("shortcuts:set", map),
   },
