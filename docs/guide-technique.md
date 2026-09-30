@@ -138,7 +138,7 @@ Le taux par zone est la somme des valeurs divisée par la somme des durées, pas
 
 Fichier : `src/lib/pupitre/items.ts`.
 
-À partir de deux lettres, la page interroge `https://api.dofusdb.fr/items` (paramètre `slug.fr[$search]`, langue `fr`, huit résultats). Ce n'est pas un paquet du jeu. Une mise à jour de Dofus ne casse cette recherche que si DofusDB change d'adresse ou de forme. Le prix proposé à la sélection est celui du catalogue, pas celui de l'HDV lu en jeu.
+À partir de deux lettres, la page interroge `https://api.dofusdb.fr/items` (paramètre `slug.fr[$search]`, langue `fr`, huit résultats). Ce n'est pas un paquet du jeu. Une mise à jour de Dofus ne casse cette recherche que si DofusDB change d'adresse ou de forme. Le catalogue sert au nom, à l'icône et au type. Il ne remplit pas le prix : le prix unitaire est le prix moyen d'une unité, et la valeur de la ligne est la quantité fois ce prix.
 
 ### 5.5 Bandeau
 
@@ -236,7 +236,11 @@ Pupitre apprend l'id du personnage quand cette connexion lance un sort ou passe 
 | `jzn` `in` | Clic sur un objet en mode achat | Champ `1` : id d'objet. Champ `2.6` : prix des lots, varints compactés, un 0 s'il n'y a pas de lot. Ordre : 1, 10, 100, 1000 |
 | `kde` `out` | Juste avant `jzn` | Champ `2` : l'id demandé. Pupitre ne décode pas cette demande |
 
-Pupitre garde le lot le moins cher par unité et l'applique aux lignes de la session dont l'id d'objet correspond, badge HDV. Mille prix au plus (`HDV_PRICES_KEPT`). **Oublier** dans Réseau vide ce cache. Un prix tapé à la main a `priceFrom: "manuel"` et n'est pas remplacé.
+Pupitre garde le lot le moins cher par unité et l'applique aux lignes de la session dont l'id d'objet correspond, badge HDV. Le prix d'un lot est divisé par la taille du lot (1, 10, 100, 1000) pour obtenir le prix d'une unité.
+
+Le prix moyen est un autre paquet : une liste `{ id d'objet, prix d'une unité }`, ou un objet avec ce prix en champ 2 (le champ 3, s'il existe, est la grille des lots et n'est pas le prix unitaire). Ce prix n'est pas divisé. Badge « moyen ». La valeur affichée, dans la ligne et dans l'en-tête de session, est `quantité × prix unitaire`.
+
+Mille prix au plus (`HDV_PRICES_KEPT`). **Oublier** dans Réseau vide ce cache. Un prix tapé à la main a `priceFrom: "manuel"` et n'est pas remplacé. Un ancien prix de catalogue (revente PNJ) est retiré au chargement : ce n'était pas le prix moyen.
 
 Les gros messages répétés sans prix sont en général l'inventaire (`isb` à cette date), pas l'HDV. Un message qui contient une phrase lue dans le chat est un message de chat, pas un code de combat.
 

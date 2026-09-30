@@ -48,16 +48,12 @@ async function nameNewResources(resourceIds: string[]) {
     if (!resource?.itemId) continue;
     const item = await fetchItem(resource.itemId);
     if (!item) continue;
-    const current = usePupitre.getState().farm.resources.find((entry) => entry.id === resourceId);
-    const catalogPrice = !current?.price && item.price > 1;
     usePupitre.getState().patchResource(resourceId, {
       name: item.name,
       itemId: item.id,
       icon: item.icon,
       typeName: item.typeName,
       level: item.level,
-      price: catalogPrice ? String(item.price) : undefined,
-      priceFrom: catalogPrice ? "catalog" : undefined,
     });
   }
 }
@@ -73,7 +69,7 @@ export function bindGameEvents(): () => void {
       return;
     }
     if (event.type === "hdv-prices") {
-      usePupitre.getState().applyHdvPrices(event.prices, event.at);
+      usePupitre.getState().applyHdvPrices(event.prices, event.at, event.source);
       return;
     }
     if (event.type !== "fight-end") return;

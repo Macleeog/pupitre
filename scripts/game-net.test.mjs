@@ -344,6 +344,29 @@ test("hôtel des ventes : prix du marché par lot de 1, 10 et 100", () => {
   assert.deepEqual(readMarket({ type: "jzn", value: itemPrices(15715, hex("000000")) }).prices, []);
 });
 
+test("prix moyen : le prix d'une unité, jamais le total du lot", () => {
+  const list = Buffer.concat([
+    bytesField(1, Buffer.concat([intField(1, 7270), intField(2, 1000)])),
+    bytesField(1, Buffer.concat([intField(1, 23360), intField(2, 250)])),
+  ]);
+  assert.deepEqual(readMarket({ type: "kaa", value: list }), {
+    source: "average",
+    prices: [
+      { itemId: 7270, unitPrice: 1000 },
+      { itemId: 23360, unitPrice: 250 },
+    ],
+  });
+  // Field 3 is the seller lot grid (10 000 for the stack). The unit price stays field 2.
+  const one = Buffer.concat([
+    intField(1, 7270),
+    intField(2, 1000),
+    bytesField(3, Buffer.concat([intField(1, 1), intField(2, 10000)])),
+  ]);
+  assert.deepEqual(readMarket({ type: "kbb", value: one }).prices, [{ itemId: 7270, unitPrice: 1000 }]);
+  assert.equal(readMarket({ type: "jrj", value: Buffer.concat([intField(1, 13683), intField(2, 216)]) }), null);
+  assert.equal(readMarket({ type: "isb", value: Buffer.concat([intField(1, 7270)]) }), null);
+});
+
 test("lecteur : la mise en vente à l'HDV envoie les prix", () => {
   const events = [];
   const reader = new GameNetReader({ capturesDir: os.tmpdir(), onEvent: (e) => events.push(e) });

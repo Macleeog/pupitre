@@ -42,7 +42,12 @@ export type WantedSighting = {
 
 export type GameEvent =
   | FightEvent
-  | { type: "hdv-prices"; at: number; source: "sale"; prices: { itemId: number; unitPrice: number }[] }
+  | {
+      type: "hdv-prices";
+      at: number;
+      source: "sale" | "search" | "average";
+      prices: { itemId: number; unitPrice: number }[];
+    }
   | WantedSighting
   | { type: "wanted-absent"; at: number; mapId: number | null };
 
@@ -67,7 +72,7 @@ export type NetState = {
   fightsSeen: number;
   ownFighterIds?: string[];
   codes?: { state: "ok" | "unknown" | "stale"; knownShare: number | null };
-  lastMarket?: { at: number; source: "sale"; items: number } | null;
+  lastMarket?: { at: number; source: "sale" | "search" | "average"; items: number } | null;
   lastWanted?: WantedSighting | null;
 };
 

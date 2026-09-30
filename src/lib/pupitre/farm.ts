@@ -10,8 +10,9 @@ export type FarmResource = {
   typeName: string;
   level: number | null;
   fromFight?: boolean;
-  // Only "manual" prices are protected from auction house updates.
-  priceFrom?: "catalog" | "hdv" | "manual";
+  // Only "manual" prices are protected from later price packets.
+  // `price` is always the price of one unit (prix moyen), never the stack total.
+  priceFrom?: "catalog" | "hdv" | "average" | "manual";
 };
 
 export type FightLogEntry = {
@@ -80,12 +81,15 @@ export function elapsedMs(session: FarmSession, now: number): number {
   return session.accumulatedMs;
 }
 
+// prix unitaire is the price of exactly one unit. The line total scales with quantity.
+export function lineValue(qty: string, unitPrice: string): number {
+  return parseKamas(qty) * parseKamas(unitPrice);
+}
+
 export function snapshot(session: FarmSession, elapsed: number): FarmSnapshot {
   // Sessions saved before kamas were tracked have no such field.
   const kamas = session.kamas ?? 0;
-  const gross =
-    kamas +
-    session.resources.reduce((sum, resource) => sum + parseKamas(resource.qty) * parseKamas(resource.price), 0);
+  const gross = kamas + session.resources.reduce((sum, resource) => sum + lineValue(resource.qty, resource.price), 0);
   const keys = parseKamas(session.keys);
   const other = parseKamas(session.other);
   const jackpot = parseKamas(session.jackpot);
