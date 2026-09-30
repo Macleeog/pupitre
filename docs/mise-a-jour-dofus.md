@@ -110,8 +110,8 @@ Les tests réseau doivent passer, y compris un combat synthétique et les prix H
 
 ## 5. Publier
 
-Dans `package.json`, passe le numéro de version (par exemple `0.1.13`).
+Le pas à pas, y compris ce qu'une pull request ne fait pas et comment changer le dépôt GitHub, est dans la section 5.12 du [guide technique](guide-technique.md).
 
-Une étiquette `v*` lancée sur GitHub construit `Pupitre-Setup-<version>.exe` et le publie dans les [versions](https://github.com/Macleeog/pupitre/releases). Sans tiret dans le numéro (`v0.1.13`), c'est une version stable, proposée à tout le monde. Avec un tiret (`v0.1.13-beta.1`), c'est une bêta : seules les copies déjà en bêta la reçoivent.
+En bref : monter `version` dans `package.json` (et les deux champs de la racine dans `package-lock.json`), pousser le commit, puis pousser une étiquette `v*`. Ce n'est pas le merge qui publie. Sans tiret (`v0.1.16`), la version est stable. Avec un tiret (`v0.1.16-beta.1`), c'est une bêta.
 
 Les copies installées avec le Setup cherchent une version au lancement, puis toutes les 4 heures. Une bêta ne passe pas toute seule à la version stable : il faut installer le Setup stable une fois. Les sessions et les réglages restent dans `%APPDATA%\Pupitre\`.

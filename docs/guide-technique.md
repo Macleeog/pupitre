@@ -283,17 +283,45 @@ Pour changer l'icône : éditer les deux SVG, puis lancer `node scripts/make-ico
 
 `signAndEditExecutable` ne doit pas être remis à `false` : sans édition de l'exe, Windows continue d'afficher la page blanche par défaut, même si le fichier `.ico` est là.
 
-### 5.12 Mise à jour de Pupitre lui-même
+### 5.12 Publier une nouvelle version
 
-Workflow : `.github/workflows/windows-exe.yml`, sur chaque étiquette `v*`.
+Ce qui déclenche l'exe, c'est une **étiquette** `v*` poussée sur GitHub, pas une pull request et pas un merge. Le fichier est `.github/workflows/windows-exe.yml`. Il tourne sur `windows-latest` : un poste Linux ne peut pas produire l'installeur NSIS.
 
-1. Monter `version` dans `package.json` (et les deux champs `version` de la racine dans `package-lock.json`, pas ceux des dépendances).
-2. Commit, pousser, poser l'étiquette `vX.Y.Z` sur ce commit, pousser l'étiquette.
-3. Le workflow lance `npm run desktop:build` puis `electron-builder --win nsis` sur `windows-latest`. Le dépôt Linux ne peut pas produire l'exe NSIS.
-4. Sans tiret dans l'étiquette (`v0.1.15`) : version stable, `latest.yml`, proposée à tout le monde.
-5. Avec un tiret (`v0.1.15-beta.1`) : bêta, `beta.yml`. Seules les copies déjà en bêta la reçoivent. Passer d'une bêta à une stable demande d'installer le Setup stable une fois.
+Une pull request sert à relire le code avant. Elle ne publie rien. On peut étiqueter un commit qui n'est pas encore sur `main`. Les copies déjà installées lisent les [versions GitHub](https://github.com/Macleeog/pupitre/releases), pas les branches.
+
+1. Monter `version` dans `package.json`. Le même numéro, deux fois, à la racine de `package-lock.json` (le champ du haut et celui du paquet `""`). Ne pas toucher aux versions des dépendances.
+2. Commit, puis pousser la branche qui contient ce commit.
+3. Poser l'étiquette sur **ce** commit, puis la pousser :
+
+```bash
+git tag v0.1.16
+git push origin v0.1.16
+```
+
+4. GitHub Actions lance `npm run desktop:build`, puis `electron-builder --win nsis`, et joint à la version : `Pupitre-Setup-<version>.exe`, son `.blockmap`, et `latest.yml` ou `beta.yml`. Compter quelques minutes. La page Actions du dépôt montre l'échec s'il y en a un.
+5. Sans tiret dans l'étiquette (`v0.1.16`) : version stable, `latest.yml`, marquée comme la dernière, proposée à tout le monde au prochain lancement (puis toutes les 4 heures).
+6. Avec un tiret (`v0.1.16-beta.1`) : bêta, `beta.yml`, pas marquée dernière. Seules les copies déjà en bêta la reçoivent. Passer d'une bêta à une stable demande d'installer le Setup stable une fois.
 
 L'installeur est par utilisateur, sans droit administrateur, raccourci Bureau et menu Démarrer. Les sessions et réglages restent dans `%APPDATA%\Pupitre`.
+
+Si l'étiquette a été poussée trop tôt, on ne la réécrit pas. On monte encore le numéro (0.1.17) et on recommence. Réutiliser `v0.1.16` pour un autre commit casse les copies qui ont déjà téléchargé le premier fichier.
+
+### 5.13 Changer le dépôt GitHub
+
+Aujourd'hui les versions et la mise à jour automatique visent `Macleeog/pupitre`. Déplacer le projet, le renommer ou le forker ne suffit pas : les copies déjà construites gardent l'adresse gravée dedans. Elles ne suivront le nouveau dépôt qu'après une installation manuelle d'un Setup construit avec la nouvelle adresse.
+
+À changer ensemble, avant l'étiquette :
+
+| Endroit | Quoi |
+|---|---|
+| `package.json`, bloc `build.publish` | `owner` et `repo`. C'est cette paire qu'electron-builder écrit dans l'exe (`app-update.yml`). C'est elle que la mise à jour automatique interroge |
+| `desktop/updates.cjs` | La constante `RELEASES`, affichée quand la copie ne peut pas se mettre à jour seule (zip, ou pas Windows) |
+| `src/components/pupitre/settings-view.tsx` | La même constante `RELEASES`, le lien dans Réglages |
+| `README.md` | Le lien « versions » en tête du mode d'emploi |
+
+Le workflow n'a pas le nom du dépôt en dur : il publie dans le dépôt où il tourne, avec le jeton du dépôt (`contents: write`). Après un déplacement, il faut que GitHub Actions soit autorisé sur le nouveau dépôt. Rien d'autre à coller dans le YAML pour l'adresse.
+
+Les liens dans `docs/` sont de la documentation. Les mettre à jour évite d'envoyer quelqu'un sur l'ancien dépôt, mais ils ne changent pas le comportement de l'exe.
 
 ---
 
