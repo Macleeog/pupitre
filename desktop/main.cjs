@@ -53,13 +53,14 @@ function waitForServer() {
   });
 }
 
-function webPreferences() {
+function webPreferences(overrides = {}) {
   return {
     preload: path.join(__dirname, "preload.cjs"),
     contextIsolation: true,
     nodeIntegration: false,
     sandbox: true,
     spellcheck: false,
+    ...overrides,
   };
 }
 
@@ -146,7 +147,10 @@ function overlaySize(overlay) {
 }
 
 function moveOverlay(overlay, x, y) {
-  overlay.setBounds({ x: Math.round(x), y: Math.round(y), ...overlaySize(overlay) });
+  const next = { x: Math.round(x), y: Math.round(y), ...overlaySize(overlay) };
+  const current = overlay.getBounds();
+  if (current.x === next.x && current.y === next.y && current.width === next.width && current.height === next.height) return;
+  overlay.setBounds(next);
 }
 
 function lockOverlaySize(overlay, size) {
@@ -364,18 +368,23 @@ app.whenReady().then(async () => {
     autoHideMenuBar: true,
     webPreferences: webPreferences(),
   });
+  // Solid on purpose. A transparent always-on-top window is a layered window: Windows blends it
+  // over Dofus on every frame the game draws. An opaque rectangle stays a single compositor quad,
+  // and thickFrame off skips the extra frame shadow. The clock keeps real time while Dofus is in
+  // front; the desk window stays throttled.
   const overlay = new BrowserWindow({
     ...OVERLAY_SIZES.compact,
     frame: false,
-    transparent: true,
+    transparent: false,
+    thickFrame: false,
     alwaysOnTop: true,
     skipTaskbar: true,
     resizable: false,
     hasShadow: false,
     show: false,
     focusable: false,
-    backgroundColor: "#00000000",
-    webPreferences: webPreferences(),
+    backgroundColor: "#1a120c",
+    webPreferences: webPreferences({ backgroundThrottling: false }),
   });
   overlay.on("resize", () => {
     const [width, height] = overlay.getSize();
