@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2c2015"/>
+      <stop offset="1" stop-color="#110b07"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="0.5" cy="0.53" r="0.5">
+      <stop offset="0" stop-color="#e0a33a" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#e0a33a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="shell" x1="0.18" y1="0.04" x2="0.88" y2="1">
+      <stop offset="0" stop-color="#ffdc84"/>
+      <stop offset="0.42" stop-color="#e0a33a"/>
+      <stop offset="1" stop-color="#9d5418"/>
+    </linearGradient>
+    <clipPath id="eggClip">
+      <path d="M256 118c74 0 130 126 130 200 0 72-58 106-130 106s-130-34-130-106c0-74 56-200 130-200Z"/>
+    </clipPath>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#tile)"/>
+  <rect x="7" y="7" width="498" height="498" rx="106" fill="none" stroke="#e0a33a" stroke-opacity="0.24" stroke-width="7"/>
+  <circle cx="256" cy="271" r="178" fill="url(#halo)"/>
+
+  <g transform="rotate(-90 256 271)">
+    <circle cx="256" cy="271" r="188" fill="none" stroke="#e0a33a" stroke-opacity="0.22" stroke-width="20"/>
+    <circle cx="256" cy="271" r="188" fill="none" stroke="#e0a33a" stroke-width="20" stroke-linecap="round"
+            stroke-dasharray="886 295"/>
+  </g>
+
+  <path d="M256 118c74 0 130 126 130 200 0 72-58 106-130 106s-130-34-130-106c0-74 56-200 130-200Z" fill="url(#shell)"/>
+
+  <g clip-path="url(#eggClip)">
+    <ellipse cx="348" cy="362" rx="150" ry="134" fill="#6f360c" fill-opacity="0.38"/>
+    <g stroke="#8a4a14" stroke-opacity="0.32" stroke-width="8" stroke-linecap="round" fill="none">
+      <path d="M256 120 200 428"/>
+      <path d="M256 120 312 428"/>
+      <path d="M256 120 124 344"/>
+      <path d="M256 120 388 342"/>
+    </g>
+    <path d="M124 322h264" stroke="#8a4a14" stroke-opacity="0.26" stroke-width="8" stroke-linecap="round"/>
+    <ellipse cx="208" cy="214" rx="32" ry="50" transform="rotate(-24 208 214)" fill="#fff4d6" fill-opacity="0.52"/>
+  </g>
+
+  <path d="M256 118c74 0 130 126 130 200 0 72-58 106-130 106s-130-34-130-106c0-74 56-200 130-200Z"
+        fill="none" stroke="#522b0d" stroke-opacity="0.6" stroke-width="9"/>
+</svg>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Below 48px the chrono ring and the egg blur into one blob, so the small sizes drop the ring,
+       the facets and the glow, and keep only the silhouette. -->
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2c2015"/>
+      <stop offset="1" stop-color="#110b07"/>
+    </linearGradient>
+    <linearGradient id="shell" x1="0.18" y1="0.04" x2="0.88" y2="1">
+      <stop offset="0" stop-color="#ffdc84"/>
+      <stop offset="0.42" stop-color="#e0a33a"/>
+      <stop offset="1" stop-color="#9d5418"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="96" fill="url(#tile)"/>
+  <path d="M256 54c94 0 166 160 166 254 0 92-74 134-166 134S90 400 90 308c0-94 72-254 166-254Z" fill="url(#shell)"/>
+  <ellipse cx="192" cy="176" rx="38" ry="60" transform="rotate(-24 192 176)" fill="#fff4d6" fill-opacity="0.5"/>
+  <path d="M256 54c94 0 166 160 166 254 0 92-74 134-166 134S90 400 90 308c0-94 72-254 166-254Z"
+        fill="none" stroke="#3d1f08" stroke-opacity="0.65" stroke-width="16"/>
+</svg>

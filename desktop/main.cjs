@@ -8,6 +8,9 @@ const { lookupMapCoords, validCoords } = require("./game-net/map-coords.cjs");
 const { watchForUpdates } = require("./updates.cjs");
 
 const PORT = 47321;
+// The packaged exe carries the icon in its own resources; this is what the window and the taskbar
+// use when Pupitre runs unpackaged.
+const APP_ICON = path.join(__dirname, "icon.png");
 const DEFAULT_PLACEMENT = { right: 12, top: 48 };
 const OVERLAY_SIZES = {
   compact: { width: 300, height: 150 },
@@ -615,6 +618,7 @@ app.whenReady().then(async () => {
     minWidth: 390,
     minHeight: 640,
     title: pupitreVersion() ? `Pupitre ${pupitreVersion()}` : "Pupitre",
+    icon: APP_ICON,
     backgroundColor: "#1a120c",
     show: false,
     autoHideMenuBar: true,

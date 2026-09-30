@@ -101,7 +101,7 @@
       "target": [
         "nsis"
       ],
-      "signAndEditExecutable": false,
+      "icon": "build/icon.ico",
       "artifactName": "Pupitre-Setup-${version}.${ext}"
     },
     "nsis": {
@@ -110,6 +110,9 @@
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
       "shortcutName": "Pupitre",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
       "runAfterFinish": true,
       "deleteAppDataOnUninstall": false
     },
