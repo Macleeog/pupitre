@@ -51,6 +51,7 @@ test("le shell SPA _shell.html sert les routes", async () => {
     assert.equal(await page.text(), "<p>shell</p>");
     assert.equal(page.headers.get("content-type"), "text/html; charset=utf-8");
     assert.equal(script.headers.get("content-type"), "text/javascript; charset=utf-8");
+    await script.arrayBuffer();
     await new Promise((resolve) => server.close(resolve));
   } finally {
     await rm(root, { recursive: true, force: true });
@@ -69,6 +70,19 @@ test("un shell sans extension est servi en HTML", async () => {
     assert.equal(page.headers.get("content-type"), "text/html; charset=utf-8");
     assert.equal(await page.text(), "<p>nu</p>");
     await new Promise((resolve) => server.close(resolve));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("la page d'accueil ne remplace pas le shell des autres routes", async () => {
+  const root = await mkdtemp(path.join(tmpdir(), "pupitre-static-"));
+  try {
+    await writeFile(path.join(root, "index.html"), "bureau");
+    await writeFile(path.join(root, "_shell.html"), "shell");
+    assert.equal(fileFor(root, "/"), path.join(root, "index.html"));
+    assert.equal(fileFor(root, "/overlay"), path.join(root, "_shell.html"));
+    assert.equal(fileFor(root, "/avis"), path.join(root, "_shell.html"));
   } finally {
     await rm(root, { recursive: true, force: true });
   }

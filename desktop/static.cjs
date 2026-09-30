@@ -30,9 +30,8 @@ function existingFile(file) {
 // A real file wins. A page path falls back to the SPA shell, so /overlay and /avis
 // open the same client. A missing asset stays a 404, otherwise the browser would
 // try to run index.html as JavaScript.
-function shellFile(rootAbs) {
+function spaShell(rootAbs) {
   return (
-    existingFile(path.join(rootAbs, "index.html")) ||
     existingFile(path.join(rootAbs, "_shell.html")) ||
     existingFile(path.join(rootAbs, "_shell", "index.html")) ||
     existingFile(path.join(rootAbs, "_shell"))
@@ -54,11 +53,19 @@ function fileFor(root, pathname) {
   const direct = rel ? existingFile(abs) : null;
   if (direct) return direct;
   if (rel !== "" && path.extname(rel)) return null;
-  return existingFile(path.join(abs, "index.html")) || shellFile(rootAbs);
+  const nested = existingFile(path.join(abs, "index.html"));
+  if (nested) return nested;
+  const shell = spaShell(rootAbs);
+  const home = existingFile(path.join(rootAbs, "index.html"));
+  // `/` prefers the prerendered homepage. Every other page uses the SPA shell
+  // when it exists, so the homepage is not handed to /overlay or /avis.
+  if (rel === "") return home || shell;
+  return shell || home;
 }
 
 function hasAppShell(root) {
-  return Boolean(shellFile(path.resolve(root)));
+  const rootAbs = path.resolve(root);
+  return Boolean(existingFile(path.join(rootAbs, "index.html")) || spaShell(rootAbs));
 }
 
 function contentType(file) {
