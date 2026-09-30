@@ -31,10 +31,12 @@ export function Desk() {
 
   useEffect(() => {
     const syncReader = () => {
-      const { farm, tab, wantedNotices } = usePupitre.getState();
+      const { farm, tab, wantedNotices, archiNotices } = usePupitre.getState();
       const notices = wantedNotices !== false;
-      window.pupitre?.net?.setActive?.(farm.status === "running" || tab === "reseau" || notices);
+      const archi = archiNotices !== false;
+      window.pupitre?.net?.setActive?.(farm.status === "running" || tab === "reseau" || notices || archi);
       window.pupitre?.net?.setWantedNotices?.(notices);
+      window.pupitre?.net?.setArchiNotices?.(archi);
     };
     const unsub = usePupitre.subscribe(syncReader);
     void Promise.resolve(usePupitre.persist.rehydrate()).then(() => {
@@ -132,15 +134,18 @@ export function Desk() {
 function WantedBanner() {
   const sighting = usePupitre((state) => state.lastWanted);
   const enabled = usePupitre((state) => state.wantedNotices);
+  const archi = usePupitre((state) => state.archiNotices);
   const [desktop, setDesktop] = useState(false);
   useEffect(() => {
     setDesktop(Boolean(window.pupitre?.toast));
   }, []);
-  if (desktop || enabled === false || !sighting || Date.now() - sighting.at > 10_000) return null;
+  if (desktop || (enabled === false && archi === false) || !sighting) return null;
+  if (Date.now() - sighting.at > 10_000) return null;
   const monsters: WantedCard[] = sighting.monsters.slice(0, 3).map((monster) => ({
     id: monster.id,
     name: monster.name,
     gfxId: monster.gfxId,
+    kind: monster.kind,
   }));
   return <WantedSquares key={sighting.at} monsters={monsters} coords={sighting.coords ?? null} />;
 }

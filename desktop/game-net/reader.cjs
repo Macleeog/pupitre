@@ -6,7 +6,7 @@ const readline = require("node:readline");
 const { FrameStream, toJson } = require("./decode.cjs");
 const { createFightTracker } = require("./fights.cjs");
 const { codesHealth } = require("./known-types.cjs");
-const { createWantedWatch } = require("./wanted.cjs");
+const { createWantedWatch, sentence } = require("./wanted.cjs");
 const { readMarket } = require("./market.cjs");
 
 const GAME_PORTS = new Set([5555, 443]);
@@ -172,6 +172,7 @@ class GameNetReader {
     this.lastMarket = null;
     this.lastWanted = null;
     this.wantedNotices = true;
+    this.archiNotices = true;
     this.wantedToken = null;
     this.wanted = createWantedWatch((event) => {
       if (event.type === "wanted-absent") {
@@ -182,17 +183,24 @@ class GameNetReader {
         return;
       }
       if (event.type !== "wanted-sighting") return;
-      this.lastWanted = event;
+      // Both kinds are always detected; the two settings decide which ones are announced.
+      const monsters = event.monsters.filter((monster) =>
+        monster.kind === "archi" ? this.archiNotices !== false : this.wantedNotices !== false,
+      );
+      if (monsters.length === 0) return;
+      const sighting =
+        monsters.length === event.monsters.length ? event : { ...event, monsters, text: sentence(monsters) };
+      this.lastWanted = sighting;
       this.dirty = true;
-      this.onEvent?.(event);
-      if (!this.mapLookup || !event.mapId) return;
-      const token = event.at;
+      this.onEvent?.(sighting);
+      if (!this.mapLookup || !sighting.mapId) return;
+      const token = sighting.at;
       this.wantedToken = token;
       Promise.resolve()
-        .then(() => this.mapLookup(event.mapId))
+        .then(() => this.mapLookup(sighting.mapId))
         .then((coords) => {
           if (this.wantedToken !== token || !coords) return;
-          const next = { ...event, coords };
+          const next = { ...sighting, coords };
           this.lastWanted = next;
           this.dirty = true;
           this.onEvent?.(next);

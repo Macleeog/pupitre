@@ -60,6 +60,7 @@ contextBridge.exposeInMainWorld("pupitre", {
     forgetOwn: () => ipcRenderer.invoke("net:forget-own"),
     setActive: (active) => ipcRenderer.send("net:set-active", active),
     setWantedNotices: (enabled) => ipcRenderer.send("net:set-wanted-notices", enabled),
+    setArchiNotices: (enabled) => ipcRenderer.send("net:set-archi-notices", enabled),
     onState(handler) {
       const listener = (_event, state) => handler(state);
       ipcRenderer.on("net:state", listener);

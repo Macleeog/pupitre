@@ -25,7 +25,9 @@ export type FightEvent =
   | { type: "fight-end"; at: number; durationMs?: number; results?: FightResult[]; ownFighterIds?: string[] }
   | { type: "turn-start" | "turn-end"; fighterId: string; at: number };
 
-export type WantedMonster = { id: number; name: string; level: number; gfxId?: number };
+export type WantedKind = "wanted" | "archi";
+
+export type WantedMonster = { id: number; name: string; level: number; gfxId?: number; kind?: WantedKind };
 
 export type MapCoords = { x: number; y: number };
 
@@ -117,6 +119,7 @@ declare global {
         forgetOwn: () => Promise<NetState | null>;
         setActive?: (active: boolean) => void;
         setWantedNotices?: (enabled: boolean) => void;
+        setArchiNotices?: (enabled: boolean) => void;
         onState: (handler: (state: NetState) => void) => () => void;
         onGameEvent: (handler: (event: GameEvent) => void) => () => void;
       };

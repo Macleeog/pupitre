@@ -90,6 +90,8 @@ type PupitreState = {
   setAutoLoot: (autoLoot: boolean) => void;
   wantedNotices: boolean;
   setWantedNotices: (wantedNotices: boolean) => void;
+  archiNotices: boolean;
+  setArchiNotices: (archiNotices: boolean) => void;
   lastWanted: WantedSighting | null;
   setLastWanted: (lastWanted: WantedSighting | null) => void;
   shortcuts: ShortcutMap;
@@ -153,6 +155,8 @@ export const usePupitre = create<PupitreState>()(
       setAutoLoot: (autoLoot) => set({ autoLoot }),
       wantedNotices: true,
       setWantedNotices: (wantedNotices) => set({ wantedNotices }),
+      archiNotices: true,
+      setArchiNotices: (archiNotices) => set({ archiNotices }),
       lastWanted: null,
       setLastWanted: (lastWanted) => set({ lastWanted }),
       shortcuts: DEFAULT_SHORTCUTS,
@@ -425,6 +429,7 @@ export const usePupitre = create<PupitreState>()(
         autoCombats: state.autoCombats,
         autoLoot: state.autoLoot,
         wantedNotices: state.wantedNotices,
+        archiNotices: state.archiNotices,
         shortcuts: state.shortcuts,
         hdvPrices: state.hdvPrices,
       }),
@@ -446,6 +451,7 @@ export const usePupitre = create<PupitreState>()(
           me,
           shortcuts: { ...DEFAULT_SHORTCUTS, ...saved.shortcuts },
           wantedNotices: saved.wantedNotices !== false,
+          archiNotices: saved.archiNotices !== false,
           overlayOpacity: clampOverlayOpacity(saved.overlayOpacity),
           lastWanted: null,
         };

@@ -359,7 +359,8 @@ function readGameNetwork(desk) {
         toastQueued = null;
         closeWantedToast();
       }
-      if (event.type === "wanted-sighting" && reader.wantedNotices !== false) queueWantedToast(event);
+      // The reader already dropped the kinds the settings turned off.
+      if (event.type === "wanted-sighting") queueWantedToast(event);
     },
     cacheFile: path.join(app.getPath("userData"), "game-servers.json"),
     mapLookup: (mapId) => lookupMapCoords(mapId, { cacheFile: path.join(app.getPath("userData"), "map-coords.json") }),
@@ -380,6 +381,9 @@ function readGameNetwork(desk) {
   });
   ipcMain.on("net:set-wanted-notices", (event, enabled) => {
     if (fromDesk(event) && typeof enabled === "boolean") reader.wantedNotices = enabled;
+  });
+  ipcMain.on("net:set-archi-notices", (event, enabled) => {
+    if (fromDesk(event) && typeof enabled === "boolean") reader.archiNotices = enabled;
   });
   ipcMain.handle("net:forget-own", (event) => {
     if (!fromDesk(event)) return null;
@@ -454,6 +458,7 @@ function wantedCards(monsters) {
     if (!monster || typeof monster.name !== "string" || !Number.isFinite(monster.id)) continue;
     const card = { id: monster.id, name: monster.name.slice(0, 48) };
     if (Number.isFinite(monster.gfxId) && monster.gfxId > 0) card.gfxId = monster.gfxId;
+    if (monster.kind === "archi") card.kind = "archi";
     cards.push(card);
   }
   return cards;

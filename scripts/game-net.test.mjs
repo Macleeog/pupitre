@@ -11,7 +11,7 @@ const { createFightTracker } = require("../desktop/game-net/fights.cjs");
 const { GameNetReader, captureFilter, describeInterfaces, pickInterfaces, payloadFromHex } = require("../desktop/game-net/reader.cjs");
 const { KNOWN_TYPES, codesHealth } = require("../desktop/game-net/known-types.cjs");
 const { readMarket } = require("../desktop/game-net/market.cjs");
-const { createWantedWatch } = require("../desktop/game-net/wanted.cjs");
+const { createWantedWatch, monsterKind } = require("../desktop/game-net/wanted.cjs");
 const { lookupMapCoords } = require("../desktop/game-net/map-coords.cjs");
 
 const hex = (s) => Buffer.from(s.replace(/\s+/g, ""), "hex");
@@ -461,7 +461,7 @@ test("avis de recherche : Sicogne reconnu par la description du groupe déjà su
   assert.equal(events.length, 1);
 });
 
-test("avis de recherche : un groupe décrit hors de la carte, ou un archimonstre, ne prévient pas", () => {
+test("avis de recherche : un groupe décrit hors de la carte ne prévient pas", () => {
   const events = [];
   const watch = createWantedWatch((event) => events.push(event));
   const elsewhere = Buffer.concat([
@@ -471,6 +471,38 @@ test("avis de recherche : un groupe décrit hors de la carte, ou un archimonstre
   watch.handle({ type: "kqf", value: elsewhere }, 1000);
   watch.handle({ type: "joq", value: intFieldSigned(3, -20009) }, 1100);
   assert.equal(events.length, 0);
+});
+
+test("archimonstre : Kiroyal est signalé, marqué archi, sans se mêler des avis de recherche", () => {
+  const events = [];
+  const watch = createWantedWatch((event) => events.push(event));
+  const carte = mapPopulation(174851076, [groupActor(-20004, 2508, 35), groupActor(-20005, 3597, 40)]);
+  watch.handle({ type: "jpo", value: carte }, 1000);
+  assert.equal(events.length, 1);
+  assert.equal(events[0].text, "Kiroyal le Sirupeux est sur cette carte.");
+  assert.equal(events[0].monsters[0].kind, "archi");
+  assert.equal(events[0].monsters[0].gfxId, 90);
+  assert.equal(monsterKind(2508), "archi");
+  assert.equal(monsterKind(4737), "wanted");
+  assert.equal(monsterKind(3597), null);
+});
+
+test("archimonstre : la case décochée le tait, l'avis de recherche passe quand même", async () => {
+  const events = [];
+  const reader = new GameNetReader({ capturesDir: os.tmpdir(), onEvent: (event) => events.push(event) });
+  reader.archiNotices = false;
+  const archi = framed(event("jpo", mapPopulation(174851076, [groupActor(-20004, 2508, 35)])));
+  reader.handleLine(["1700000000.5", "5555", "9", "100", "", archi.toString("hex")].join("\t"));
+  assert.equal(events.length, 0);
+  assert.equal(reader.snapshot().lastWanted, null);
+  const both = framed(event("jpo", mapPopulation(174852100, [groupActor(-20006, 2508, 35), groupActor(-20007, 4737, 170)])));
+  reader.handleLine(["1700000001.5", "5555", "10", "100", "", both.toString("hex")].join("\t"));
+  assert.equal(events.at(-1)?.type, "wanted-sighting");
+  assert.deepEqual(
+    events.at(-1).monsters.map((monster) => monster.name),
+    ["Ka'Youloud"],
+  );
+  assert.equal(events.at(-1).text, "Ka'Youloud est sur cette carte.");
 });
 
 test("lecteur : l'arrivée sur la carte de Ka'Youloud envoie l'alerte", () => {

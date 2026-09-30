@@ -91,7 +91,7 @@ Les gros messages répétés sans prix sont en général l'inventaire (`isb` à 
 
 1. `desktop/game-net/fights.cjs` : les quatre noms de `CODES`, et `OWN_TURN_REQUESTS` si les requêtes de ton tour ont changé de nom.
 2. `desktop/game-net/market.cjs` : `sellerListings` et `itemPrices`.
-3. `desktop/game-net/wanted.cjs` : les noms `jpo`, `joq` et `jpt` si les avis de recherche ne sont plus signalés. Les id de monstres, eux, sont dans `wanted-monsters.json` (DofusDB) et ne changent pas avec le renommage des messages.
+3. `desktop/game-net/wanted.cjs` : les noms `jpo`, `joq` et `jpt` si les avis de recherche ne sont plus signalés. Les id de monstres, eux, sont dans `wanted-monsters.json` et `archmonsters.json` (DofusDB) et ne changent pas avec le renommage des messages.
 4. `desktop/game-net/known-types.cjs` : remplace la liste par **tous** les types vus dans la nouvelle capture (un passage en jeu de quelques minutes, combat compris, plus l'HDV). Une liste à moitié ancienne laisse l'alerte allumée, ou l'éteint trop tôt.
 5. `scripts/game-net.test.mjs` : les tests nomment les mêmes codes (`jvt`, `jwe`, `jrj`, `ket`, `jzn`, `jpo`, …). Remplace-les par les nouveaux noms. Garde les octets réels de la nouvelle capture pour l'HDV, comme les tests « Aile de Tofu » le font avec la capture du 29/09.
 

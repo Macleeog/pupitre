@@ -1,7 +1,16 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent } from "react";
-import type { MapCoords } from "@/pupitre-desktop";
+import type { MapCoords, WantedKind } from "@/pupitre-desktop";
 
-export type WantedCard = { id: number; name: string; gfxId?: number };
+export type WantedCard = { id: number; name: string; gfxId?: number; kind?: WantedKind };
+
+// The ochre Dofus, the sign of an archmonster hunt. Metamob hosts it; a miss just hides it.
+const ARCHI_ICON = "https://www.metamob.fr/img/ocre.png";
+
+export function ArchiIcon({ className = "size-4" }: { className?: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return null;
+  return <img src={ARCHI_ICON} alt="Archimonstre" onError={() => setFailed(true)} className={className} />;
+}
 
 export function travelCommand(coords: MapCoords | null | undefined): string | null {
   if (!coords || !Number.isInteger(coords.x) || !Number.isInteger(coords.y)) return null;
@@ -28,12 +37,13 @@ export function cardsFromValue(value: unknown): WantedCard[] {
   for (const entry of list) {
     if (cards.length >= 3) break;
     if (!entry || typeof entry !== "object") continue;
-    const row = entry as { id?: unknown; name?: unknown; gfxId?: unknown };
+    const row = entry as { id?: unknown; name?: unknown; gfxId?: unknown; kind?: unknown };
     if (typeof row.id !== "number" || !Number.isFinite(row.id) || typeof row.name !== "string") continue;
     const name = row.name.trim().slice(0, 48);
     if (!name) continue;
     const card: WantedCard = { id: row.id, name };
     if (typeof row.gfxId === "number" && row.gfxId > 0) card.gfxId = row.gfxId;
+    if (row.kind === "archi") card.kind = "archi";
     cards.push(card);
   }
   return cards;
@@ -101,10 +111,21 @@ function WantedSquare({
 
   const src = card.gfxId ? `https://api.dofusdb.fr/img/monsters/${card.gfxId}.png` : "";
   const command = travelCommand(coords);
+  const archi = card.kind === "archi";
 
   return (
-    <article className="relative flex h-[168px] w-[148px] shrink-0 cursor-grab flex-col overflow-hidden rounded-xl border border-lamp/80 bg-pine active:cursor-grabbing">
+    <article
+      className={
+        "relative flex h-[168px] w-[148px] shrink-0 cursor-grab flex-col overflow-hidden rounded-xl bg-pine active:cursor-grabbing " +
+        (archi
+          ? "border-2 border-lamp shadow-[0_0_0_1px_var(--color-lamp),0_0_18px_2px_rgb(224_163_58/0.55)]"
+          : "border border-lamp/80")
+      }
+    >
       <div className="relative min-h-0 flex-1">
+        {archi ? (
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_50%_100%,rgb(224_163_58/0.3),transparent_70%)]" />
+        ) : null}
         {src && !failed ? (
           <img
             src={src}
@@ -129,9 +150,17 @@ function WantedSquare({
             <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
           </svg>
         </button>
-        <p className="pointer-events-none absolute top-1.5 right-1.5 left-9 line-clamp-2 text-right text-[11px] leading-tight font-medium text-fog [text-shadow:0_1px_2px_rgb(0_0_0/0.9)]">
-          {card.name}
-        </p>
+        <div className="pointer-events-none absolute top-1.5 right-1.5 left-9">
+          <p
+            className={
+              "line-clamp-2 text-right text-[11px] leading-tight font-medium [text-shadow:0_1px_2px_rgb(0_0_0/0.9)] " +
+              (archi ? "text-lamp" : "text-fog")
+            }
+          >
+            {archi ? <ArchiIcon className="mr-1 inline-block size-4 align-text-bottom" /> : null}
+            {card.name}
+          </p>
+        </div>
       </div>
       {command && coords ? (
         <button

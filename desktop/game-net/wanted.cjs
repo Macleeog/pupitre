@@ -4,7 +4,13 @@ const { parseMessage, varintField } = require("./decode.cjs");
 // Gumans and Atcham's three disguises (Chi, Fou, Mi). Names stay the French ones
 // shown in game. Refreshed 2026-09-30.
 const MONSTERS = require("./wanted-monsters.json");
-const BY_ID = new Map(MONSTERS.map((monster) => [monster.id, monster]));
+// Archmonsters: DofusDB isMiniBoss. No id is in both lists; a quest monster would win anyway.
+const ARCHMONSTERS = require("./archmonsters.json");
+const BY_ID = new Map();
+for (const monster of MONSTERS) BY_ID.set(monster.id, { ...monster, kind: "wanted" });
+for (const monster of ARCHMONSTERS) {
+  if (!BY_ID.has(monster.id)) BY_ID.set(monster.id, { ...monster, kind: "archi" });
+}
 
 // Monster groups use a negative contextual id around -20000. -1 is the fight sentinel, not a group.
 const GROUP_MIN = -1000000n;
@@ -29,6 +35,10 @@ function sentence(monsters) {
   if (names.length === 1) return `${names[0]} est sur cette carte.`;
   if (names.length === 2) return `${names[0]} et ${names[1]} sont sur cette carte.`;
   return `${names.slice(0, -1).join(", ")} et ${names.at(-1)} sont sur cette carte.`;
+}
+
+function monsterKind(id) {
+  return BY_ID.get(id)?.kind ?? null;
 }
 
 // A creature entry inside a monster group: field 2 is the monster id, field 3 its level.
@@ -139,6 +149,7 @@ function createWantedWatch(emit) {
           name: monster.name,
           level: monster.level,
           gfxId: monster.gfxId,
+          kind: monster.kind,
         })),
         text: sentence(found),
       });
@@ -196,4 +207,4 @@ function createWantedWatch(emit) {
   };
 }
 
-module.exports = { MONSTERS, createWantedWatch, readMap, sentence };
+module.exports = { ARCHMONSTERS, MONSTERS, createWantedWatch, monsterKind, readMap, sentence };

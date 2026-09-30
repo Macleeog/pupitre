@@ -13,6 +13,7 @@ export function Overlay() {
   const buttons = usePupitre((state) => state.overlayButtons);
   const opacity = usePupitre((state) => state.overlayOpacity);
   const notices = usePupitre((state) => state.wantedNotices);
+  const archiNotices = usePupitre((state) => state.archiNotices);
   const [sighting, setSighting] = useState<{ at: number; text: string } | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
@@ -40,7 +41,8 @@ export function Overlay() {
           current.overlayButtons === next.overlayButtons &&
           current.overlayOpacity === nextOpacity &&
           fields(current.overlayFields) === fields(next.overlayFields) &&
-          current.wantedNotices === (next.wantedNotices !== false);
+          current.wantedNotices === (next.wantedNotices !== false) &&
+          current.archiNotices === (next.archiNotices !== false);
         if (sameFields) return;
         usePupitre.setState({
           overlayFields: next.overlayFields ?? current.overlayFields,
@@ -48,6 +50,7 @@ export function Overlay() {
           overlayButtons: next.overlayButtons ?? current.overlayButtons,
           overlayOpacity: nextOpacity,
           wantedNotices: next.wantedNotices !== false,
+          archiNotices: next.archiNotices !== false,
         });
       } catch {
         // A half-written value is replaced by the next write.
@@ -75,7 +78,8 @@ export function Overlay() {
     return () => window.clearInterval(timer);
   }, [farm.status, sighting]);
 
-  const wanted = notices !== false && sighting !== null && now - sighting.at < 10 * 60 * 1000;
+  const alerts = notices !== false || archiNotices !== false;
+  const wanted = alerts && sighting !== null && now - sighting.at < 10 * 60 * 1000;
   const elapsed = elapsedMs(farm, now);
   const totals = snapshot(farm, elapsed);
   const stats = fields.slice(0, overlayCapacity(size, buttons)).map((field) => overlayStat(field, farm, totals, elapsed));
