@@ -93,7 +93,7 @@
     ],
     "extraResources": [
       {
-        "from": ".output",
+        "from": ".output/public",
         "to": "output"
       }
     ],
@@ -102,6 +102,7 @@
         "nsis"
       ],
       "icon": "build/icon.ico",
+      "electronLanguages": ["en-US", "fr"],
       "artifactName": "Pupitre-Setup-${version}.${ext}"
     },
     "nsis": {

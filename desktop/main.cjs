@@ -1,10 +1,10 @@
 const { app, BrowserWindow, clipboard, dialog, globalShortcut, ipcMain, screen, shell } = require("electron");
 const { spawn } = require("node:child_process");
 const fs = require("node:fs");
-const http = require("node:http");
 const path = require("node:path");
 const { GameNetReader } = require("./game-net/reader.cjs");
 const { lookupMapCoords, validCoords } = require("./game-net/map-coords.cjs");
+const { hasAppShell, startStaticServer } = require("./static.cjs");
 const { watchForUpdates } = require("./updates.cjs");
 
 const PORT = 47321;
@@ -37,24 +37,9 @@ function pupitreVersion() {
 
 function outputRoot() {
   if (app.isPackaged) return path.join(process.resourcesPath, "output");
-  return path.join(__dirname, "..", ".output");
-}
-
-function waitForServer() {
-  const started = Date.now();
-  return new Promise((resolve, reject) => {
-    const tick = () => {
-      const req = http.get({ hostname: "127.0.0.1", port: PORT, path: "/" }, (res) => {
-        res.resume();
-        resolve();
-      });
-      req.on("error", () => {
-        if (Date.now() - started > 25000) reject(new Error("Le serveur Pupitre n'a pas démarré."));
-        else setTimeout(tick, 250);
-      });
-    };
-    tick();
-  });
+  const base = path.join(__dirname, "..", ".output");
+  const candidates = [path.join(base, "public"), base, path.join(base, "client")];
+  return candidates.find((dir) => hasAppShell(dir)) ?? candidates[0];
 }
 
 function webPreferences(overrides = {}) {
@@ -406,32 +391,8 @@ function readGameNetwork(desk) {
   return reader;
 }
 
-// Starts while Electron itself is still booting, so the window is not waiting on a cold server.
 app.commandLine.appendSwitch("disable-features", "SpareRendererForSitePerProcess");
-const root = outputRoot();
-const entry = path.join(root, "server", "index.mjs");
-const logs = [];
-const pushLog = (chunk) => {
-  logs.push(String(chunk));
-  if (logs.length > 30) logs.shift();
-};
-const child = spawn(process.execPath, [entry], {
-  cwd: root,
-  env: {
-    ...process.env,
-    ELECTRON_RUN_AS_NODE: "1",
-    HOST: "127.0.0.1",
-    PORT: String(PORT),
-    NITRO_HOST: "127.0.0.1",
-    NITRO_PORT: String(PORT),
-  },
-  stdio: ["ignore", "pipe", "pipe"],
-});
-child.stdout.on("data", pushLog);
-child.stderr.on("data", pushLog);
-child.on("exit", (code) => {
-  if (code && code !== 0) pushLog(`exit ${code}`);
-});
+let pages = null;
 
 const TOAST_W = 148;
 const TOAST_H = 168;
@@ -596,17 +557,26 @@ app.whenReady().then(async () => {
   toastPlacement = loadToastPlacement();
   let network = null;
   const shutdown = () => {
-    if (!child.killed) child.kill();
+    const server = pages;
+    pages = null;
+    if (server) server.close();
     network?.stop();
+    network = null;
   };
   app.on("before-quit", shutdown);
 
+  const root = outputRoot();
+  if (!hasAppShell(root)) {
+    dialog.showErrorBox("Pupitre", "Les pages de l'application sont introuvables.");
+    app.quit();
+    return;
+  }
   try {
-    await waitForServer();
+    pages = await startStaticServer(root, PORT);
   } catch (error) {
     dialog.showErrorBox(
       "Pupitre",
-      `${error instanceof Error ? error.message : "Démarrage impossible."}\n\n${logs.join("").slice(-1200)}`,
+      error instanceof Error ? error.message : "Démarrage impossible.",
     );
     app.quit();
     return;
