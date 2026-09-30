@@ -6,7 +6,7 @@ import { useUpdateState } from "@/lib/pupitre/updates";
 import { ShortcutsView } from "@/components/pupitre/shortcuts-view";
 import type { OverlaySize, UpdateState } from "@/pupitre-desktop";
 
-const RELEASES = "https://github.com/Macleeog/pupitre/releases";
+const RELEASES = "https://github.com/Macleeog/pupitre-releases/releases";
 
 export function SettingsView() {
   return (
@@ -110,18 +110,31 @@ function UpdatesCard() {
             Télécharger l'installateur
           </a>
         ) : canCheck ? (
-          <button
-            type="button"
-            disabled={busy || update.status === "checking"}
-            onClick={() => {
-              setBusy(true);
-              void window.pupitre?.updates?.check().finally(() => setBusy(false));
-            }}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-edge bg-pine px-4 text-sm font-medium text-fog disabled:opacity-60"
-          >
-            <RefreshCw className={"size-4" + (busy ? " animate-spin" : "")} aria-hidden="true" />
-            Vérifier
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              disabled={busy || update.status === "checking"}
+              onClick={() => {
+                setBusy(true);
+                void window.pupitre?.updates?.check().finally(() => setBusy(false));
+              }}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-edge bg-pine px-4 text-sm font-medium text-fog disabled:opacity-60"
+            >
+              <RefreshCw className={"size-4" + (busy ? " animate-spin" : "")} aria-hidden="true" />
+              Vérifier
+            </button>
+            {update.status === "error" ? (
+              <a
+                href={RELEASES}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-lamp px-4 text-sm font-medium text-lamp-ink"
+              >
+                <Download className="size-4" aria-hidden="true" />
+                Télécharger
+              </a>
+            ) : null}
+          </div>
         ) : null}
       </div>
       {update?.status === "downloading" ? (
