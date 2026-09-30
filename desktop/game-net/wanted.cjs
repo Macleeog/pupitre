@@ -88,10 +88,7 @@ function mapFromPath(message) {
   return id > 1000 ? id : null;
 }
 
-// Group description, capture of 2026-09-30 (Sicogne): "4x3851x200|1x3838x200|…",
-// field 8 is the group id. The same block is what the client attaches to a chat link.
-function describedGroups(fields, depth, out) {
-  if (!fields || depth > 8) return out;
+function compositionText(fields) {
   let composition = "";
   for (const entries of fields.values()) {
     for (const entry of entries) {
@@ -100,19 +97,55 @@ function describedGroups(fields, depth, out) {
       if (/\d+x\d+x\d+/.test(text)) composition += text;
     }
   }
+  return composition;
+}
+
+function monsterIdsFrom(composition) {
+  return [...composition.matchAll(COMPOSITION)].map((match) => Number(match[2]));
+}
+
+// Chat link for a monster group, capture of 2026-09-30: field 2 is { 1: x, 2: y }.
+// Those are the group's coordinates, not the map the player is standing on.
+function coordinatePair(fields) {
+  const entry = fields.get(2)?.[0];
+  if (!entry || entry.wireType !== 2 || entry.raw.length > 24) return null;
+  const point = parseMessage(entry.raw);
+  if (!point) return null;
+  const xRaw = varintField(point, 1);
+  const yRaw = varintField(point, 2);
+  if (xRaw === undefined || yRaw === undefined) return null;
+  for (const [field, entries] of point) {
+    if (field !== 1 && field !== 2) return null;
+    if (entries.some((item) => item.wireType !== 0)) return null;
+  }
+  const x = Number(signed(xRaw));
+  const y = Number(signed(yRaw));
+  if (!Number.isInteger(x) || !Number.isInteger(y)) return null;
+  if (x < -256 || x > 256 || y < -256 || y > 256) return null;
+  return { x, y };
+}
+
+// Group description, capture of 2026-09-30 (Sicogne): "4x3851x200|1x3838x200|…",
+// field 8 is the group id. A chat link of the same shape also carries coordinates.
+function describedGroups(fields, depth, local, remote) {
+  if (!fields || depth > 8) return;
+  const composition = compositionText(fields);
   if (composition) {
-    const monsterIds = [...composition.matchAll(COMPOSITION)].map((match) => Number(match[2]));
-    const groupId = signed(varintField(fields, 8));
-    if (isGroup(groupId) && monsterIds.length > 0) out.push({ groupId: Number(groupId), monsterIds });
+    const monsterIds = monsterIdsFrom(composition);
+    const coords = coordinatePair(fields);
+    if (coords && monsterIds.length > 0) remote.push({ monsterIds, coords });
+    else {
+      const groupId = signed(varintField(fields, 8));
+      if (isGroup(groupId) && monsterIds.length > 0) local.push({ groupId: Number(groupId), monsterIds });
+    }
   }
   for (const entries of fields.values()) {
     for (const entry of entries) {
       if (entry.wireType !== 2 || entry.raw.length === 0 || entry.raw.length > 8192) continue;
       const nested = parseMessage(entry.raw);
-      if (nested) describedGroups(nested, depth + 1, out);
+      if (nested) describedGroups(nested, depth + 1, local, remote);
     }
   }
-  return out;
 }
 
 function createWantedWatch(emit) {
@@ -165,6 +198,35 @@ function createWantedWatch(emit) {
     emit({ type: "wanted-absent", at, mapId });
   };
 
+  const announceRemote = (at, groups) => {
+    for (const info of groups) {
+      const found = [];
+      for (const id of info.monsterIds) {
+        const monster = BY_ID.get(id);
+        if (!monster) continue;
+        const key = `${monster.name}@${info.coords.x},${info.coords.y}`;
+        if (notified.has(key) || found.some((entry) => entry.name === monster.name)) continue;
+        found.push(monster);
+        notified.add(key);
+      }
+      if (found.length === 0) continue;
+      emit({
+        type: "wanted-sighting",
+        at,
+        mapId: null,
+        coords: info.coords,
+        monsters: found.map((monster) => ({
+          id: monster.id,
+          name: monster.name,
+          level: monster.level,
+          gfxId: monster.gfxId,
+          kind: monster.kind,
+        })),
+        text: sentence(found),
+      });
+    }
+  };
+
   const changeMap = (next) => {
     if (!next || next === mapId) return;
     mapId = next;
@@ -196,10 +258,15 @@ function createWantedWatch(emit) {
       if (message.value.length <= 16384 && message.value.includes(0x78)) {
         const text = message.value.toString("latin1");
         if (/\d+x\d+x\d+/.test(text)) {
-          for (const info of describedGroups(parseMessage(message.value), 0, [])) {
+          const local = [];
+          const remote = [];
+          describedGroups(parseMessage(message.value), 0, local, remote);
+          for (const info of local) {
             const current = known.get(info.groupId);
             if (!current || current.length === 0) known.set(info.groupId, info.monsterIds);
           }
+          // A chat link names the group's own map. Its contextual id is not the one on this map.
+          announceRemote(at, remote);
         }
       }
       consider(at, false);

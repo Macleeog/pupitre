@@ -193,7 +193,7 @@ class GameNetReader {
       this.lastWanted = sighting;
       this.dirty = true;
       this.onEvent?.(sighting);
-      if (!this.mapLookup || !sighting.mapId) return;
+      if (sighting.coords || !this.mapLookup || !sighting.mapId) return;
       const token = sighting.at;
       this.wantedToken = token;
       Promise.resolve()
