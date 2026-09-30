@@ -3,7 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const CHECK_EVERY_MS = 4 * 60 * 60 * 1000;
-const RELEASES = "https://github.com/Macleeog/pupitre/releases";
+const RELEASES = "https://github.com/Macleeog/pupitre-releases/releases";
 
 // Updates come from the GitHub releases (latest.yml, written by electron-builder). Only a copy
 // installed by the setup can replace itself; an extracted zip is told to install once.
@@ -42,7 +42,7 @@ function watchForUpdates(desk) {
     updater.on("update-available", (info) => set({ status: "downloading", available: info.version, progress: 0 }));
     updater.on("download-progress", (progress) => set({ status: "downloading", progress: Math.round(progress.percent) }));
     updater.on("update-downloaded", (info) => set({ status: "ready", available: info.version, progress: 100 }));
-    updater.on("error", (error) => set({ status: "error", detail: String(error?.message ?? error).slice(0, 300) }));
+    updater.on("error", (error) => set({ status: "error", detail: readableUpdateError(error) }));
     const check = () => updater.checkForUpdates().catch(() => {});
     setTimeout(check, 8000);
     setInterval(check, CHECK_EVERY_MS);
@@ -57,6 +57,16 @@ function watchForUpdates(desk) {
   ipcMain.on("update:install", (event) => {
     if (fromDesk(event) && updater && state.status === "ready") updater.quitAndInstall(true, true);
   });
+}
+
+// A private source repo answers 404 on the releases feed, and GitHub hides that it exists.
+// The raw message includes headers and is useless on the settings card.
+function readableUpdateError(error) {
+  const message = String(error?.message ?? error);
+  if (/404/.test(message)) {
+    return "La page des téléchargements ne répond pas. Installe Pupitre-Setup une fois depuis cette page : ensuite la recherche repart.";
+  }
+  return message.replace(/\s+/g, " ").slice(0, 180);
 }
 
 module.exports = { watchForUpdates };
