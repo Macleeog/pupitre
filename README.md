@@ -48,6 +48,8 @@ Les codes des messages de combat (`desktop/game-net/fights.cjs`) viennent de Bli
 
 Les conditions d'utilisation d'Ankama interdisent les logiciels tiers qui lisent le trafic du jeu. À tes risques pour ton compte.
 
+Le détail de chaque fonction, des fichiers, et la marche à suivre après une mise à jour de Dofus (paquets, bandeau, icône) sont dans [docs/guide-technique.md](docs/guide-technique.md).
+
 ## Développement
 
 ```bash

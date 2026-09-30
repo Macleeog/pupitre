@@ -1,5 +1,7 @@
 # Mettre Pupitre à jour après une mise à jour de Dofus
 
+Cette page est la procédure courte pour les paquets. Le guide complet du dépôt (chaque fonction, le bandeau, l'icône, les listes de monstres, la publication) est [guide-technique.md](guide-technique.md). Les noms de messages cités ici sont ceux du 29 septembre 2026.
+
 Pupitre ne se connecte pas au jeu et n'envoie rien. Il reconnaît quelques messages déjà présents sur la connexion, par leur nom court (`jwe`, `ket`, …). À une mise à jour du client, Ankama renomme en général **tous** ces noms d'un coup. Le bandeau, le chronomètre, les raccourcis et la saisie manuelle continuent de marcher. Ce qui s'arrête, c'est la lecture automatique.
 
 | Continue de marcher | S'arrête tant que les codes ne sont pas repris |
@@ -108,8 +110,8 @@ Les tests réseau doivent passer, y compris un combat synthétique et les prix H
 
 ## 5. Publier
 
-Dans `package.json`, passe le numéro de version (par exemple `0.1.13`).
+Le pas à pas, y compris ce qu'une pull request ne fait pas et comment changer le dépôt GitHub, est dans la section 5.12 du [guide technique](guide-technique.md).
 
-Une étiquette `v*` lancée sur GitHub construit `Pupitre-Setup-<version>.exe` et le publie dans les [versions](https://github.com/Macleeog/pupitre/releases). Sans tiret dans le numéro (`v0.1.13`), c'est une version stable, proposée à tout le monde. Avec un tiret (`v0.1.13-beta.1`), c'est une bêta : seules les copies déjà en bêta la reçoivent.
+En bref : monter `version` dans `package.json` (et les deux champs de la racine dans `package-lock.json`), pousser le commit, puis pousser une étiquette `v*`. Ce n'est pas le merge qui publie. Sans tiret (`v0.1.16`), la version est stable. Avec un tiret (`v0.1.16-beta.1`), c'est une bêta.
 
 Les copies installées avec le Setup cherchent une version au lancement, puis toutes les 4 heures. Une bêta ne passe pas toute seule à la version stable : il faut installer le Setup stable une fois. Les sessions et les réglages restent dans `%APPDATA%\Pupitre\`.
