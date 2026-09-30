@@ -52,6 +52,7 @@ Garde ce tableau sous les yeux avant de supprimer un dossier. Une grande partie 
 | `build/icon.ico` | Icône gravée dans l'installeur et l'exe | Produit par `scripts/make-icon.mjs`, ne pas le dessiner à la main |
 | `scripts/game-net.test.mjs` | Tests des combats, de l'HDV, des avis, des coordonnées | Après chaque changement de code réseau |
 | `scripts/static-server.test.mjs` | Tests du serveur de pages local | Après un changement de `desktop/static.cjs` |
+| `scripts/desktop-index.mjs` | Écrit `index.html` du bureau pendant la construction de l'exe | Si le bureau s'ouvre vide |
 | `.github/workflows/windows-exe.yml` | Construit `Pupitre-Setup-….exe` à chaque étiquette `v*` | La publication |
 | `docs/mise-a-jour-dofus.md` | Procédure courte, limitée aux paquets | Le cas « Dofus a changé ses codes » |
 | `src/lib/auth/`, `src/lib/db.ts`, `src/lib/app-data/` | Socle d'aperçu. Pupitre ne s'en sert pas | Ne pas les brancher sur une session de farm |
@@ -64,14 +65,14 @@ Garde ce tableau sous les yeux avant de supprimer un dossier. Une grande partie 
 ## 3. Ce qui se passe à l'ouverture
 
 1. Electron démarre `desktop/main.cjs`.
-2. Le processus sert les pages déjà construites (`desktop/static.cjs`), depuis `.output/public` en développement, ou depuis le dossier `output` embarqué une fois installé. La coque s'appelle `_shell.html` : `/`, `/overlay` et `/avis` retombent dessus. Il n'y a pas de second programme Node à attendre.
+2. Le processus sert les pages déjà construites (`desktop/static.cjs`), depuis `.output/public` en développement, ou depuis le dossier `output` embarqué une fois installé. Le bureau ouvre `index.html`, écrit rien que pour lui. Le bandeau et les avis retombent sur la coque `_shell.html`. Il n'y a pas de second programme Node à attendre.
 3. Deux fenêtres se créent. Le bureau (`/`) s'affiche. Le bandeau (`/overlay`) reste caché tant que Dofus n'est pas devant.
 4. La lecture réseau ne démarre que si une session tourne, si l'onglet Réseau est ouvert, ou si une alerte de carte est cochée.
 5. Huit secondes après l'ouverture, puis toutes les quatre heures, une copie installée par le Setup cherche une nouvelle version (`desktop/updates.cjs`). Une copie lancée depuis le code source ne se met pas à jour.
 
 Les versions publiées jusqu'à **0.1.15** inclus faisaient autrement : elles lançaient un serveur Node complet (Nitro) et n'affichaient la fenêtre qu'une fois ce serveur prêt. Ce serveur, plus toutes les langues de Chromium, expliquent une installation d'environ 500 Mo et une ouverture longue. Le code actuel ne copie plus que les pages, et ne garde que le français et l'anglais dans l'exe. Le poids qui reste est celui d'Electron lui-même (le moteur d'affichage), de l'ordre de 250 Mo une fois installé. On ne descend pas en dessous sans changer de moteur.
 
-La construction des pages pour l'exe passe par `npm run desktop:build`, qui pose `PUPITRE_DESKTOP=1`. Dans ce mode le routeur est un site d'une seule coque HTML : la page gère `/`, `/overlay` et `/avis`. Nitro reste sur le preset `node-server` le temps d'écrire cette coque. Le preset `static` casse la construction : il ne sait pas empaqueter `scripts/install-page.html?raw`, dont l'aperçu web a besoin. On ne change pas ce preset pour « alléger » la construction. L'installeur, lui, ne copie que `.output/public` (`extraResources` dans `package.json`). Le dossier `.output/server` produit à côté n'entre pas dans l'exe. La construction web ordinaire (`npm run build` sans `PUPITRE_DESKTOP`) continue de viser l'hébergement de l'aperçu.
+La construction des pages pour l'exe passe par `npm run desktop:build`, qui pose `PUPITRE_DESKTOP=1`. Nitro reste sur le preset `node-server` le temps d'écrire la coque `_shell.html`. Le preset `static` casse la construction : il ne sait pas empaqueter `scripts/install-page.html?raw`, dont l'aperçu web a besoin. On ne change pas ce preset pour « alléger » la construction. Une coque vide ne peut pas afficher le bureau : `scripts/desktop-index.mjs` demande la page `/` au serveur de construction, une seule fois, et l'enregistre dans `.output/public/index.html`. Sans `PUPITRE_DESKTOP`, ce script ne fait rien. L'installeur ne copie que `.output/public` (`extraResources` dans `package.json`). Le dossier `.output/server` produit à côté n'entre pas dans l'exe. La construction web ordinaire (`npm run build` sans `PUPITRE_DESKTOP`) continue de viser l'hébergement de l'aperçu.
 
 ---
 
