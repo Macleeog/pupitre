@@ -11,6 +11,7 @@ const { createFightTracker } = require("../desktop/game-net/fights.cjs");
 const { GameNetReader, captureFilter, describeInterfaces, pickInterfaces, payloadFromHex } = require("../desktop/game-net/reader.cjs");
 const { KNOWN_TYPES, codesHealth } = require("../desktop/game-net/known-types.cjs");
 const { readMarket } = require("../desktop/game-net/market.cjs");
+const { createWantedWatch } = require("../desktop/game-net/wanted.cjs");
 
 const hex = (s) => Buffer.from(s.replace(/\s+/g, ""), "hex");
 
@@ -27,6 +28,18 @@ function varint(value) {
 }
 const bytesField = (field, payload) => Buffer.concat([varint((field << 3) | 2), varint(payload.length), payload]);
 const intField = (field, value) => Buffer.concat([varint(field << 3), varint(value)]);
+function signedVarint(value) {
+  let n = BigInt.asUintN(64, BigInt(value));
+  const bytes = [];
+  do {
+    let byte = Number(n & 0x7fn);
+    n >>= 7n;
+    if (n > 0n) byte |= 0x80;
+    bytes.push(byte);
+  } while (n > 0n);
+  return Buffer.from(bytes);
+}
+const intFieldSigned = (field, value) => Buffer.concat([varint(field << 3), signedVarint(value)]);
 const any = (type, value = Buffer.alloc(0)) =>
   Buffer.concat([bytesField(1, Buffer.from(`type.ankama.com/${type}`)), bytesField(2, value)]);
 const event = (type, value) => bytesField(2, bytesField(3, any(type, value)));
@@ -399,4 +412,71 @@ test("lecteur : ligne tshark → messages, combat détecté, fichier de capture"
     assert.ok(lines[0].fields["1"]);
     fs.rmSync(dir, { recursive: true, force: true });
   });
+});
+
+// Creature inside a monster group, as on a map load (jpo) of 2026-09-30: Ka'Youloud is id 4737, level 170.
+function creature(monsterId, level) {
+  return Buffer.concat([intField(1, 1), intField(2, monsterId), intField(3, level)]);
+}
+function groupActor(groupId, monsterId, level) {
+  return Buffer.concat([bytesField(1, bytesField(1, creature(monsterId, level))), intFieldSigned(2, groupId)]);
+}
+function mapPopulation(mapId, actors) {
+  return Buffer.concat([intField(6, mapId), ...actors.map((actor) => bytesField(9, actor))]);
+}
+
+test("avis de recherche : Ka'Youloud est signalé à l'arrivée sur la carte, une seule fois", () => {
+  const events = [];
+  const watch = createWantedWatch((event) => events.push(event));
+  const kayouloud = mapPopulation(174851076, [groupActor(-20004, 4737, 170), groupActor(-20000, 3597, 40)]);
+  watch.handle({ type: "jpo", value: kayouloud }, 1000);
+  assert.equal(events.length, 1);
+  assert.equal(events[0].type, "wanted-sighting");
+  assert.equal(events[0].text, "Ka'Youloud est sur cette carte.");
+  assert.equal(events[0].monsters[0].id, 4737);
+  assert.equal(events[0].mapId, 174851076);
+  watch.handle({ type: "jpo", value: kayouloud }, 2000);
+  assert.equal(events.length, 1);
+  const empty = mapPopulation(174852100, [groupActor(-20006, 3597, 40)]);
+  watch.handle({ type: "jpo", value: empty }, 3000);
+  assert.equal(events.at(-1).type, "wanted-absent");
+});
+
+test("avis de recherche : Sicogne reconnu par la description du groupe déjà sur la carte", () => {
+  const events = [];
+  const watch = createWantedWatch((event) => events.push(event));
+  const composition = Buffer.concat([
+    bytesField(5, Buffer.from("4x3851x200|1x3838x200|3x3836x206")),
+    intFieldSigned(8, -20002),
+  ]);
+  watch.handle({ type: "jpt", value: intField(3, 144575492) }, 1000);
+  watch.handle({ type: "kqd", value: composition }, 1100);
+  assert.equal(events.length, 0);
+  watch.handle({ type: "joq", value: intFieldSigned(3, -20002) }, 1200);
+  assert.equal(events.length, 1);
+  assert.equal(events[0].text, "Sicogne est sur cette carte.");
+  watch.handle({ type: "joq", value: intFieldSigned(3, -20002) }, 1300);
+  assert.equal(events.length, 1);
+});
+
+test("avis de recherche : un groupe décrit hors de la carte, ou un archimonstre, ne prévient pas", () => {
+  const events = [];
+  const watch = createWantedWatch((event) => events.push(event));
+  const elsewhere = Buffer.concat([
+    bytesField(5, Buffer.from("1x2508x200")),
+    intFieldSigned(8, -20000),
+  ]);
+  watch.handle({ type: "kqf", value: elsewhere }, 1000);
+  watch.handle({ type: "joq", value: intFieldSigned(3, -20009) }, 1100);
+  assert.equal(events.length, 0);
+});
+
+test("lecteur : l'arrivée sur la carte de Ka'Youloud envoie l'alerte", () => {
+  const events = [];
+  const reader = new GameNetReader({ capturesDir: os.tmpdir(), onEvent: (event) => events.push(event) });
+  const inbound = framed(event("jpo", mapPopulation(174851076, [groupActor(-20004, 4737, 170)])));
+  reader.handleLine(["1700000000.5", "5555", "9", "100", "", inbound.toString("hex")].join("\t"));
+  assert.equal(events.at(-1)?.type, "wanted-sighting");
+  assert.equal(events.at(-1).monsters[0].name, "Ka'Youloud");
+  assert.equal(reader.snapshot().lastWanted.text, "Ka'Youloud est sur cette carte.");
 });

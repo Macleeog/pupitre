@@ -25,9 +25,21 @@ export type FightEvent =
   | { type: "fight-end"; at: number; durationMs?: number; results?: FightResult[]; ownFighterIds?: string[] }
   | { type: "turn-start" | "turn-end"; fighterId: string; at: number };
 
+export type WantedMonster = { id: number; name: string; level: number };
+
+export type WantedSighting = {
+  type: "wanted-sighting";
+  at: number;
+  mapId: number | null;
+  monsters: WantedMonster[];
+  text: string;
+};
+
 export type GameEvent =
   | FightEvent
-  | { type: "hdv-prices"; at: number; source: "sale"; prices: { itemId: number; unitPrice: number }[] };
+  | { type: "hdv-prices"; at: number; source: "sale"; prices: { itemId: number; unitPrice: number }[] }
+  | WantedSighting
+  | { type: "wanted-absent"; at: number; mapId: number | null };
 
 export type NetState = {
   status: NetStatus;
@@ -51,6 +63,7 @@ export type NetState = {
   ownFighterIds?: string[];
   codes?: { state: "ok" | "unknown" | "stale"; knownShare: number | null };
   lastMarket?: { at: number; source: "sale"; items: number } | null;
+  lastWanted?: WantedSighting | null;
 };
 
 export type OverlaySize = "compact" | "large";
@@ -92,6 +105,7 @@ declare global {
         openFolder: () => Promise<void>;
         forgetOwn: () => Promise<NetState | null>;
         setActive?: (active: boolean) => void;
+        setWantedNotices?: (enabled: boolean) => void;
         onState: (handler: (state: NetState) => void) => () => void;
         onGameEvent: (handler: (event: GameEvent) => void) => () => void;
       };

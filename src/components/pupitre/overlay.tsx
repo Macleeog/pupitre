@@ -11,6 +11,8 @@ export function Overlay() {
   const fields = usePupitre((state) => state.overlayFields);
   const size = usePupitre((state) => state.overlaySize);
   const buttons = usePupitre((state) => state.overlayButtons);
+  const notices = usePupitre((state) => state.wantedNotices);
+  const [sighting, setSighting] = useState<{ at: number; text: string } | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -31,32 +33,42 @@ export function Overlay() {
         const sameFields =
           current.overlaySize === next.overlaySize &&
           current.overlayButtons === next.overlayButtons &&
-          fields(current.overlayFields) === fields(next.overlayFields);
+          fields(current.overlayFields) === fields(next.overlayFields) &&
+          current.wantedNotices === (next.wantedNotices !== false);
         if (sameFields) return;
         usePupitre.setState({
           overlayFields: next.overlayFields ?? current.overlayFields,
           overlaySize: next.overlaySize ?? current.overlaySize,
           overlayButtons: next.overlayButtons ?? current.overlayButtons,
+          wantedNotices: next.wantedNotices !== false,
         });
       } catch {
         // A half-written value is replaced by the next write.
       }
     };
     window.addEventListener("storage", onStorage);
+    const channel = new BroadcastChannel("pupitre-wanted");
+    channel.onmessage = (event: MessageEvent<{ type?: string; at?: number; text?: string }>) => {
+      const data = event.data;
+      if (data?.type === "wanted-sighting" && data.at && data.text) setSighting({ at: data.at, text: data.text });
+      if (data?.type === "wanted-absent") setSighting(null);
+    };
     return () => {
       unbindSync();
       window.removeEventListener("storage", onStorage);
+      channel.close();
     };
   }, []);
 
   useEffect(() => bindFarmHotkeys(), []);
 
   useEffect(() => {
-    if (farm.status !== "running") return;
+    if (farm.status !== "running" && !sighting) return;
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timer);
-  }, [farm.status]);
+  }, [farm.status, sighting]);
 
+  const wanted = notices !== false && sighting !== null && now - sighting.at < 10 * 60 * 1000;
   const elapsed = elapsedMs(farm, now);
   const totals = snapshot(farm, elapsed);
   const stats = fields.slice(0, overlayCapacity(size, buttons)).map((field) => overlayStat(field, farm, totals, elapsed));
@@ -71,7 +83,9 @@ export function Overlay() {
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className={"truncate font-medium " + (large ? "text-base" : "text-sm")}>{farm.zone.trim() || "Session"}</p>
-            <p className="text-[11px] leading-tight text-mist">{STATUS[farm.status]}</p>
+            <p className={"truncate text-[11px] leading-tight " + (wanted ? "text-lamp" : "text-mist")}>
+              {wanted ? sighting?.text : STATUS[farm.status]}
+            </p>
           </div>
           <p className={"font-display leading-none " + (large ? "text-3xl" : "text-2xl")}>{formatDuration(elapsed)}</p>
         </div>

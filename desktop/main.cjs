@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, globalShortcut, ipcMain, screen, shell } = require("electron");
+const { app, BrowserWindow, dialog, globalShortcut, ipcMain, Notification, screen, shell } = require("electron");
 const { spawn } = require("node:child_process");
 const fs = require("node:fs");
 const http = require("node:http");
@@ -276,7 +276,10 @@ function readGameNetwork(desk) {
   const reader = new GameNetReader({
     capturesDir,
     onState: (state) => toDesk("net:state", state),
-    onEvent: (event) => toDesk("game-event", event),
+    onEvent: (event) => {
+      toDesk("game-event", event);
+      if (event.type === "wanted-sighting" && reader.wantedNotices !== false) notifyWanted(event.text);
+    },
     cacheFile: path.join(app.getPath("userData"), "game-servers.json"),
     ownFighterIds: loadOwnFighters(),
     onOwnFighters: (ids) => writeJson("own-fighters.json", ids),
@@ -292,6 +295,9 @@ function readGameNetwork(desk) {
   });
   ipcMain.on("net:set-active", (event, active) => {
     if (fromDesk(event) && typeof active === "boolean") reader.setActive(active);
+  });
+  ipcMain.on("net:set-wanted-notices", (event, enabled) => {
+    if (fromDesk(event) && typeof enabled === "boolean") reader.wantedNotices = enabled;
   });
   ipcMain.handle("net:forget-own", (event) => {
     if (!fromDesk(event)) return null;
@@ -338,7 +344,17 @@ child.on("exit", (code) => {
   if (code && code !== 0) pushLog(`exit ${code}`);
 });
 
+function notifyWanted(text) {
+  if (!text || !Notification.isSupported()) return;
+  try {
+    new Notification({ title: "Avis de recherche", body: text }).show();
+  } catch {
+    // A desktop notification is optional; the desk still shows the alert.
+  }
+}
+
 app.whenReady().then(async () => {
+  if (process.platform === "win32") app.setAppUserModelId("app.pupitre.desk");
   let network = null;
   const shutdown = () => {
     if (!child.killed) child.kill();
