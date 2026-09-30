@@ -8,7 +8,9 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { FrameStream, decodeFrame, readVarint } = require("../desktop/game-net/decode.cjs");
 const { createFightTracker } = require("../desktop/game-net/fights.cjs");
-const { GameNetReader, captureFilter } = require("../desktop/game-net/reader.cjs");
+const { GameNetReader, captureFilter, describeInterfaces, pickInterfaces, payloadFromHex } = require("../desktop/game-net/reader.cjs");
+const { KNOWN_TYPES, codesHealth } = require("../desktop/game-net/known-types.cjs");
+const { readMarket } = require("../desktop/game-net/market.cjs");
 
 const hex = (s) => Buffer.from(s.replace(/\s+/g, ""), "hex");
 
@@ -233,6 +235,126 @@ test("lecteur : les requêtes sortantes pendant son tour désignent son personna
   reader.handleLine(["1700000000.5", "5555", "4", "100", "", framed(event("jwd", intField(7, ME))).toString("hex")].join("\t"));
   reader.handleLine(["1700000001.0", "51000", "4", "900", "", jrj.toString("hex")].join("\t"));
   assert.deepEqual(reader.snapshot().ownFighterIds, ["27038515495"]);
+});
+
+test("personnage mémorisé : reconnu dès le premier combat, même sans jouer son tour", () => {
+  const saved = [];
+  const events = [];
+  const first = createFightTracker(() => {}, { onOwnFighter: (ids) => saved.push(ids) });
+  first.handle("0", { type: "jwd", value: intField(7, ME) }, 1000);
+  first.handle("0", { type: "jrj", value: Buffer.alloc(0) }, 1100, "out");
+  first.handle("0", { type: "jrj", value: Buffer.alloc(0) }, 1200, "out");
+  assert.deepEqual(saved, [["27038515495"]]);
+
+  const next = createFightTracker((e) => events.push(e), { ownFighterIds: saved.at(-1) });
+  next.handle(
+    "0",
+    { type: "jwe", value: fightEnd([{ id: ME, xp: 125, kamas: 3 }, { id: 30000000001n, xp: 90, kamas: 5 }]) },
+    9000,
+  );
+  assert.deepEqual(events[0].results.map((r) => r.mine), [true, false]);
+
+  next.forgetOwn();
+  assert.deepEqual(next.ownFighterIds(), []);
+});
+
+test("codes du jeu : alerte seulement quand la plupart des types sont inconnus", () => {
+  const known = [...KNOWN_TYPES].slice(0, 20);
+  const renamed = Array.from({ length: 20 }, (_, i) => `z${String.fromCharCode(97 + i)}q`);
+  assert.equal(codesHealth(known, 50).state, "unknown");
+  assert.equal(codesHealth(known, 1000).state, "ok");
+  assert.equal(codesHealth([...known.slice(0, 15), "abc", "abd", "abe"], 1000).state, "ok");
+  assert.equal(codesHealth(renamed, 1000).state, "stale");
+  assert.equal(codesHealth([...renamed, ...known.slice(0, 3)], 1000).state, "stale");
+});
+
+// Listings from the sell-mode capture of 2026-09-29: Viande Hachée by 1 and by 10, Plume de Piou Vert.
+function sellerListings(lots) {
+  const settings = bytesField(1, Buffer.concat([intField(2, 200), intField(3, 672)]));
+  const listing = ([uid, itemId, quantity, price]) =>
+    bytesField(
+      2,
+      Buffer.concat([
+        bytesField(1, Buffer.concat([intField(1, uid), intField(2, itemId), intField(3, quantity)])),
+        intField(2, price),
+        intField(3, 2419139),
+      ]),
+    );
+  return Buffer.concat([settings, ...lots.map(listing)]);
+}
+
+test("hôtel des ventes : un prix unitaire par objet, le moins cher des lots", () => {
+  const value = sellerListings([
+    [7350584, 17123, 1, 29],
+    [7350647, 17123, 10, 322],
+    [7350390, 6899, 1, 113],
+    [7350397, 6899, 1, 113],
+    [1, 0, 1, 50],
+  ]);
+  assert.deepEqual(readMarket({ type: "ket", value }), {
+    source: "sale",
+    prices: [
+      { itemId: 17123, unitPrice: 29 },
+      { itemId: 6899, unitPrice: 113 },
+    ],
+  });
+  assert.deepEqual(readMarket({ type: "ket", value: sellerListings([[1, 17123, 100, 2550]]) }).prices, [
+    { itemId: 17123, unitPrice: 26 },
+  ]);
+  assert.equal(readMarket({ type: "isb", value }), null);
+});
+
+// Prices looked up in buy mode, capture of 2026-09-29 23:11: Aile Atrophiée de Tofu Dodu
+// (lots de 1, 10 et 100) et Aile de Vortex (pas de lot de 100).
+const TOFU = hex("a12df3cc03ffc72100");
+const VORTEX = hex("f0e721efdbe8020000");
+
+function itemPrices(itemId, lots) {
+  const entry = lots
+    ? [bytesField(2, Buffer.concat([intField(2, itemId), intField(3, 104), intField(5, 53896), bytesField(6, lots)]))]
+    : [];
+  return Buffer.concat([intField(1, itemId), ...entry, intField(3, 104)]);
+}
+
+test("hôtel des ventes : prix du marché par lot de 1, 10 et 100", () => {
+  assert.deepEqual(readMarket({ type: "jzn", value: itemPrices(13725, TOFU) }), {
+    source: "search",
+    prices: [{ itemId: 13725, unitPrice: 5499 }],
+  });
+  // 553 968 le lot de 1 est moins cher à l'unité que 5 909 999 le lot de 10 ; pas de lot de 100.
+  assert.deepEqual(readMarket({ type: "jzn", value: itemPrices(15715, VORTEX) }).prices, [
+    { itemId: 15715, unitPrice: 553968 },
+  ]);
+  // Plus aucun prix : le client a cessé de suivre cet objet.
+  assert.deepEqual(readMarket({ type: "jzn", value: itemPrices(15715, null) }).prices, []);
+  assert.deepEqual(readMarket({ type: "jzn", value: itemPrices(15715, hex("000000")) }).prices, []);
+});
+
+test("lecteur : la mise en vente à l'HDV envoie les prix", () => {
+  const events = [];
+  const reader = new GameNetReader({ capturesDir: os.tmpdir(), onEvent: (e) => events.push(e) });
+  const inbound = framed(event("ket", sellerListings([[7350390, 6899, 1, 113]])));
+  reader.handleLine(["1700000000.5", "5555", "7", "100", "", inbound.toString("hex")].join("\t"));
+  assert.deepEqual(events, [
+    { type: "hdv-prices", at: 1700000000500, source: "sale", prices: [{ itemId: 6899, unitPrice: 113 }] },
+  ]);
+  assert.deepEqual(reader.snapshot().lastMarket, { at: 1700000000500, source: "sale", items: 1 });
+  const outbound = framed(bytesField(1, bytesField(1, any("ket", sellerListings([[1, 6899, 1, 5]])))));
+  reader.handleLine(["1700000001.0", "51000", "7", "900", "", outbound.toString("hex")].join("\t"));
+  assert.equal(events.length, 1);
+});
+
+test("capture : les cartes virtuelles sont laissées de côté", () => {
+  const listed = describeInterfaces(
+    [
+      "1. \\Device\\NPF_{AAA} (Wi-Fi)",
+      "2. \\Device\\NPF_{BBB} (vEthernet (WSL))",
+      "3. \\Device\\NPF_Loopback (Adapter for loopback traffic capture)",
+      "4. etwdump (Event Tracing for Windows (ETW) reader)",
+    ].join("\n"),
+  );
+  assert.deepEqual(pickInterfaces(listed), ["\\Device\\NPF_{AAA}"]);
+  assert.deepEqual(payloadFromHex("0a:ff"), Buffer.from([0x0a, 0xff]));
 });
 
 test("filtre de capture limité aux serveurs de jeu", () => {

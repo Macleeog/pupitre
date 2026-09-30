@@ -19,25 +19,30 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run desktop:build
-      - run: npx electron-builder --win zip
+      - run: npx electron-builder --win nsis --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
       - uses: actions/upload-artifact@v4
         with:
           name: Pupitre-windows
-          path: dist-electron/*.zip
+          path: |
+            dist-electron/*.exe
+            dist-electron/*.blockmap
+            dist-electron/latest*.yml
+            dist-electron/beta*.yml
       - uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: dist-electron/*.zip
+          files: |
+            dist-electron/*.exe
+            dist-electron/*.blockmap
+            dist-electron/latest*.yml
+            dist-electron/beta*.yml
           prerelease: ${{ contains(github.ref_name, '-') }}
           make_latest: ${{ contains(github.ref_name, '-') && 'false' || 'true' }}
           body: |
-            Télécharge le zip. Ne lance pas un .exe depuis la bulle de Chrome : elle reste sur « Opening when complete ».
+            Télécharge Pupitre-Setup, puis ouvre-le depuis le dossier Téléchargements. Il s'installe sans droits administrateur, crée un raccourci sur le Bureau et dans le menu Démarrer, puis se met à jour tout seul.
 
-            1. Ferme la bulle de téléchargement.
-            2. Ouvre le dossier Téléchargements et extrais le zip.
-            3. Double-clique sur Pupitre.exe qui est dans le dossier extrait.
-            4. Si SmartScreen s'affiche : Informations complémentaires, puis Exécuter quand même.
+            Si SmartScreen s'affiche : Informations complémentaires, puis Exécuter quand même (l'exe n'est pas signé).
 
-            L'ancien fichier portable (Pupitre.0.1.9.exe) est déjà téléchargé s'il affiche 100/100 Mo. Chrome essaie de l'ouvrir. Ferme cette bulle. Ce zip s'ouvre tout de suite.
+            Tu avais la version zip ? Installe cette version une fois ; tes sessions, réglages et raccourcis sont repris. Tu peux ensuite supprimer l'ancien dossier extrait.

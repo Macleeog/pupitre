@@ -12,9 +12,22 @@ import {
   type FarmSession,
   type FarmSnapshot,
 } from "@/lib/pupitre/farm";
-import type { ShortcutAction, ShortcutMap, ShortcutStatus } from "@/pupitre-desktop";
+import type { OverlaySize, ShortcutAction, ShortcutMap, ShortcutStatus } from "@/pupitre-desktop";
 
-export type DeskTab = "tour" | "roue" | "reseau" | "raccourcis";
+export type DeskTab = "session" | "reseau" | "reglages";
+
+export type OverlayField = "rate" | "gross" | "kamas" | "items" | "combats" | "donjons";
+
+export const OVERLAY_FIELDS: { id: OverlayField; label: string }[] = [
+  { id: "rate", label: "Kamas / heure" },
+  { id: "gross", label: "Valeur gagnée" },
+  { id: "kamas", label: "Kamas des combats" },
+  { id: "items", label: "Objets ramassés" },
+  { id: "combats", label: "Combats" },
+  { id: "donjons", label: "Donjons" },
+];
+
+export const DEFAULT_OVERLAY_FIELDS: OverlayField[] = ["rate", "combats"];
 export type Character = {
   id: string;
   name: string;
@@ -22,6 +35,14 @@ export type Character = {
 };
 
 export type FightLootItem = { itemId: number; quantity: number };
+
+export type ResourcePatch = Partial<
+  Pick<FarmResource, "name" | "qty" | "price" | "priceFrom" | "itemId" | "icon" | "typeName" | "level">
+>;
+
+export type HdvPrice = { unit: number; at: number };
+
+const HDV_PRICES_KEPT = 1000;
 
 export const DEFAULT_SHORTCUTS: ShortcutMap = {
   overlay: "CommandOrControl+Shift+F9",
@@ -46,8 +67,13 @@ export type FarmHistoryEntry = FarmSnapshot & {
 
 type PupitreState = {
   tab: DeskTab;
-  characters: Character[];
-  focusId: string | null;
+  me: Character | null;
+  overlayFields: OverlayField[];
+  overlaySize: OverlaySize;
+  overlayButtons: boolean;
+  toggleOverlayField: (field: OverlayField) => void;
+  setOverlaySize: (size: OverlaySize) => void;
+  setOverlayButtons: (overlayButtons: boolean) => void;
   farm: FarmSession;
   farmHistory: FarmHistoryEntry[];
   autoCombats: boolean;
@@ -60,13 +86,7 @@ type PupitreState = {
   resetShortcuts: () => void;
   setShortcutStatus: (status: Partial<Record<ShortcutAction, ShortcutStatus>>) => void;
   setTab: (tab: DeskTab) => void;
-  addCharacter: (name: string, classId: ClassId) => void;
-  removeCharacter: (id: string) => void;
-  moveCharacter: (id: string, direction: -1 | 1) => void;
-  setFocus: (id: string) => void;
-  advance: () => void;
-  clearTeam: () => void;
-  restoreExample: () => void;
+  setMe: (name: string, classId: ClassId) => void;
   patchFarm: (patch: Partial<Pick<FarmSession, "zone" | "notes" | "keys" | "other" | "jackpot">>) => void;
   startFarm: () => void;
   pauseFarm: () => void;
@@ -77,20 +97,13 @@ type PupitreState = {
   addResource: () => void;
   addFightLoot: (kamas: number, items: FightLootItem[]) => string[];
   undoFightLoot: (id: string) => void;
-  patchResource: (
-    id: string,
-    patch: Partial<Pick<FarmResource, "name" | "qty" | "price" | "itemId" | "icon" | "typeName" | "level">>,
-  ) => void;
+  patchResource: (id: string, patch: ResourcePatch) => void;
+  hdvPrices: Record<string, HdvPrice>;
+  applyHdvPrices: (prices: { itemId: number; unitPrice: number }[], at: number) => void;
+  forgetHdvPrices: () => void;
   removeResource: (id: string) => void;
   removeFarmHistory: (id: string) => void;
 };
-
-const EXAMPLE: Character[] = [
-  { id: "ex-linea", name: "Linéa", classId: "iop" },
-  { id: "ex-brume", name: "Brume", classId: "eniripsa" },
-  { id: "ex-cendre", name: "Cendre", classId: "cra" },
-  { id: "ex-nacre", name: "Nacre", classId: "forgelance" },
-];
 
 function uid(prefix: string): string {
   return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
@@ -100,19 +113,24 @@ function clearedResources(resources: FarmResource[]): FarmResource[] {
   return resources.map((resource) => ({ ...resource, qty: "" }));
 }
 
-function nextId(characters: Character[], current: string | null): string | null {
-  if (characters.length === 0) return null;
-  const index = characters.findIndex((character) => character.id === current);
-  const following = characters[(index + 1) % characters.length];
-  return following?.id ?? characters[0]?.id ?? null;
-}
-
 export const usePupitre = create<PupitreState>()(
   persist(
     (set) => ({
-      tab: "tour",
-      characters: EXAMPLE,
-      focusId: EXAMPLE[0]?.id ?? null,
+      tab: "session",
+      me: null,
+      overlayFields: DEFAULT_OVERLAY_FIELDS,
+      overlaySize: "compact",
+      overlayButtons: true,
+      toggleOverlayField: (field) =>
+        set((state) => ({
+          overlayFields: state.overlayFields.includes(field)
+            ? state.overlayFields.filter((entry) => entry !== field)
+            : OVERLAY_FIELDS.map((entry) => entry.id).filter(
+                (id) => id === field || state.overlayFields.includes(id),
+              ),
+        })),
+      setOverlaySize: (overlaySize) => set({ overlaySize }),
+      setOverlayButtons: (overlayButtons) => set({ overlayButtons }),
       farm: EMPTY_FARM,
       farmHistory: [],
       autoCombats: true,
@@ -126,45 +144,11 @@ export const usePupitre = create<PupitreState>()(
       resetShortcuts: () => set({ shortcuts: DEFAULT_SHORTCUTS }),
       setShortcutStatus: (shortcutStatus) => set({ shortcutStatus }),
       setTab: (tab) => set({ tab }),
-      addCharacter: (name, classId) => {
+      setMe: (name, classId) => {
         const trimmed = name.trim().slice(0, 18);
         if (!trimmed) return;
-        const character: Character = { id: uid("ch"), name: trimmed, classId };
-        set((state) => ({
-          characters: [...state.characters, character],
-          focusId: state.focusId ?? character.id,
-        }));
+        set((state) => ({ me: { id: state.me?.id ?? uid("ch"), name: trimmed, classId } }));
       },
-      removeCharacter: (id) =>
-        set((state) => {
-          const characters = state.characters.filter((character) => character.id !== id);
-          const focusId =
-            state.focusId === id ? (characters[0]?.id ?? null) : state.focusId;
-          return { characters, focusId };
-        }),
-      moveCharacter: (id, direction) =>
-        set((state) => {
-          const index = state.characters.findIndex((character) => character.id === id);
-          const target = index + direction;
-          if (index < 0 || target < 0 || target >= state.characters.length) return state;
-          const characters = state.characters.slice();
-          const [picked] = characters.splice(index, 1);
-          if (!picked) return state;
-          characters.splice(target, 0, picked);
-          return { characters };
-        }),
-      setFocus: (id) => set({ focusId: id }),
-      advance: () =>
-        set((state) => {
-          const focusId = nextId(state.characters, state.focusId);
-          return focusId ? { focusId } : state;
-        }),
-      clearTeam: () => set({ characters: [], focusId: null }),
-      restoreExample: () =>
-        set({
-          characters: EXAMPLE,
-          focusId: EXAMPLE[0]?.id ?? null,
-        }),
       patchFarm: (patch) =>
         set((state) => ({
           farm: {
@@ -294,12 +278,14 @@ export const usePupitre = create<PupitreState>()(
               resources[index] = { ...current, qty: String(parseKamas(current.qty) + quantity), fromFight: true };
             } else {
               const id = uid("res");
+              const known = state.hdvPrices[itemId];
               created.push(id);
               resources.push({
                 id,
                 name: `Objet ${itemId}`,
                 qty: String(quantity),
-                price: "",
+                price: known ? String(known.unit) : "",
+                priceFrom: known ? "hdv" : undefined,
                 itemId,
                 icon: "",
                 typeName: "",
@@ -358,7 +344,10 @@ export const usePupitre = create<PupitreState>()(
                 }
               }
               if (patch.qty !== undefined) next.qty = digitsOnly(patch.qty);
-              if (patch.price !== undefined) next.price = digitsOnly(patch.price);
+              if (patch.price !== undefined) {
+                next.price = digitsOnly(patch.price);
+                next.priceFrom = next.price ? (patch.priceFrom ?? "manual") : undefined;
+              }
               if (patch.itemId !== undefined) next.itemId = patch.itemId;
               if (patch.icon !== undefined) next.icon = patch.icon;
               if (patch.typeName !== undefined) next.typeName = patch.typeName.slice(0, 40);
@@ -367,6 +356,31 @@ export const usePupitre = create<PupitreState>()(
             }),
           },
         })),
+      hdvPrices: {},
+      applyHdvPrices: (prices, at) =>
+        set((state) => {
+          if (prices.length === 0) return state;
+          const fresh = Object.fromEntries(prices.map(({ itemId, unitPrice }) => [itemId, { unit: unitPrice, at }]));
+          const pricesChanged = prices.some(({ itemId, unitPrice }) => state.hdvPrices[itemId]?.unit !== unitPrice);
+          const resources = state.farm.resources.map((resource) => {
+            const known = resource.itemId != null ? fresh[resource.itemId] : undefined;
+            if (!known || resource.priceFrom === "manual") return resource;
+            const price = String(known.unit);
+            if (resource.price === price && resource.priceFrom === "hdv") return resource;
+            return { ...resource, price, priceFrom: "hdv" as const };
+          });
+          const resourcesChanged = resources.some((resource, index) => resource !== state.farm.resources[index]);
+          if (!pricesChanged && !resourcesChanged) return state;
+          const hdvPrices = pricesChanged
+            ? Object.fromEntries(
+                Object.entries({ ...state.hdvPrices, ...fresh })
+                  .sort(([, a], [, b]) => b.at - a.at)
+                  .slice(0, HDV_PRICES_KEPT),
+              )
+            : state.hdvPrices;
+          return { hdvPrices, farm: resourcesChanged ? { ...state.farm, resources } : state.farm };
+        }),
+      forgetHdvPrices: () => set({ hdvPrices: {} }),
       removeResource: (id) =>
         set((state) => ({
           farm: {
@@ -383,17 +397,30 @@ export const usePupitre = create<PupitreState>()(
       name: "pupitre-dofus3",
       skipHydration: true,
       partialize: (state) => ({
-        characters: state.characters,
-        focusId: state.focusId,
+        me: state.me,
+        overlayFields: state.overlayFields,
+        overlaySize: state.overlaySize,
+        overlayButtons: state.overlayButtons,
         farm: state.farm,
         farmHistory: state.farmHistory,
         autoCombats: state.autoCombats,
         autoLoot: state.autoLoot,
         shortcuts: state.shortcuts,
+        hdvPrices: state.hdvPrices,
       }),
       merge: (persisted, current) => {
-        const saved = (persisted ?? {}) as Partial<PupitreState>;
-        return { ...current, ...saved, shortcuts: { ...DEFAULT_SHORTCUTS, ...saved.shortcuts } };
+        const saved = (persisted ?? {}) as Partial<PupitreState> & {
+          characters?: Character[];
+          focusId?: string | null;
+        };
+        const { characters, focusId, ...rest } = saved;
+        // Before 0.1.12 the desk kept a team; the character in front becomes "me".
+        const mine = characters?.filter((character) => !character.id.startsWith("ex-")) ?? [];
+        const me =
+          saved.me !== undefined
+            ? saved.me
+            : (mine.find((character) => character.id === focusId) ?? mine[0] ?? null);
+        return { ...current, ...rest, me, shortcuts: { ...DEFAULT_SHORTCUTS, ...saved.shortcuts } };
       },
     },
   ),

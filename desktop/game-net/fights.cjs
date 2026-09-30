@@ -12,6 +12,7 @@ const CODES = {
 // Client requests only sent while it is the client's own turn (spell cast, end of turn),
 // seen in every capture of 2026-09-29.
 const OWN_TURN_REQUESTS = new Set(["jrj", "jvv"]);
+const WATCHED = new Set([CODES.fightOrder, CODES.turnStart, CODES.turnEnd, CODES.fightEnd]);
 const NO_FIGHTER = 18446744073709551615n;
 const SAME_FIGHT_MS = 5000;
 const SAME_TURN_MS = 1000;
@@ -75,10 +76,10 @@ function fighterOrder(payload) {
 // Several accounts in one fight each receive the same messages on their own connection:
 // events are merged so one fight counts once. Each connection plays one character, which is
 // recognised when that connection acts during a turn.
-function createFightTracker(emit) {
+function createFightTracker(emit, { ownFighterIds = [], onOwnFighter } = {}) {
   const active = new Map();
   const currentTurn = new Map();
-  const own = new Set();
+  const own = new Set(ownFighterIds.map(String));
   let lastStart = -Infinity;
   let lastEnd = -Infinity;
   let lastTurn = { id: null, at: 0 };
@@ -97,9 +98,14 @@ function createFightTracker(emit) {
     handle(connection, message, at, direction = "in") {
       if (direction === "out") {
         const fighterId = currentTurn.get(connection);
-        if (fighterId && OWN_TURN_REQUESTS.has(message.type)) own.add(fighterId);
+        if (fighterId && OWN_TURN_REQUESTS.has(message.type) && !own.has(fighterId)) {
+          own.add(fighterId);
+          onOwnFighter?.([...own]);
+        }
         return;
       }
+      // Inventory and chat messages are large and frequent; only fight messages are worth parsing.
+      if (!WATCHED.has(message.type)) return;
       const payload = parseMessage(message.value);
       if (!payload) return;
       if (message.type === CODES.fightOrder) {
@@ -143,6 +149,10 @@ function createFightTracker(emit) {
     },
     ownFighterIds() {
       return [...own];
+    },
+    forgetOwn() {
+      own.clear();
+      onOwnFighter?.([]);
     },
   };
 }
