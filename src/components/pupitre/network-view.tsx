@@ -223,24 +223,26 @@ function WantedNotice({ now }: { now: number }) {
           ))}
         </ul>
       ) : null}
-      {command && sighting?.coords ? (
+      {fresh && sighting?.coords ? (
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <p className="text-sm text-fog">
             <span className="text-mist">
               {sighting.coords.x},{sighting.coords.y}
             </span>{" "}
-            <span className="font-medium">{command}</span>
+            <span className="font-medium">{command ?? "Autre monde"}</span>
           </p>
-          <button
-            type="button"
-            onClick={() => {
-              window.pupitre?.toast?.copy?.(command);
-              void navigator.clipboard?.writeText(command).finally(() => setCopied(true));
-            }}
-            className="min-h-11 rounded-full border border-edge px-4 text-sm font-medium text-fog"
-          >
-            {copied ? "Copié" : "Copier"}
-          </button>
+          {command ? (
+            <button
+              type="button"
+              onClick={() => {
+                window.pupitre?.toast?.copy?.(command);
+                void navigator.clipboard?.writeText(command).finally(() => setCopied(true));
+              }}
+              className="min-h-11 rounded-full border border-edge px-4 text-sm font-medium text-fog"
+            >
+              {copied ? "Copié" : "Copier"}
+            </button>
+          ) : null}
         </div>
       ) : null}
     </section>

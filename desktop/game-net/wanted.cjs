@@ -26,15 +26,23 @@ function isGroup(id) {
   return id !== undefined && id <= GROUP_MAX && id >= GROUP_MIN;
 }
 
-function sentence(monsters) {
+function place(coords) {
+  if (!coords || !Number.isInteger(coords.x) || !Number.isInteger(coords.y)) return "";
+  if (coords.world && coords.world !== 1) return `${coords.x},${coords.y}, sur un autre monde`;
+  return `${coords.x},${coords.y}`;
+}
+
+function sentence(monsters, coords) {
   const names = [];
   for (const monster of monsters) {
     if (!names.includes(monster.name)) names.push(monster.name);
   }
   if (names.length === 0) return "";
-  if (names.length === 1) return `${names[0]} est sur cette carte.`;
-  if (names.length === 2) return `${names[0]} et ${names[1]} sont sur cette carte.`;
-  return `${names.slice(0, -1).join(", ")} et ${names.at(-1)} sont sur cette carte.`;
+  const where = place(coords);
+  const tail = where ? `en ${where}` : "sur cette carte";
+  if (names.length === 1) return `${names[0]} est ${tail}.`;
+  if (names.length === 2) return `${names[0]} et ${names[1]} sont ${tail}.`;
+  return `${names.slice(0, -1).join(", ")} et ${names.at(-1)} sont ${tail}.`;
 }
 
 function monsterKind(id) {
@@ -125,6 +133,14 @@ function coordinatePair(fields) {
   return { x, y };
 }
 
+// Same block, capture of 2026-09-30: field 4 is the world map (1 = Monde des Douze).
+// 7,9 on world 14 is not 7,9 on world 1. /travel only knows the world the player is on.
+function worldId(fields) {
+  const world = Number(varintField(fields, 4) ?? 0);
+  if (!Number.isInteger(world) || world < 1 || world > 64) return null;
+  return world;
+}
+
 // Group description, capture of 2026-09-30 (Sicogne): "4x3851x200|1x3838x200|…",
 // field 8 is the group id. A chat link of the same shape also carries coordinates.
 function describedGroups(fields, depth, local, remote) {
@@ -133,7 +149,10 @@ function describedGroups(fields, depth, local, remote) {
   if (composition) {
     const monsterIds = monsterIdsFrom(composition);
     const coords = coordinatePair(fields);
-    if (coords && monsterIds.length > 0) remote.push({ monsterIds, coords });
+    if (coords && monsterIds.length > 0) {
+      const world = worldId(fields);
+      remote.push({ monsterIds, coords: world && world !== 1 ? { ...coords, world } : coords });
+    }
     else {
       const groupId = signed(varintField(fields, 8));
       if (isGroup(groupId) && monsterIds.length > 0) local.push({ groupId: Number(groupId), monsterIds });
@@ -204,7 +223,7 @@ function createWantedWatch(emit) {
       for (const id of info.monsterIds) {
         const monster = BY_ID.get(id);
         if (!monster) continue;
-        const key = `${monster.name}@${info.coords.x},${info.coords.y}`;
+        const key = `${monster.name}@${info.coords.x},${info.coords.y},${info.coords.world ?? 1}`;
         if (notified.has(key) || found.some((entry) => entry.name === monster.name)) continue;
         found.push(monster);
         notified.add(key);
@@ -222,7 +241,7 @@ function createWantedWatch(emit) {
           gfxId: monster.gfxId,
           kind: monster.kind,
         })),
-        text: sentence(found),
+        text: sentence(found, info.coords),
       });
     }
   };

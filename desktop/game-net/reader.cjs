@@ -189,7 +189,9 @@ class GameNetReader {
       );
       if (monsters.length === 0) return;
       const sighting =
-        monsters.length === event.monsters.length ? event : { ...event, monsters, text: sentence(monsters) };
+        monsters.length === event.monsters.length
+          ? event
+          : { ...event, monsters, text: sentence(monsters, event.coords) };
       this.lastWanted = sighting;
       this.dirty = true;
       this.onEvent?.(sighting);

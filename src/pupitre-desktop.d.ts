@@ -29,7 +29,7 @@ export type WantedKind = "wanted" | "archi";
 
 export type WantedMonster = { id: number; name: string; level: number; gfxId?: number; kind?: WantedKind };
 
-export type MapCoords = { x: number; y: number };
+export type MapCoords = { x: number; y: number; world?: number };
 
 export type WantedSighting = {
   type: "wanted-sighting";
