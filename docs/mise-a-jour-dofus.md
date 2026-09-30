@@ -1,5 +1,7 @@
 # Mettre Pupitre à jour après une mise à jour de Dofus
 
+Cette page est la procédure courte pour les paquets. Le guide complet du dépôt (chaque fonction, le bandeau, l'icône, les listes de monstres, la publication) est [guide-technique.md](guide-technique.md). Les noms de messages cités ici sont ceux du 29 septembre 2026.
+
 Pupitre ne se connecte pas au jeu et n'envoie rien. Il reconnaît quelques messages déjà présents sur la connexion, par leur nom court (`jwe`, `ket`, …). À une mise à jour du client, Ankama renomme en général **tous** ces noms d'un coup. Le bandeau, le chronomètre, les raccourcis et la saisie manuelle continuent de marcher. Ce qui s'arrête, c'est la lecture automatique.
 
 | Continue de marcher | S'arrête tant que les codes ne sont pas repris |
