@@ -27,10 +27,13 @@ export type FightEvent =
 
 export type WantedMonster = { id: number; name: string; level: number; gfxId?: number };
 
+export type MapCoords = { x: number; y: number };
+
 export type WantedSighting = {
   type: "wanted-sighting";
   at: number;
   mapId: number | null;
+  coords?: MapCoords | null;
   monsters: WantedMonster[];
   text: string;
 };
@@ -87,6 +90,10 @@ declare global {
       overlayDragEnd?: () => void;
       toast?: {
         setCount: (count: number) => void;
+        moveBy?: (dx: number, dy: number) => void;
+        dragEnd?: () => void;
+        copy?: (text: string) => void;
+        onCoords?: (handler: (coords: MapCoords | null) => void) => () => void;
       };
       shortcuts?: {
         set: (map: ShortcutMap) => Promise<Record<ShortcutAction, ShortcutStatus>>;

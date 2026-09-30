@@ -12,6 +12,7 @@ const { GameNetReader, captureFilter, describeInterfaces, pickInterfaces, payloa
 const { KNOWN_TYPES, codesHealth } = require("../desktop/game-net/known-types.cjs");
 const { readMarket } = require("../desktop/game-net/market.cjs");
 const { createWantedWatch } = require("../desktop/game-net/wanted.cjs");
+const { lookupMapCoords } = require("../desktop/game-net/map-coords.cjs");
 
 const hex = (s) => Buffer.from(s.replace(/\s+/g, ""), "hex");
 
@@ -480,4 +481,34 @@ test("lecteur : l'arrivée sur la carte de Ka'Youloud envoie l'alerte", () => {
   assert.equal(events.at(-1)?.type, "wanted-sighting");
   assert.equal(events.at(-1).monsters[0].name, "Ka'Youloud");
   assert.equal(reader.snapshot().lastWanted.text, "Ka'Youloud est sur cette carte.");
+});
+
+test("avis de recherche : les coordonnées de la carte complètent l'alerte", async () => {
+  const events = [];
+  const reader = new GameNetReader({
+    capturesDir: os.tmpdir(),
+    onEvent: (event) => events.push(event),
+    mapLookup: async () => ({ x: -56, y: 16 }),
+  });
+  const inbound = framed(event("jpo", mapPopulation(174851076, [groupActor(-20004, 4737, 170)])));
+  reader.handleLine(["1700000000.5", "5555", "9", "100", "", inbound.toString("hex")].join("\t"));
+  assert.equal(events.at(-1)?.coords, undefined);
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  assert.deepEqual(events.at(-1)?.coords, { x: -56, y: 16 });
+  assert.equal(reader.snapshot().lastWanted.coords.x, -56);
+});
+
+test("coordonnées : DofusDB map-positions, puis le cache", async () => {
+  const file = path.join(os.tmpdir(), `pupitre-maps-${Date.now()}.json`);
+  let calls = 0;
+  const fetchImpl = async () => {
+    calls += 1;
+    return { ok: true, json: async () => ({ posX: 8, posY: -68 }) };
+  };
+  const first = await lookupMapCoords(174851076, { cacheFile: file, fetchImpl });
+  const second = await lookupMapCoords(174851076, { cacheFile: file, fetchImpl });
+  assert.deepEqual(first, { x: 8, y: -68 });
+  assert.deepEqual(second, first);
+  assert.equal(calls, 1);
+  fs.rmSync(file, { force: true });
 });

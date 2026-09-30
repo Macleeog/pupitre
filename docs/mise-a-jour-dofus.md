@@ -77,7 +77,7 @@ Le plus souvent, seul le nom de trois lettres change. Les numéros de champs res
 | Tes ventes à l'HDV | `ket` | `MARKET_CODES.sellerListings` | `in`, à l'ouverture du mode vente. Champ `2` : une ligne par objet en vente, `1.2` = id d'objet, `1.3` = taille du lot (1, 10, 100), `2` = prix du lot. |
 | Prix du marché | `jzn` | `MARKET_CODES.itemPrices` | `in`, juste après le clic sur un objet en mode achat. Champ `1` : l'id d'objet. Champ `2.6` : les prix des lots, varints compactés, un 0 s'il n'y a pas de lot. L'ordre est 1, puis 10, puis 100, puis 1000. |
 | Demande de ce prix | `kde` | commentaire de `market.cjs` | `out`, juste avant `jzn`. Champ `2` : l'id de l'objet cliqué. Pupitre ne décode que la réponse. |
-| Population de la carte | `jpo` | `wanted.cjs` | `in`, en changeant de carte. Champ `6` : id de la carte. Champ `9` : un acteur. Un groupe de monstres a un id négatif (vers `-20000`) dans le champ `2`. Dans le groupe, champ `2` = id du monstre, champ `3` = niveau. |
+| Population de la carte | `jpo` | `wanted.cjs` | `in`, en changeant de carte. Champ `6` : id de la carte. Champ `9` : un acteur. Un groupe de monstres a un id négatif (vers `-20000`) dans le champ `2`. Dans le groupe, champ `2` = id du monstre, champ `3` = niveau. Les coordonnées `/travel` ne sont pas dans le paquet : DofusDB `map-positions/{id}` donne `posX` et `posY` pour cet id. |
 | Déplacement | `joq` / `jpt` | `wanted.cjs` | `joq` est `in`, champ `3` = id de l'acteur (négatif pour un groupe). `jpt` est `out`, champ `3` = id de la carte. |
 | Description d'un groupe | dans le lien de chat | `wanted.cjs` | Texte du genre `4x3851x200` puis `1x3838x200` : nombre, id de monstre, niveau. Champ `8` : id du groupe. Sert quand la population n'a pas été revue. |
 

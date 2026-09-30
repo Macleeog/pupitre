@@ -142,7 +142,7 @@ function WantedBanner() {
     name: monster.name,
     gfxId: monster.gfxId,
   }));
-  return <WantedSquares key={sighting.at} monsters={monsters} />;
+  return <WantedSquares key={sighting.at} monsters={monsters} coords={sighting.coords ?? null} />;
 }
 
 function UpdateBanner({ onOpen }: { onOpen: () => void }) {

@@ -19,6 +19,20 @@ contextBridge.exposeInMainWorld("pupitre", {
     setCount(count) {
       ipcRenderer.send("toast:count", count);
     },
+    moveBy(dx, dy) {
+      ipcRenderer.send("toast:move-by", dx, dy);
+    },
+    dragEnd() {
+      ipcRenderer.send("toast:drag-end");
+    },
+    copy(text) {
+      ipcRenderer.send("toast:copy", text);
+    },
+    onCoords(handler) {
+      const listener = (_event, coords) => handler(coords);
+      ipcRenderer.on("toast:coords", listener);
+      return () => ipcRenderer.removeListener("toast:coords", listener);
+    },
   },
   shortcuts: {
     set: (map) => ipcRenderer.invoke("shortcuts:set", map),

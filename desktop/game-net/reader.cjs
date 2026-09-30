@@ -141,11 +141,12 @@ function captureFilter(addresses) {
 const FIELDS = ["frame.time_epoch", "tcp.srcport", "tcp.stream", "tcp.seq_raw", "tcp.seq", "tcp.payload"];
 
 class GameNetReader {
-  constructor({ capturesDir, cacheFile = null, onState, onEvent, ownFighterIds = [], onOwnFighters }) {
+  constructor({ capturesDir, cacheFile = null, onState, onEvent, ownFighterIds = [], onOwnFighters, mapLookup = null }) {
     this.capturesDir = capturesDir;
     this.cacheFile = cacheFile;
     this.onState = onState;
     this.onEvent = onEvent;
+    this.mapLookup = mapLookup;
     this.child = null;
     this.timer = null;
     this.dirty = true;
@@ -171,11 +172,34 @@ class GameNetReader {
     this.lastMarket = null;
     this.lastWanted = null;
     this.wantedNotices = true;
+    this.wantedToken = null;
     this.wanted = createWantedWatch((event) => {
-      if (event.type === "wanted-sighting") this.lastWanted = event;
-      if (event.type === "wanted-absent") this.lastWanted = null;
+      if (event.type === "wanted-absent") {
+        this.wantedToken = null;
+        this.lastWanted = null;
+        this.dirty = true;
+        this.onEvent?.(event);
+        return;
+      }
+      if (event.type !== "wanted-sighting") return;
+      this.lastWanted = event;
       this.dirty = true;
       this.onEvent?.(event);
+      if (!this.mapLookup || !event.mapId) return;
+      const token = event.at;
+      this.wantedToken = token;
+      Promise.resolve()
+        .then(() => this.mapLookup(event.mapId))
+        .then((coords) => {
+          if (this.wantedToken !== token || !coords) return;
+          const next = { ...event, coords };
+          this.lastWanted = next;
+          this.dirty = true;
+          this.onEvent?.(next);
+        })
+        .catch(() => {
+          // The alert still stands without coordinates.
+        });
     });
     this.capture = null;
     this.status = "idle";

@@ -1,9 +1,10 @@
-const { app, BrowserWindow, dialog, globalShortcut, ipcMain, screen, shell } = require("electron");
+const { app, BrowserWindow, clipboard, dialog, globalShortcut, ipcMain, screen, shell } = require("electron");
 const { spawn } = require("node:child_process");
 const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
 const { GameNetReader } = require("./game-net/reader.cjs");
+const { lookupMapCoords, validCoords } = require("./game-net/map-coords.cjs");
 const { watchForUpdates } = require("./updates.cjs");
 
 const PORT = 47321;
@@ -353,10 +354,15 @@ function readGameNetwork(desk) {
     onState: (state) => toDesk("net:state", state),
     onEvent: (event) => {
       toDesk("game-event", event);
-      if (event.type === "wanted-absent") closeWantedToast();
-      if (event.type === "wanted-sighting" && reader.wantedNotices !== false) showWantedToast(event.monsters);
+      if (event.type === "wanted-absent") {
+        clearTimeout(toastTimer);
+        toastQueued = null;
+        closeWantedToast();
+      }
+      if (event.type === "wanted-sighting" && reader.wantedNotices !== false) queueWantedToast(event);
     },
     cacheFile: path.join(app.getPath("userData"), "game-servers.json"),
+    mapLookup: (mapId) => lookupMapCoords(mapId, { cacheFile: path.join(app.getPath("userData"), "map-coords.json") }),
     ownFighterIds: loadOwnFighters(),
     onOwnFighters: (ids) => writeJson("own-fighters.json", ids),
   });
@@ -420,13 +426,24 @@ child.on("exit", (code) => {
   if (code && code !== 0) pushLog(`exit ${code}`);
 });
 
-const TOAST_CARD = 128;
+const TOAST_W = 148;
+const TOAST_H = 168;
 const TOAST_GAP = 8;
 let wantedToast = null;
+let toastPlacement = null;
+let toastShownAt = null;
+let toastTimer = null;
+let toastQueued = null;
 let gameView = { bounds: () => null, handle: () => 0n };
 
 function toastHeight(count) {
-  return TOAST_CARD * count + TOAST_GAP * Math.max(0, count - 1);
+  return TOAST_H * count + TOAST_GAP * Math.max(0, count - 1);
+}
+
+function loadToastPlacement() {
+  const saved = readJson("toast.json");
+  if (Number.isFinite(saved?.x) && Number.isFinite(saved?.y)) return { x: Math.round(saved.x), y: Math.round(saved.y) };
+  return null;
 }
 
 function wantedCards(monsters) {
@@ -443,15 +460,26 @@ function wantedCards(monsters) {
 }
 
 function placeWantedToast(win, count) {
-  const width = TOAST_CARD;
+  const width = TOAST_W;
   const height = toastHeight(count);
   const game = gameView.bounds();
   const area = screen.getPrimaryDisplay().workArea;
-  const x = Math.round(game ? game.x + 16 : area.x + 16);
-  const y = Math.round(game ? game.y + 16 : area.y + 16);
+  const x = toastPlacement ? toastPlacement.x : Math.round(game ? game.x + 16 : area.x + 16);
+  const y = toastPlacement ? toastPlacement.y : Math.round(game ? game.y + 16 : area.y + 16);
   win.setMinimumSize(1, 1);
   win.setMaximumSize(4000, 4000);
   win.setBounds({ x, y, width, height });
+}
+
+function moveWantedToastBy(dx, dy) {
+  if (!wantedToast || wantedToast.isDestroyed()) return;
+  const bounds = wantedToast.getBounds();
+  const x = Math.round(bounds.x + dx);
+  const y = Math.round(bounds.y + dy);
+  wantedToast.setMinimumSize(1, 1);
+  wantedToast.setMaximumSize(4000, 4000);
+  wantedToast.setBounds({ x, y, width: bounds.width, height: bounds.height });
+  toastPlacement = { x, y };
 }
 
 function closeWantedToast(options = {}) {
@@ -463,16 +491,22 @@ function closeWantedToast(options = {}) {
   if (focused && options.focus !== false) focusGame(gameView.handle());
 }
 
-function showWantedToast(monsters) {
-  const cards = wantedCards(monsters);
+function showWantedToast(event) {
+  const cards = wantedCards(event?.monsters);
+  const coords = validCoords(event?.coords);
   if (cards.length === 0) {
     closeWantedToast();
     return;
   }
-  const url = `http://127.0.0.1:${PORT}/avis?m=${encodeURIComponent(JSON.stringify(cards))}`;
+  if (wantedToast && !wantedToast.isDestroyed() && toastShownAt === event.at) {
+    if (coords) wantedToast.webContents.send("toast:coords", coords);
+    return;
+  }
+  toastShownAt = event.at;
+  const url = `http://127.0.0.1:${PORT}/avis?m=${encodeURIComponent(JSON.stringify({ cards, coords }))}`;
   if (!wantedToast || wantedToast.isDestroyed()) {
     const win = new BrowserWindow({
-      width: TOAST_CARD,
+      width: TOAST_W,
       height: toastHeight(cards.length),
       frame: false,
       transparent: true,
@@ -480,7 +514,6 @@ function showWantedToast(monsters) {
       alwaysOnTop: true,
       skipTaskbar: true,
       resizable: false,
-      movable: false,
       hasShadow: false,
       show: false,
       focusable: true,
@@ -504,6 +537,22 @@ function showWantedToast(monsters) {
   if (!wantedToast.isVisible()) wantedToast.showInactive();
 }
 
+// Coordinates arrive a moment after the sighting. Wait briefly so the card opens once, with /travel.
+function queueWantedToast(event) {
+  if (event.coords) {
+    clearTimeout(toastTimer);
+    toastQueued = null;
+    showWantedToast(event);
+    return;
+  }
+  toastQueued = event;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    if (toastQueued) showWantedToast(toastQueued);
+    toastQueued = null;
+  }, 1500);
+}
+
 ipcMain.on("toast:count", (event, count) => {
   if (!wantedToast || wantedToast.isDestroyed() || event.sender !== wantedToast.webContents) return;
   const next = Number(count);
@@ -514,8 +563,29 @@ ipcMain.on("toast:count", (event, count) => {
   placeWantedToast(wantedToast, Math.min(3, next));
 });
 
+ipcMain.on("toast:move-by", (event, dx, dy) => {
+  if (!wantedToast || wantedToast.isDestroyed() || event.sender !== wantedToast.webContents) return;
+  if (!Number.isFinite(dx) || !Number.isFinite(dy)) return;
+  moveWantedToastBy(dx, dy);
+});
+
+ipcMain.on("toast:drag-end", (event) => {
+  if (!wantedToast || wantedToast.isDestroyed() || event.sender !== wantedToast.webContents) return;
+  if (toastPlacement) writeJson("toast.json", toastPlacement);
+  if (wantedToast.isFocused()) {
+    wantedToast.blur();
+    focusGame(gameView.handle());
+  }
+});
+
+ipcMain.on("toast:copy", (_event, text) => {
+  if (typeof text !== "string" || !/^\/travel -?\d{1,4},-?\d{1,4}$/.test(text)) return;
+  clipboard.writeText(text);
+});
+
 app.whenReady().then(async () => {
   if (process.platform === "win32") app.setAppUserModelId("app.pupitre.desk");
+  toastPlacement = loadToastPlacement();
   let network = null;
   const shutdown = () => {
     if (!child.killed) child.kill();

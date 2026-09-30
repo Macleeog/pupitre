@@ -1,20 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { parseWantedCards, WantedToast, type WantedCard } from "@/components/pupitre/wanted-toast";
+import { cardsFromValue, coordsFromValue, WantedToast, type WantedCard } from "@/components/pupitre/wanted-toast";
+import type { MapCoords } from "@/pupitre-desktop";
 
 export const Route = createFileRoute("/avis")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    m: cardsFromSearch(search.m),
-  }),
+  validateSearch: (search: Record<string, unknown>): { cards: WantedCard[]; coords: MapCoords | null } => {
+    const value = typeof search.m === "string" ? safeParse(search.m) : search.m;
+    return { cards: cardsFromValue(value), coords: coordsFromValue(value) };
+  },
   component: AvisRoute,
 });
 
-function cardsFromSearch(value: unknown): WantedCard[] {
-  if (Array.isArray(value)) return parseWantedCards(JSON.stringify(value));
-  if (typeof value === "string") return parseWantedCards(value);
-  return [];
+function safeParse(value: string): unknown {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
 }
 
 function AvisRoute() {
-  const { m } = Route.useSearch();
-  return <WantedToast cards={m} />;
+  const { cards, coords } = Route.useSearch();
+  return <WantedToast cards={cards} coords={coords} />;
 }

@@ -3,6 +3,7 @@ import { FolderOpen, RotateCw, Store, Swords, Circle, Square, TriangleAlert, Use
 import { fightLoot, hasLoot, useNetState } from "@/lib/pupitre/game-net";
 import { useItemNames } from "@/lib/pupitre/items";
 import { usePupitre } from "@/lib/pupitre/store";
+import { travelCommand } from "@/components/pupitre/wanted-toast";
 import type { FightEnd, FightEvent, NetState, NetStatus } from "@/pupitre-desktop";
 
 const STATUS: Record<NetStatus, { label: string; tone: string }> = {
@@ -194,7 +195,9 @@ function OwnFighters({ ids }: { ids: string[] }) {
 
 function WantedNotice({ now }: { now: number }) {
   const sighting = usePupitre((state) => state.lastWanted);
+  const [copied, setCopied] = useState(false);
   const fresh = sighting !== null && now - sighting.at < 10 * 60 * 1000;
+  const command = fresh && sighting ? travelCommand(sighting.coords) : null;
   return (
     <section className="rounded-card border border-edge bg-moss p-4">
       <h2 className="font-medium text-fog">Avis de recherche</h2>
@@ -203,6 +206,26 @@ function WantedNotice({ now }: { now: number }) {
           ? `${sighting.text} Repéré ${ago(sighting.at, now)}.`
           : "Aucun sur la carte actuelle. Pupitre prévient en arrivant sur une carte qui en a un."}
       </p>
+      {command && sighting?.coords ? (
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <p className="text-sm text-fog">
+            <span className="text-mist">
+              {sighting.coords.x},{sighting.coords.y}
+            </span>{" "}
+            <span className="font-medium">{command}</span>
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              window.pupitre?.toast?.copy?.(command);
+              void navigator.clipboard?.writeText(command).finally(() => setCopied(true));
+            }}
+            className="min-h-11 rounded-full border border-edge px-4 text-sm font-medium text-fog"
+          >
+            {copied ? "Copié" : "Copier"}
+          </button>
+        </div>
+      ) : null}
     </section>
   );
 }
