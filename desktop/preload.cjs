@@ -37,6 +37,7 @@ contextBridge.exposeInMainWorld("pupitre", {
     openFolder: () => ipcRenderer.invoke("net:open-folder"),
     forgetOwn: () => ipcRenderer.invoke("net:forget-own"),
     setActive: (active) => ipcRenderer.send("net:set-active", active),
+    setWantedNotices: (enabled) => ipcRenderer.send("net:set-wanted-notices", enabled),
     onState(handler) {
       const listener = (_event, state) => handler(state);
       ipcRenderer.on("net:state", listener);

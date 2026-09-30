@@ -30,8 +30,10 @@ export function Desk() {
 
   useEffect(() => {
     const syncReader = () => {
-      const { farm, tab } = usePupitre.getState();
-      window.pupitre?.net?.setActive?.(farm.status === "running" || tab === "reseau");
+      const { farm, tab, wantedNotices } = usePupitre.getState();
+      const notices = wantedNotices !== false;
+      window.pupitre?.net?.setActive?.(farm.status === "running" || tab === "reseau" || notices);
+      window.pupitre?.net?.setWantedNotices?.(notices);
     };
     const unsub = usePupitre.subscribe(syncReader);
     void Promise.resolve(usePupitre.persist.rehydrate()).then(() => {
@@ -81,6 +83,7 @@ export function Desk() {
           ) : null}
         </div>
         <UpdateBanner onOpen={() => setTab("reglages")} />
+        <WantedBanner />
       </header>
 
       <main className={"mx-auto w-full px-4 pt-5 pb-28 " + frame}>
@@ -121,6 +124,24 @@ export function Desk() {
           })}
         </div>
       </nav>
+    </div>
+  );
+}
+
+function WantedBanner() {
+  const sighting = usePupitre((state) => state.lastWanted);
+  const enabled = usePupitre((state) => state.wantedNotices);
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!sighting) return;
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [sighting]);
+  if (enabled === false || !sighting || now - sighting.at > 10 * 60 * 1000) return null;
+  return (
+    <div className="rounded-card border border-lamp/60 bg-canopy px-4 py-3 text-sm text-fog">
+      <p className="font-medium">Avis de recherche</p>
+      <p className="mt-0.5">{sighting.text}</p>
     </div>
   );
 }
