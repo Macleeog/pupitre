@@ -43,7 +43,7 @@ Optionnel. Avec [Wireshark](https://www.wireshark.org/download.html) installé (
 - **Prix de l'hôtel des ventes** : Pupitre lit les prix que l'HDV t'affiche, en mode vente (tes objets en vente) comme en mode achat (le prix du marché quand tu cliques un objet). Il garde le lot le moins cher par unité (lots de 1, 10 ou 100) et l'applique aux ressources de la session, badge « HDV ». Un prix tapé à la main n'est jamais remplacé. Liste et bouton **Oublier** dans Réseau. Les deux messages décodés (`desktop/game-net/market.cjs`) viennent de captures du 29/09/2026, pas de Blitzkrieg.
 - **Capturer les paquets** : enregistre chaque message décodé dans `%APPDATA%\Pupitre\packet-captures\capture-….ndjson`, une ligne JSON par message.
 
-Les codes des messages de combat (`desktop/game-net/fights.cjs`) viennent de Blitzkrieg 1.42 (licence MIT). Ankama les renomme aux mises à jour : quand la plupart des types reçus sont inconnus (`desktop/game-net/known-types.cjs`), l'onglet Réseau affiche une alerte. Une capture pendant un combat permet de retrouver les nouveaux codes.
+Les codes des messages de combat (`desktop/game-net/fights.cjs`) viennent de Blitzkrieg 1.42 (licence MIT). Ankama les renomme aux mises à jour : quand la plupart des types reçus sont inconnus (`desktop/game-net/known-types.cjs`), l'onglet Réseau affiche une alerte. Une capture pendant un combat permet de retrouver les nouveaux codes. La marche à suivre est dans [docs/mise-a-jour-dofus.md](docs/mise-a-jour-dofus.md).
 
 Les conditions d'utilisation d'Ankama interdisent les logiciels tiers qui lisent le trafic du jeu. À tes risques pour ton compte.
 
