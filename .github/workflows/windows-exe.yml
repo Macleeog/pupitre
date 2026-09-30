@@ -30,24 +30,11 @@ jobs:
             dist-electron/*.blockmap
             dist-electron/latest*.yml
             dist-electron/beta*.yml
-      # The source repo is private, so its releases answer 404 and the app cannot see them.
-      # The installer is published on the public repo Macleeog/pupitre-releases, which has no source.
-      # RELEASES_TOKEN is a fine-grained token with Contents read/write on that repo only.
-      - name: Check the downloads token
-        if: startsWith(github.ref, 'refs/tags/')
-        shell: bash
-        env:
-          RELEASES_TOKEN: ${{ secrets.RELEASES_TOKEN }}
-        run: |
-          if [ -z "$RELEASES_TOKEN" ]; then
-            echo "Secret RELEASES_TOKEN manquant. Il ne lit pas le code : il publie seulement l'installeur sur Macleeog/pupitre-releases."
-            exit 1
-          fi
+      # The installer is attached to a release of this same repo. The repo has to be public
+      # at that moment, otherwise installed copies get a 404 on releases.atom.
       - uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          repository: Macleeog/pupitre-releases
-          token: ${{ secrets.RELEASES_TOKEN }}
           files: |
             dist-electron/*.exe
             dist-electron/*.blockmap

@@ -6,7 +6,7 @@ import { useUpdateState } from "@/lib/pupitre/updates";
 import { ShortcutsView } from "@/components/pupitre/shortcuts-view";
 import type { OverlaySize, UpdateState } from "@/pupitre-desktop";
 
-const RELEASES = "https://github.com/Macleeog/pupitre-releases/releases";
+const RELEASES = "https://github.com/Macleeog/pupitre/releases";
 
 export function SettingsView() {
   return (
