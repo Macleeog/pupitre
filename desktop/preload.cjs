@@ -6,6 +6,9 @@ contextBridge.exposeInMainWorld("pupitre", {
     ipcRenderer.on("farm-command", listener);
     return () => ipcRenderer.removeListener("farm-command", listener);
   },
+  overlayDragStart() {
+    ipcRenderer.send("overlay:drag-start");
+  },
   overlayMoveBy(dx, dy) {
     ipcRenderer.send("overlay:move-by", dx, dy);
   },

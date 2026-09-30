@@ -135,6 +135,8 @@ function OverlayCard() {
   const setSize = usePupitre((state) => state.setOverlaySize);
   const buttons = usePupitre((state) => state.overlayButtons);
   const setButtons = usePupitre((state) => state.setOverlayButtons);
+  const opacity = usePupitre((state) => state.overlayOpacity);
+  const setOpacity = usePupitre((state) => state.setOverlayOpacity);
   const capacity = overlayCapacity(size, buttons);
   return (
     <section className="rounded-card border border-edge bg-moss p-4">
@@ -157,6 +159,32 @@ function OverlayCard() {
             <span className="block text-xs">{entry.hint}</span>
           </button>
         ))}
+      </div>
+      <div className="mt-4">
+        <div className="flex items-baseline justify-between gap-3">
+          <label htmlFor="overlay-opacity" className="text-sm font-medium text-fog">
+            Opacité
+          </label>
+          <span className="text-sm text-mist">{opacity} % opaque</span>
+        </div>
+        <input
+          id="overlay-opacity"
+          type="range"
+          min={20}
+          max={100}
+          step={1}
+          value={opacity}
+          onChange={(event) => setOpacity(Number(event.target.value))}
+          aria-valuemin={20}
+          aria-valuemax={100}
+          aria-valuenow={opacity}
+          aria-valuetext={`${opacity} % opaque`}
+          className="mt-1 h-11 w-full cursor-pointer accent-[var(--color-lamp)]"
+        />
+        <div className="flex justify-between text-xs text-mist">
+          <span>Transparent</span>
+          <span>Opaque</span>
+        </div>
       </div>
       <ul className="mt-3 grid gap-1 sm:grid-cols-2">
         {OVERLAY_FIELDS.map((field) => {
@@ -191,7 +219,8 @@ function OverlayCard() {
       </ul>
       <p className="mt-2 text-xs text-mist">
         Le {size === "compact" ? "petit" : "grand"} bandeau affiche {capacity} info{capacity > 1 ? "s" : ""}
-        {buttons ? " avec les boutons" : " sans les boutons"}. Il garde sa taille quand tu le déplaces.
+        {buttons ? " avec les boutons" : " sans les boutons"}. Glisse-le sur la fenêtre du jeu pour le
+        déplacer. À 100 % il cache le jeu, à 50 % le jeu se voit à travers, à 20 % il est très transparent.
       </p>
     </section>
   );

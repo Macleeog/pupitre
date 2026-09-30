@@ -150,7 +150,63 @@ function moveOverlay(overlay, x, y) {
   const next = { x: Math.round(x), y: Math.round(y), ...overlaySize(overlay) };
   const current = overlay.getBounds();
   if (current.x === next.x && current.y === next.y && current.width === next.width && current.height === next.height) return;
-  overlay.setBounds(next);
+  // A window whose minimum size equals its maximum ignores setBounds position changes on Windows.
+  // Unlock for the move, then lock again so display scaling cannot grow the bandeau.
+  const { width, height } = overlaySize(overlay);
+  overlay.pupitreMoving = true;
+  try {
+    overlay.setMinimumSize(1, 1);
+    overlay.setMaximumSize(4000, 4000);
+    overlay.setBounds(next);
+    overlay.setMinimumSize(width, height);
+    overlay.setMaximumSize(width, height);
+  } finally {
+    overlay.pupitreMoving = false;
+  }
+}
+
+function windowHandle(win) {
+  const buf = win.getNativeWindowHandle();
+  const value = buf.length >= 8 ? buf.readBigUInt64LE(0) : BigInt(buf.readUInt32LE(0));
+  if (value === 0n) return 0n;
+  return value > 9223372036854775807n ? value - 18446744073709551616n : value;
+}
+
+// Windows only lets the foreground process move the foreground. The bandeau is foreground while
+// it is being dragged, so this attaches to that thread and hands the keyboard back to Dofus.
+function focusGame(hwnd) {
+  if (process.platform !== "win32" || typeof hwnd !== "bigint" || hwnd === 0n) return;
+  const signed = hwnd > 9223372036854775807n ? hwnd - 18446744073709551616n : hwnd;
+  if (signed < -9223372036854775808n || signed > 9223372036854775807n) return;
+  const script = `
+Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+public static class PupitreFocus {
+  [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
+  [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
+  [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint pid);
+  [DllImport("kernel32.dll")] public static extern uint GetCurrentThreadId();
+  [DllImport("user32.dll")] public static extern bool AttachThreadInput(uint a, uint b, bool attach);
+  public static void Focus(long raw) {
+    IntPtr target = new IntPtr(raw);
+    IntPtr foreground = GetForegroundWindow();
+    uint pid;
+    uint foreThread = GetWindowThreadProcessId(foreground, out pid);
+    uint appThread = GetCurrentThreadId();
+    if (foreThread != 0 && foreThread != appThread) AttachThreadInput(foreThread, appThread, true);
+    SetForegroundWindow(target);
+    if (foreThread != 0 && foreThread != appThread) AttachThreadInput(foreThread, appThread, false);
+  }
+}
+'@
+[PupitreFocus]::Focus(${signed.toString()})
+`;
+  spawn(
+    "powershell.exe",
+    ["-NoProfile", "-ExecutionPolicy", "Bypass", "-EncodedCommand", Buffer.from(script, "utf16le").toString("base64")],
+    { windowsHide: true, stdio: "ignore" },
+  );
 }
 
 function lockOverlaySize(overlay, size) {
@@ -164,7 +220,7 @@ function lockOverlaySize(overlay, size) {
 }
 
 function followDofus(overlay) {
-  const state = { game: null, placement: loadPlacement(), dragging: false, hiddenByUser: false };
+  const state = { game: null, gameHwnd: 0n, placement: loadPlacement(), dragging: false, hiddenByUser: false };
   lockOverlaySize(overlay, state.placement.size);
 
   const resize = (size) => {
@@ -197,6 +253,11 @@ function followDofus(overlay) {
     moveOverlay(overlay, state.game.x + state.game.width - width - right, state.game.y + top);
   };
 
+  ipcMain.on("overlay:drag-start", (event) => {
+    if (event.sender !== overlay.webContents) return;
+    state.dragging = true;
+  });
+
   ipcMain.on("overlay:move-by", (event, dx, dy) => {
     if (event.sender !== overlay.webContents || !Number.isFinite(dx) || !Number.isFinite(dy)) return;
     state.dragging = true;
@@ -204,18 +265,26 @@ function followDofus(overlay) {
     moveOverlay(overlay, x + dx, y + dy);
   });
 
+  const releaseToGame = () => {
+    if (!overlay.isDestroyed()) overlay.blur();
+    focusGame(state.gameHwnd);
+  };
+
   ipcMain.on("overlay:drag-end", (event) => {
     if (event.sender !== overlay.webContents) return;
+    const wasDragging = state.dragging;
     state.dragging = false;
-    if (!state.game) return;
-    const bounds = overlay.getBounds();
-    state.placement = {
-      right: Math.round(state.game.x + state.game.width - bounds.x - bounds.width),
-      top: Math.round(bounds.y - state.game.y),
-      size: overlay.pupitreSize,
-    };
-    writeJson("overlay.json", state.placement);
-    place();
+    if (wasDragging && state.game) {
+      const bounds = overlay.getBounds();
+      state.placement = {
+        right: Math.round(state.game.x + state.game.width - bounds.x - bounds.width),
+        top: Math.round(bounds.y - state.game.y),
+        size: overlay.pupitreSize,
+      };
+      writeJson("overlay.json", state.placement);
+      place();
+    }
+    releaseToGame();
   });
 
   if (process.platform !== "win32") {
@@ -226,7 +295,9 @@ function followDofus(overlay) {
   }
 
   // The script sits inside app.asar in the packaged exe, where powershell.exe cannot open it by path.
-  const script = fs.readFileSync(path.join(__dirname, "follow-dofus.ps1"), "utf8");
+  const script = fs
+    .readFileSync(path.join(__dirname, "follow-dofus.ps1"), "utf8")
+    .replaceAll("__OVERLAY_HWND__", windowHandle(overlay).toString());
   const child = spawn(
     "powershell.exe",
     ["-NoProfile", "-ExecutionPolicy", "Bypass", "-EncodedCommand", Buffer.from(script, "utf16le").toString("base64")],
@@ -247,8 +318,9 @@ function followDofus(overlay) {
       return;
     }
     const parts = line.split(",").map((part) => Number(part));
-    if (parts.length !== 5 || parts.some((part) => !Number.isFinite(part))) return;
+    if (parts.length < 5 || parts.slice(0, 5).some((part) => !Number.isFinite(part))) return;
     const [left, top, right, bottom, front] = parts;
+    if (parts.length >= 6 && Number.isFinite(parts[5])) state.gameHwnd = BigInt(Math.trunc(parts[5]));
     state.game = screen.screenToDipRect(null, {
       x: left,
       y: top,
@@ -384,25 +456,26 @@ app.whenReady().then(async () => {
     autoHideMenuBar: true,
     webPreferences: webPreferences(),
   });
-  // Solid on purpose. A transparent always-on-top window is a layered window: Windows blends it
-  // over Dofus on every frame the game draws. An opaque rectangle stays a single compositor quad,
-  // and thickFrame off skips the extra frame shadow. The clock keeps real time while Dofus is in
-  // front; the desk window stays throttled.
+  // Layered on purpose: the card opacity is a slider, and partial alpha needs a transparent window.
+  // thickFrame off skips the extra frame shadow. The clock keeps real time while Dofus is in front;
+  // the desk window stays throttled. focusable so a click reaches the page (an unfocusable window
+  // drops pointer events on Windows). The keyboard is handed back to Dofus when the pointer goes up.
   const overlay = new BrowserWindow({
     ...OVERLAY_SIZES.compact,
     frame: false,
-    transparent: false,
+    transparent: true,
     thickFrame: false,
     alwaysOnTop: true,
     skipTaskbar: true,
     resizable: false,
     hasShadow: false,
     show: false,
-    focusable: false,
-    backgroundColor: "#1a120c",
+    focusable: true,
+    backgroundColor: "#00000000",
     webPreferences: webPreferences({ backgroundThrottling: false }),
   });
   overlay.on("resize", () => {
+    if (overlay.pupitreMoving) return;
     const [width, height] = overlay.getSize();
     const size = overlaySize(overlay);
     if (width === size.width && height === size.height) return;

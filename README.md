@@ -19,7 +19,7 @@ Il faut Windows 10 ou 11, 64 bits. Rien d’autre : pas de Node, pas de compte P
 
 Ensuite, Pupitre se met à jour tout seul : il cherche une nouvelle version au lancement puis toutes les 4 heures, la télécharge, et l’installe au redémarrage (bouton **Redémarrer**, ou à la prochaine fermeture). Une version de test (beta) reçoit aussi les betas suivantes. Les anciennes versions en zip ne se mettent pas à jour : installe le Setup une fois, tes sessions et réglages sont repris.
 
-Dans l’exe, le bandeau de session suit la fenêtre Dofus au premier plan (ou la première ouverte) et ne s’affiche que quand Dofus est devant. Glisse-le où tu veux : sa place par rapport à la fenêtre du jeu est retenue, et il garde sa taille. Dans **Réglages**, choisis sa taille (petit 300 × 150 ou grand 380 × 210), les infos affichées (kamas/heure, valeur gagnée, kamas des combats, objets, combats, donjons) et les boutons.
+Dans l’exe, le bandeau de session suit la fenêtre Dofus au premier plan (ou la première ouverte) et ne s’affiche que quand Dofus est devant. Glisse-le pour le poser où tu veux sur la fenêtre du jeu : sa place est retenue, et il garde sa taille. Dans **Réglages**, choisis sa taille (petit 300 × 150 ou grand 380 × 210), son opacité (de transparent à opaque) et les infos affichées (kamas/heure, valeur gagnée, kamas des combats, objets, combats, donjons) et les boutons.
 
 Raccourcis par défaut, modifiables dans l'onglet **Réglages** (bouton Modifier, puis la combinaison ; Échap annule) :
 

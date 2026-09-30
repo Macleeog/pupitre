@@ -82,6 +82,7 @@ declare global {
   interface Window {
     pupitre?: {
       onFarmCommand: (handler: (command: FarmCommand) => void) => () => void;
+      overlayDragStart?: () => void;
       overlayMoveBy?: (dx: number, dy: number) => void;
       overlayDragEnd?: () => void;
       shortcuts?: {
