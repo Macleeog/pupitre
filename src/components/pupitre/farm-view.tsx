@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Swords, Trash2, Undo2 } from "lucide-react";
+import { Eraser, Plus, Store, Swords, Trash2, Undo2 } from "lucide-react";
 import {
   averageMs,
   elapsedMs,
@@ -13,7 +13,8 @@ import {
 } from "@/lib/pupitre/farm";
 import { searchItems, useItemNames, type CatalogItem } from "@/lib/pupitre/items";
 import { formatAccelerator } from "@/lib/pupitre/shortcuts";
-import { usePupitre, type FarmHistoryEntry } from "@/lib/pupitre/store";
+import { HistoryCharts } from "@/components/pupitre/history-view";
+import { usePupitre, type FarmHistoryEntry, type ResourcePatch } from "@/lib/pupitre/store";
 import type { FarmResource, FightLogEntry } from "@/lib/pupitre/farm";
 
 const STATUS_LABEL: Record<FarmStatus, string> = {
@@ -30,6 +31,7 @@ export function FarmView() {
   const startFarm = usePupitre((state) => state.startFarm);
   const pauseFarm = usePupitre((state) => state.pauseFarm);
   const finishFarm = usePupitre((state) => state.finishFarm);
+  const resetFarm = usePupitre((state) => state.resetFarm);
   const addCombat = usePupitre((state) => state.addCombat);
   const addDonjon = usePupitre((state) => state.addDonjon);
   const addResource = usePupitre((state) => state.addResource);
@@ -39,18 +41,15 @@ export function FarmView() {
   const undoFightLoot = usePupitre((state) => state.undoFightLoot);
   const shortcuts = usePupitre((state) => state.shortcuts);
   const [selected, setSelected] = useState<string | null>(null);
-  const [now, setNow] = useState(() => Date.now());
-
-  useEffect(() => {
-    if (farm.status !== "running") return;
-    const timer = window.setInterval(() => setNow(Date.now()), 250);
-    return () => window.clearInterval(timer);
-  }, [farm.status]);
-
-  const elapsed = elapsedMs(farm, now);
-  const totals = snapshot(farm, elapsed);
+  const totals = snapshot(farm, elapsedMs(farm, Date.now()));
   const counting = farm.status === "running" || farm.status === "paused";
-  const hours = elapsed / 3_600_000;
+  const sessionEmpty =
+    farm.status === "idle" &&
+    farm.combats === 0 &&
+    farm.donjons === 0 &&
+    (farm.kamas ?? 0) === 0 &&
+    !farm.jackpot &&
+    farm.resources.every((resource) => !resource.qty);
 
   return (
     <div className="flex flex-col gap-4">
@@ -124,7 +123,8 @@ export function FarmView() {
               <p className="mt-3 text-xs text-mist">
                 Dans l'exe, un bandeau suit la fenêtre Dofus. {formatAccelerator(shortcuts.start)} démarre,{" "}
                 {formatAccelerator(shortcuts.pause)} pause, {formatAccelerator(shortcuts.stop)} termine,{" "}
-                {formatAccelerator(shortcuts.combat)} ajoute un combat. À changer dans l'onglet Raccourcis.
+                {formatAccelerator(shortcuts.combat)} ajoute un combat, {formatAccelerator(shortcuts.reset)} efface. À
+                changer dans l'onglet Réglages.
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button
@@ -144,22 +144,10 @@ export function FarmView() {
                   +1 donjon
                 </button>
               </div>
+              <ClearSession empty={sessionEmpty} onClear={resetFarm} />
             </section>
 
-            <section className="rounded-card border border-edge bg-moss p-4">
-              <p className="text-xs font-medium tracking-widest text-mist uppercase">Mesures en temps réel</p>
-              <div className="mt-3 grid grid-cols-3 gap-2">
-                <Measure label="Durée" value={formatDuration(elapsed)} />
-                <Measure label="Combats" value={String(farm.combats)} />
-                <Measure label="Donjons" value={String(farm.donjons)} />
-                <Measure label="Combats/h" value={formatDecimal(perHour(farm.combats, elapsed))} />
-                <Measure label="Donjons/h" value={formatDecimal(perHour(farm.donjons, elapsed))} />
-                <Measure label="Moy. combat" value={formatDuration(averageMs(elapsed, farm.combats))} />
-              </div>
-              <div className="mt-2">
-                <Measure label="Moy. donjon" value={formatDuration(averageMs(elapsed, farm.donjons))} />
-              </div>
-            </section>
+            <LiveMeasures />
           </div>
 
           <div className="grid gap-3 lg:grid-cols-[1.4fr_0.8fr]">
@@ -264,33 +252,20 @@ export function FarmView() {
                 value={farm.jackpot}
                 onChange={(value) => patchFarm({ jackpot: value })}
               />
-              <ProfitCard
-                title="Rentabilité normale · hors jackpot"
-                value={totals.normal}
-                elapsed={elapsed}
-                hours={hours}
-                combats={farm.combats}
-                donjons={farm.donjons}
-              />
-              <ProfitCard
-                title="Rentabilité totale · avec jackpot"
-                value={totals.total}
-                elapsed={elapsed}
-                hours={hours}
-                combats={farm.combats}
-                donjons={farm.donjons}
-                emphasis
-              />
+              <LiveProfit />
             </section>
           </div>
           <p className="text-sm text-mist">
-            Les objets viennent du catalogue Dofus 3 (DofusDB). Le prix unitaire, c'est le tien. Dans l'exe, l'onglet
-            Réseau peut ajouter seul les combats, les kamas et le butin de fin de combat.
+            Les objets viennent du catalogue Dofus 3 (DofusDB). Dans l'exe, l'onglet Réseau ajoute seul les combats, les
+            kamas et le butin, et reprend les prix que tu vois à l'hôtel des ventes. Un prix tapé à la main reste le tien.
           </p>
           <FightLog entries={farm.fightLog ?? []} resources={farm.resources} onUndo={undoFightLoot} />
           <section>
             <h3 className="mb-2 text-xs font-medium tracking-widest text-mist uppercase">Historique</h3>
-            <HistoryList entries={history} onRemove={removeFarmHistory} />
+            <div className="flex flex-col gap-3">
+              <HistoryCharts entries={history} />
+              <HistoryList entries={history} onRemove={removeFarmHistory} />
+            </div>
           </section>
     </div>
   );
@@ -303,7 +278,7 @@ function ResourceName({
 }: {
   resource: FarmResource;
   onFocus: () => void;
-  onPatch: (patch: Partial<Pick<FarmResource, "name" | "qty" | "price" | "itemId" | "icon" | "typeName" | "level">>) => void;
+  onPatch: (patch: ResourcePatch) => void;
 }) {
   const [editing, setEditing] = useState(false);
   const [hits, setHits] = useState<CatalogItem[]>([]);
@@ -367,7 +342,7 @@ function ResourceName({
           className="min-h-11 min-w-0 flex-1 rounded-lg bg-transparent px-2"
         />
       </div>
-      {linked || resource.fromFight ? (
+      {linked || resource.fromFight || resource.priceFrom === "hdv" ? (
         <p className="flex flex-wrap items-center gap-x-2 px-2 text-xs text-mist">
           {resource.fromFight ? (
             <span
@@ -376,6 +351,15 @@ function ResourceName({
             >
               <Swords className="size-3" aria-hidden="true" />
               combat
+            </span>
+          ) : null}
+          {resource.priceFrom === "hdv" ? (
+            <span
+              className="inline-flex items-center gap-1 rounded-full border border-edge px-1.5 text-fog"
+              title="Prix lu à l'hôtel des ventes. Tape un prix pour garder le tien."
+            >
+              <Store className="size-3" aria-hidden="true" />
+              HDV
             </span>
           ) : null}
           {linked
@@ -402,7 +386,9 @@ function ResourceName({
                     icon: item.icon,
                     typeName: item.typeName,
                     level: item.level,
-                    price: !resource.price && item.price > 1 ? String(item.price) : undefined,
+                    ...(!resource.price && item.price > 1
+                      ? { price: String(item.price), priceFrom: "catalog" as const }
+                      : {}),
                   });
                 }}
               >
@@ -476,6 +462,67 @@ function FightLog({
         ))}
       </ul>
     </section>
+  );
+}
+
+function useTickingNow(running: boolean): number {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!running) return;
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [running]);
+  return now;
+}
+
+function LiveMeasures() {
+  const farm = usePupitre((state) => state.farm);
+  const now = useTickingNow(farm.status === "running");
+  const elapsed = elapsedMs(farm, now);
+  return (
+    <section className="rounded-card border border-edge bg-moss p-4">
+      <p className="text-xs font-medium tracking-widest text-mist uppercase">Mesures en temps réel</p>
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        <Measure label="Durée" value={formatDuration(elapsed)} />
+        <Measure label="Combats" value={String(farm.combats)} />
+        <Measure label="Donjons" value={String(farm.donjons)} />
+        <Measure label="Combats/h" value={formatDecimal(perHour(farm.combats, elapsed))} />
+        <Measure label="Donjons/h" value={formatDecimal(perHour(farm.donjons, elapsed))} />
+        <Measure label="Moy. combat" value={formatDuration(averageMs(elapsed, farm.combats))} />
+      </div>
+      <div className="mt-2">
+        <Measure label="Moy. donjon" value={formatDuration(averageMs(elapsed, farm.donjons))} />
+      </div>
+    </section>
+  );
+}
+
+function LiveProfit() {
+  const farm = usePupitre((state) => state.farm);
+  const now = useTickingNow(farm.status === "running");
+  const elapsed = elapsedMs(farm, now);
+  const totals = snapshot(farm, elapsed);
+  const hours = elapsed / 3_600_000;
+  return (
+    <>
+      <ProfitCard
+        title="Rentabilité normale · hors jackpot"
+        value={totals.normal}
+        elapsed={elapsed}
+        hours={hours}
+        combats={farm.combats}
+        donjons={farm.donjons}
+      />
+      <ProfitCard
+        title="Rentabilité totale · avec jackpot"
+        value={totals.total}
+        elapsed={elapsed}
+        hours={hours}
+        combats={farm.combats}
+        donjons={farm.donjons}
+        emphasis
+      />
+    </>
   );
 }
 
@@ -593,5 +640,38 @@ function HistoryList({
         </li>
       ))}
     </ul>
+  );
+}
+
+function ClearSession({ empty, onClear }: { empty: boolean; onClear: () => void }) {
+  const [armed, setArmed] = useState(false);
+
+  useEffect(() => {
+    if (!armed) return;
+    const timer = window.setTimeout(() => setArmed(false), 3000);
+    return () => window.clearTimeout(timer);
+  }, [armed]);
+
+  return (
+    <button
+      type="button"
+      disabled={empty}
+      onClick={() => {
+        if (!armed) {
+          setArmed(true);
+          return;
+        }
+        setArmed(false);
+        onClear();
+      }}
+      title="Remet la durée, les combats, les kamas et les quantités à zéro, sans ranger la session dans l'historique."
+      className={
+        "mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border text-sm disabled:opacity-40 " +
+        (armed ? "border-clay bg-clay/20 text-fog" : "border-clay/40 text-clay")
+      }
+    >
+      <Eraser className="size-4" aria-hidden="true" />
+      {armed ? "Confirmer l'effacement" : "Effacer la session"}
+    </button>
   );
 }

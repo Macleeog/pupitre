@@ -10,6 +10,7 @@ public static class PupitreWin {
 '@
 Add-Type -TypeDefinition $signature
 # Match the game process only: window titles also match browser tabs such as DofusDB.
+$last = ""
 while ($true) {
   $windows = @(Get-Process -Name "Dofus*" -ErrorAction SilentlyContinue |
     Where-Object { $_.MainWindowHandle -ne 0 })
@@ -18,10 +19,14 @@ while ($true) {
   if ($null -eq $target) { $target = $windows | Select-Object -First 1 }
   $rect = New-Object PupitreWin+RECT
   if ($null -eq $target -or [PupitreWin]::IsIconic($target.MainWindowHandle) -or -not [PupitreWin]::GetWindowRect($target.MainWindowHandle, [ref]$rect)) {
-    Write-Output "none"
+    $line = "none"
   } else {
     $front = if ($target.MainWindowHandle -eq $foreground) { 1 } else { 0 }
-    Write-Output ("{0},{1},{2},{3},{4}" -f $rect.Left, $rect.Top, $rect.Right, $rect.Bottom, $front)
+    $line = "{0},{1},{2},{3},{4}" -f $rect.Left, $rect.Top, $rect.Right, $rect.Bottom, $front
   }
-  Start-Sleep -Milliseconds 300
+  if ($line -ne $last) {
+    $last = $line
+    Write-Output $line
+  }
+  Start-Sleep -Milliseconds 400
 }

@@ -1,17 +1,39 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
-import { elapsedMs, formatDuration, formatKamas, perHour, snapshot } from "@/lib/pupitre/farm";
+import { elapsedMs, formatDuration, snapshot } from "@/lib/pupitre/farm";
 import { applyFarmCommand, bindFarmHotkeys, bindFarmSync } from "@/lib/pupitre/farm-sync";
+import { overlayCapacity, overlayStat } from "@/lib/pupitre/overlay";
 import { usePupitre } from "@/lib/pupitre/store";
+
+const STATUS = { idle: "Prête", running: "En cours", paused: "En pause", done: "Terminée" } as const;
 
 export function Overlay() {
   const farm = usePupitre((state) => state.farm);
+  const fields = usePupitre((state) => state.overlayFields);
+  const size = usePupitre((state) => state.overlaySize);
+  const buttons = usePupitre((state) => state.overlayButtons);
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     void usePupitre.persist.rehydrate();
     document.documentElement.style.background = "transparent";
     document.body.style.background = "transparent";
-    return bindFarmSync();
+    const unbindSync = bindFarmSync();
+    // Settings changed on the desk reach this window through shared storage, so its own saves
+    // never write stale ones back. The farm is left out: it has its own channel.
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== "pupitre-dofus3" || !event.newValue) return;
+      try {
+        const { farm: _farm, farmHistory: _history, ...settings } = JSON.parse(event.newValue).state ?? {};
+        usePupitre.setState(settings);
+      } catch {
+        // A half-written value is replaced by the next write.
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => {
+      unbindSync();
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
 
   useEffect(() => bindFarmHotkeys(), []);
@@ -24,7 +46,8 @@ export function Overlay() {
 
   const elapsed = elapsedMs(farm, now);
   const totals = snapshot(farm, elapsed);
-  const rate = perHour(totals.normal, elapsed);
+  const stats = fields.slice(0, overlayCapacity(size, buttons)).map((field) => overlayStat(field, farm, totals, elapsed));
+  const large = size === "large";
   const dragHandlers = useWindowDrag();
 
   return (
@@ -32,27 +55,31 @@ export function Overlay() {
       <section
         {...dragHandlers}
         className="flex h-full cursor-grab touch-none select-none active:cursor-grabbing flex-col justify-between rounded-2xl border border-lamp/50 bg-pine/95 px-3 py-2 shadow-lg">
-        <div className="flex items-baseline justify-between gap-3">
-          <p className="truncate text-sm font-medium">{farm.zone.trim() || "Session"}</p>
-          <p className="font-display text-2xl leading-none">{formatDuration(elapsed)}</p>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className={"truncate font-medium " + (large ? "text-base" : "text-sm")}>{farm.zone.trim() || "Session"}</p>
+            <p className="text-[11px] leading-tight text-mist">{STATUS[farm.status]}</p>
+          </div>
+          <p className={"font-display leading-none " + (large ? "text-3xl" : "text-2xl")}>{formatDuration(elapsed)}</p>
         </div>
-        <p className="text-xs text-mist">
-          {farm.status === "running"
-            ? `${formatKamas(rate)} / h`
-            : farm.status === "paused"
-              ? "En pause"
-              : farm.status === "done"
-                ? "Terminée"
-                : "Prête"}
-          {" · "}
-          {farm.combats} combats
-        </p>
-        <div className="grid grid-cols-4 gap-1">
-          <HudButton label="Start" onClick={() => applyFarmCommand("start")} />
-          <HudButton label="Pause" onClick={() => applyFarmCommand("pause")} />
-          <HudButton label="Stop" onClick={() => applyFarmCommand("stop")} />
-          <HudButton label="+1" onClick={() => applyFarmCommand("combat")} />
-        </div>
+        {stats.length > 0 ? (
+          <dl className="grid grid-cols-3 gap-x-2 gap-y-1">
+            {stats.map((stat) => (
+              <div key={stat.label} className="min-w-0">
+                <dt className="text-[10px] leading-tight tracking-wide text-mist uppercase">{stat.label}</dt>
+                <dd className={"truncate font-medium leading-tight " + (large ? "text-base" : "text-sm")}>{stat.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
+        {buttons ? (
+          <div className="grid grid-cols-4 gap-1">
+            <HudButton label="Start" onClick={() => applyFarmCommand("start")} />
+            <HudButton label="Pause" onClick={() => applyFarmCommand("pause")} />
+            <HudButton label="Stop" onClick={() => applyFarmCommand("stop")} />
+            <HudButton label="+1" onClick={() => applyFarmCommand("combat")} />
+          </div>
+        ) : null}
       </section>
     </div>
   );
