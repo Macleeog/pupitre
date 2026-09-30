@@ -15,16 +15,29 @@ export function Overlay() {
 
   useEffect(() => {
     void usePupitre.persist.rehydrate();
-    document.documentElement.style.background = "transparent";
-    document.body.style.background = "transparent";
+    // The shared page background is a gradient with transparent stops. Painting it in this
+    // window would keep an alpha layer above the game, so the bandeau stays a flat colour.
+    document.documentElement.style.background = "#1a120c";
+    document.body.style.background = "#1a120c";
     const unbindSync = bindFarmSync();
     // Settings changed on the desk reach this window through shared storage, so its own saves
     // never write stale ones back. The farm is left out: it has its own channel.
     const onStorage = (event: StorageEvent) => {
       if (event.key !== "pupitre-dofus3" || !event.newValue) return;
       try {
-        const { farm: _farm, farmHistory: _history, ...settings } = JSON.parse(event.newValue).state ?? {};
-        usePupitre.setState(settings);
+        const next = JSON.parse(event.newValue).state ?? {};
+        const current = usePupitre.getState();
+        const fields = (value: unknown) => (Array.isArray(value) ? value.join() : "");
+        const sameFields =
+          current.overlaySize === next.overlaySize &&
+          current.overlayButtons === next.overlayButtons &&
+          fields(current.overlayFields) === fields(next.overlayFields);
+        if (sameFields) return;
+        usePupitre.setState({
+          overlayFields: next.overlayFields ?? current.overlayFields,
+          overlaySize: next.overlaySize ?? current.overlaySize,
+          overlayButtons: next.overlayButtons ?? current.overlayButtons,
+        });
       } catch {
         // A half-written value is replaced by the next write.
       }
@@ -51,10 +64,10 @@ export function Overlay() {
   const dragHandlers = useWindowDrag();
 
   return (
-    <div className="h-dvh bg-transparent p-1 text-fog">
+    <div className="h-dvh bg-pine text-fog">
       <section
         {...dragHandlers}
-        className="flex h-full cursor-grab touch-none select-none active:cursor-grabbing flex-col justify-between rounded-2xl border border-lamp/50 bg-pine/95 px-3 py-2 shadow-lg">
+        className="flex h-full cursor-grab touch-none select-none active:cursor-grabbing flex-col justify-between border border-lamp/50 bg-pine px-3 py-2">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className={"truncate font-medium " + (large ? "text-base" : "text-sm")}>{farm.zone.trim() || "Session"}</p>
