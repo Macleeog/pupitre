@@ -14,8 +14,7 @@ function createMainWindow() {
       nodeIntegration: false,
     },
   });
-
-  mainWindow.loadURL('http://localhost:5173');
+  mainWindow.loadURL('http://localhost:8080');
   combatOverlay.setMainWindow(mainWindow);
 }
 
@@ -24,4 +23,11 @@ app.whenReady().then(() => {
   combatOverlay.createOverlayWindow();
   combatOverlay.setupCombatIpc();
   combatOverlay.hookMessageStream();
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+  });
+});
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
 });
