@@ -12,6 +12,7 @@ import { bindFarmHotkeys, bindFarmSync } from "@/lib/pupitre/farm-sync";
 import { bindShortcuts } from "@/lib/pupitre/shortcuts";
 import { useUpdateState } from "@/lib/pupitre/updates";
 import { APP_VERSION } from "@/lib/pupitre/version";
+import { WantedSquares, type WantedCard } from "@/components/pupitre/wanted-toast";
 
 const TABS: { id: DeskTab; label: string; icon: typeof Timer }[] = [
   { id: "session", label: "Session", icon: Timer },
@@ -30,8 +31,12 @@ export function Desk() {
 
   useEffect(() => {
     const syncReader = () => {
-      const { farm, tab } = usePupitre.getState();
-      window.pupitre?.net?.setActive?.(farm.status === "running" || tab === "reseau");
+      const { farm, tab, wantedNotices, archiNotices } = usePupitre.getState();
+      const notices = wantedNotices !== false;
+      const archi = archiNotices !== false;
+      window.pupitre?.net?.setActive?.(farm.status === "running" || tab === "reseau" || notices || archi);
+      window.pupitre?.net?.setWantedNotices?.(notices);
+      window.pupitre?.net?.setArchiNotices?.(archi);
     };
     const unsub = usePupitre.subscribe(syncReader);
     void Promise.resolve(usePupitre.persist.rehydrate()).then(() => {
@@ -81,6 +86,7 @@ export function Desk() {
           ) : null}
         </div>
         <UpdateBanner onOpen={() => setTab("reglages")} />
+        <WantedBanner />
       </header>
 
       <main className={"mx-auto w-full px-4 pt-5 pb-28 " + frame}>
@@ -123,6 +129,25 @@ export function Desk() {
       </nav>
     </div>
   );
+}
+
+function WantedBanner() {
+  const sighting = usePupitre((state) => state.lastWanted);
+  const enabled = usePupitre((state) => state.wantedNotices);
+  const archi = usePupitre((state) => state.archiNotices);
+  const [desktop, setDesktop] = useState(false);
+  useEffect(() => {
+    setDesktop(Boolean(window.pupitre?.toast));
+  }, []);
+  if (desktop || (enabled === false && archi === false) || !sighting) return null;
+  if (Date.now() - sighting.at > 10_000) return null;
+  const monsters: WantedCard[] = sighting.monsters.slice(0, 3).map((monster) => ({
+    id: monster.id,
+    name: monster.name,
+    gfxId: monster.gfxId,
+    kind: monster.kind,
+  }));
+  return <WantedSquares key={sighting.at} monsters={monsters} coords={sighting.coords ?? null} />;
 }
 
 function UpdateBanner({ onOpen }: { onOpen: () => void }) {

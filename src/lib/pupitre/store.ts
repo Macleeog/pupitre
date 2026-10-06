@@ -12,7 +12,7 @@ import {
   type FarmSession,
   type FarmSnapshot,
 } from "@/lib/pupitre/farm";
-import type { OverlaySize, ShortcutAction, ShortcutMap, ShortcutStatus } from "@/pupitre-desktop";
+import type { OverlaySize, ShortcutAction, ShortcutMap, ShortcutStatus, WantedSighting } from "@/pupitre-desktop";
 
 export type DeskTab = "session" | "reseau" | "reglages";
 
@@ -28,6 +28,12 @@ export const OVERLAY_FIELDS: { id: OverlayField; label: string }[] = [
 ];
 
 export const DEFAULT_OVERLAY_FIELDS: OverlayField[] = ["rate", "combats"];
+
+export function clampOverlayOpacity(value: unknown): number {
+  const n = typeof value === "number" ? Math.round(value) : 80;
+  if (!Number.isFinite(n)) return 80;
+  return Math.min(100, Math.max(20, n));
+}
 export type Character = {
   id: string;
   name: string;
@@ -71,15 +77,23 @@ type PupitreState = {
   overlayFields: OverlayField[];
   overlaySize: OverlaySize;
   overlayButtons: boolean;
+  overlayOpacity: number;
   toggleOverlayField: (field: OverlayField) => void;
   setOverlaySize: (size: OverlaySize) => void;
   setOverlayButtons: (overlayButtons: boolean) => void;
+  setOverlayOpacity: (overlayOpacity: number) => void;
   farm: FarmSession;
   farmHistory: FarmHistoryEntry[];
   autoCombats: boolean;
   setAutoCombats: (autoCombats: boolean) => void;
   autoLoot: boolean;
   setAutoLoot: (autoLoot: boolean) => void;
+  wantedNotices: boolean;
+  setWantedNotices: (wantedNotices: boolean) => void;
+  archiNotices: boolean;
+  setArchiNotices: (archiNotices: boolean) => void;
+  lastWanted: WantedSighting | null;
+  setLastWanted: (lastWanted: WantedSighting | null) => void;
   shortcuts: ShortcutMap;
   shortcutStatus: Partial<Record<ShortcutAction, ShortcutStatus>>;
   setShortcut: (action: ShortcutAction, accelerator: string) => void;
@@ -99,7 +113,11 @@ type PupitreState = {
   undoFightLoot: (id: string) => void;
   patchResource: (id: string, patch: ResourcePatch) => void;
   hdvPrices: Record<string, HdvPrice>;
-  applyHdvPrices: (prices: { itemId: number; unitPrice: number }[], at: number) => void;
+  applyHdvPrices: (
+    prices: { itemId: number; unitPrice: number }[],
+    at: number,
+    source?: "sale" | "search" | "average",
+  ) => void;
   forgetHdvPrices: () => void;
   removeResource: (id: string) => void;
   removeFarmHistory: (id: string) => void;
@@ -121,6 +139,7 @@ export const usePupitre = create<PupitreState>()(
       overlayFields: DEFAULT_OVERLAY_FIELDS,
       overlaySize: "compact",
       overlayButtons: true,
+      overlayOpacity: 80,
       toggleOverlayField: (field) =>
         set((state) => ({
           overlayFields: state.overlayFields.includes(field)
@@ -131,12 +150,19 @@ export const usePupitre = create<PupitreState>()(
         })),
       setOverlaySize: (overlaySize) => set({ overlaySize }),
       setOverlayButtons: (overlayButtons) => set({ overlayButtons }),
+      setOverlayOpacity: (overlayOpacity) => set({ overlayOpacity: clampOverlayOpacity(overlayOpacity) }),
       farm: EMPTY_FARM,
       farmHistory: [],
       autoCombats: true,
       setAutoCombats: (autoCombats) => set({ autoCombats }),
       autoLoot: true,
       setAutoLoot: (autoLoot) => set({ autoLoot }),
+      wantedNotices: true,
+      setWantedNotices: (wantedNotices) => set({ wantedNotices }),
+      archiNotices: true,
+      setArchiNotices: (archiNotices) => set({ archiNotices }),
+      lastWanted: null,
+      setLastWanted: (lastWanted) => set({ lastWanted }),
       shortcuts: DEFAULT_SHORTCUTS,
       shortcutStatus: {},
       setShortcut: (action, accelerator) =>
@@ -357,17 +383,19 @@ export const usePupitre = create<PupitreState>()(
           },
         })),
       hdvPrices: {},
-      applyHdvPrices: (prices, at) =>
+      applyHdvPrices: (prices, at, source) =>
         set((state) => {
           if (prices.length === 0) return state;
+          // Packet prices are already for one unit. Quantity scales the line value later.
+          const from: "average" | "hdv" = source === "average" ? "average" : "hdv";
           const fresh = Object.fromEntries(prices.map(({ itemId, unitPrice }) => [itemId, { unit: unitPrice, at }]));
           const pricesChanged = prices.some(({ itemId, unitPrice }) => state.hdvPrices[itemId]?.unit !== unitPrice);
           const resources = state.farm.resources.map((resource) => {
             const known = resource.itemId != null ? fresh[resource.itemId] : undefined;
             if (!known || resource.priceFrom === "manual") return resource;
             const price = String(known.unit);
-            if (resource.price === price && resource.priceFrom === "hdv") return resource;
-            return { ...resource, price, priceFrom: "hdv" as const };
+            if (resource.price === price && resource.priceFrom === from) return resource;
+            return { ...resource, price, priceFrom: from };
           });
           const resourcesChanged = resources.some((resource, index) => resource !== state.farm.resources[index]);
           if (!pricesChanged && !resourcesChanged) return state;
@@ -401,10 +429,13 @@ export const usePupitre = create<PupitreState>()(
         overlayFields: state.overlayFields,
         overlaySize: state.overlaySize,
         overlayButtons: state.overlayButtons,
+        overlayOpacity: state.overlayOpacity,
         farm: state.farm,
         farmHistory: state.farmHistory,
         autoCombats: state.autoCombats,
         autoLoot: state.autoLoot,
+        wantedNotices: state.wantedNotices,
+        archiNotices: state.archiNotices,
         shortcuts: state.shortcuts,
         hdvPrices: state.hdvPrices,
       }),
@@ -420,7 +451,26 @@ export const usePupitre = create<PupitreState>()(
           saved.me !== undefined
             ? saved.me
             : (mine.find((character) => character.id === focusId) ?? mine[0] ?? null);
-        return { ...current, ...rest, me, shortcuts: { ...DEFAULT_SHORTCUTS, ...saved.shortcuts } };
+        const savedFarm = saved.farm;
+        return {
+          ...current,
+          ...rest,
+          // A catalog NPC price is not the per-unit average. Drop it so valeur is not qty × that stand-in.
+          farm: savedFarm
+            ? {
+                ...savedFarm,
+                resources: (savedFarm.resources ?? []).map((resource) =>
+                  resource.priceFrom === "catalog" ? { ...resource, price: "", priceFrom: undefined } : resource,
+                ),
+              }
+            : current.farm,
+          me,
+          shortcuts: { ...DEFAULT_SHORTCUTS, ...saved.shortcuts },
+          wantedNotices: saved.wantedNotices !== false,
+          archiNotices: saved.archiNotices !== false,
+          overlayOpacity: clampOverlayOpacity(saved.overlayOpacity),
+          lastWanted: null,
+        };
       },
     },
   ),

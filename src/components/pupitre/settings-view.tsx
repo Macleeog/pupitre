@@ -6,11 +6,12 @@ import { useUpdateState } from "@/lib/pupitre/updates";
 import { ShortcutsView } from "@/components/pupitre/shortcuts-view";
 import type { OverlaySize, UpdateState } from "@/pupitre-desktop";
 
-const RELEASES = "https://github.com/Macleeog/pupitre/releases";
+const RELEASES = "https://github.com/Macleeog/pupitre-releases/releases";
 
 export function SettingsView() {
   return (
     <div className="flex flex-col gap-4">
+      <WantedCard />
       <UpdatesCard />
       <OverlayCard />
       <ShortcutsView />
@@ -38,6 +39,43 @@ function updateText(update: UpdateState | null): string {
     default:
       return "Pupitre cherche les nouvelles versions au lancement, puis toutes les 4 heures.";
   }
+}
+
+function WantedCard() {
+  const enabled = usePupitre((state) => state.wantedNotices);
+  const setEnabled = usePupitre((state) => state.setWantedNotices);
+  const archi = usePupitre((state) => state.archiNotices);
+  const setArchi = usePupitre((state) => state.setArchiNotices);
+  return (
+    <section className="rounded-card border border-edge bg-moss p-4">
+      <h2 className="font-medium text-fog">Alertes sur la carte</h2>
+      <p className="mt-1 text-sm text-mist">
+        En arrivant sur une carte, Pupitre reconnaît les monstres du groupe. Un lien de chat garde la carte du
+        monstre, pas la tienne. Une petite carte montre l'image, le nom et /travel. Hors du monde principal, /travel
+        n'est pas proposé : il ouvrirait les mêmes chiffres sur la mauvaise carte. Glisse-la où tu veux : l'endroit
+        est retenu. Elle part au bout de 10 secondes, ou si tu cliques la croix. La lecture reste allumée tant qu'une
+        des cases est cochée.
+      </p>
+      <label className="mt-3 flex min-h-11 cursor-pointer items-center gap-3 text-sm text-fog">
+        <input
+          type="checkbox"
+          checked={enabled !== false}
+          onChange={(event) => setEnabled(event.target.checked)}
+          className="size-5 accent-[var(--color-lamp)]"
+        />
+        Prévenir pour les avis de recherche
+      </label>
+      <label className="flex min-h-11 cursor-pointer items-center gap-3 text-sm text-fog">
+        <input
+          type="checkbox"
+          checked={archi !== false}
+          onChange={(event) => setArchi(event.target.checked)}
+          className="size-5 accent-[var(--color-lamp)]"
+        />
+        Prévenir pour les archimonstres
+      </label>
+    </section>
+  );
 }
 
 function UpdatesCard() {
@@ -74,18 +112,31 @@ function UpdatesCard() {
             Télécharger l'installateur
           </a>
         ) : canCheck ? (
-          <button
-            type="button"
-            disabled={busy || update.status === "checking"}
-            onClick={() => {
-              setBusy(true);
-              void window.pupitre?.updates?.check().finally(() => setBusy(false));
-            }}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-edge bg-pine px-4 text-sm font-medium text-fog disabled:opacity-60"
-          >
-            <RefreshCw className={"size-4" + (busy ? " animate-spin" : "")} aria-hidden="true" />
-            Vérifier
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              disabled={busy || update.status === "checking"}
+              onClick={() => {
+                setBusy(true);
+                void window.pupitre?.updates?.check().finally(() => setBusy(false));
+              }}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-edge bg-pine px-4 text-sm font-medium text-fog disabled:opacity-60"
+            >
+              <RefreshCw className={"size-4" + (busy ? " animate-spin" : "")} aria-hidden="true" />
+              Vérifier
+            </button>
+            {update.status === "error" ? (
+              <a
+                href={RELEASES}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex min-h-11 items-center gap-2 rounded-full bg-lamp px-4 text-sm font-medium text-lamp-ink"
+              >
+                <Download className="size-4" aria-hidden="true" />
+                Télécharger
+              </a>
+            ) : null}
+          </div>
         ) : null}
       </div>
       {update?.status === "downloading" ? (
@@ -109,6 +160,8 @@ function OverlayCard() {
   const setSize = usePupitre((state) => state.setOverlaySize);
   const buttons = usePupitre((state) => state.overlayButtons);
   const setButtons = usePupitre((state) => state.setOverlayButtons);
+  const opacity = usePupitre((state) => state.overlayOpacity);
+  const setOpacity = usePupitre((state) => state.setOverlayOpacity);
   const capacity = overlayCapacity(size, buttons);
   return (
     <section className="rounded-card border border-edge bg-moss p-4">
@@ -131,6 +184,32 @@ function OverlayCard() {
             <span className="block text-xs">{entry.hint}</span>
           </button>
         ))}
+      </div>
+      <div className="mt-4">
+        <div className="flex items-baseline justify-between gap-3">
+          <label htmlFor="overlay-opacity" className="text-sm font-medium text-fog">
+            Opacité
+          </label>
+          <span className="text-sm text-mist">{opacity} % opaque</span>
+        </div>
+        <input
+          id="overlay-opacity"
+          type="range"
+          min={20}
+          max={100}
+          step={1}
+          value={opacity}
+          onChange={(event) => setOpacity(Number(event.target.value))}
+          aria-valuemin={20}
+          aria-valuemax={100}
+          aria-valuenow={opacity}
+          aria-valuetext={`${opacity} % opaque`}
+          className="mt-1 h-11 w-full cursor-pointer accent-[var(--color-lamp)]"
+        />
+        <div className="flex justify-between text-xs text-mist">
+          <span>Transparent</span>
+          <span>Opaque</span>
+        </div>
       </div>
       <ul className="mt-3 grid gap-1 sm:grid-cols-2">
         {OVERLAY_FIELDS.map((field) => {
@@ -165,7 +244,8 @@ function OverlayCard() {
       </ul>
       <p className="mt-2 text-xs text-mist">
         Le {size === "compact" ? "petit" : "grand"} bandeau affiche {capacity} info{capacity > 1 ? "s" : ""}
-        {buttons ? " avec les boutons" : " sans les boutons"}. Il garde sa taille quand tu le déplaces.
+        {buttons ? " avec les boutons" : " sans les boutons"}. Glisse-le sur la fenêtre du jeu pour le
+        déplacer. À 100 % il cache le jeu, à 50 % le jeu se voit à travers, à 20 % il est très transparent.
       </p>
     </section>
   );

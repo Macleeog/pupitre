@@ -1,6 +1,6 @@
 {
   "name": "pupitre",
-  "version": "0.1.12-beta.4",
+  "version": "0.1.17",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "node scripts/with-app-env.mjs vite dev --host 0.0.0.0 --port 8080",
-    "build": "node scripts/with-app-env.mjs vite build && npm run db:migrate",
+    "build": "node scripts/with-app-env.mjs vite build && npm run db:migrate && node scripts/desktop-index.mjs",
     "db:migrate": "node scripts/migrate.mjs",
     "build:dev": "node scripts/with-app-env.mjs vite build --mode development",
     "preview": "node scripts/with-app-env.mjs vite preview",
@@ -17,7 +17,7 @@
     "preview:stop": "node scripts/preview.mjs stop",
     "typecheck": "tsc --noEmit",
     "check:auth": "node scripts/check-auth-invariant.mjs",
-    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/pupitre/history.test.ts src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts",
+    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/pupitre/history.test.ts src/lib/pupitre/farm.test.ts src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "desktop:build": "node scripts/build-desktop.mjs"
@@ -93,7 +93,7 @@
     ],
     "extraResources": [
       {
-        "from": ".output",
+        "from": ".output/public",
         "to": "output"
       }
     ],
@@ -101,7 +101,8 @@
       "target": [
         "nsis"
       ],
-      "signAndEditExecutable": false,
+      "icon": "build/icon.ico",
+      "electronLanguages": ["en-US", "fr"],
       "artifactName": "Pupitre-Setup-${version}.${ext}"
     },
     "nsis": {
@@ -110,6 +111,9 @@
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
       "shortcutName": "Pupitre",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
       "runAfterFinish": true,
       "deleteAppDataOnUninstall": false
     },
@@ -117,7 +121,7 @@
       {
         "provider": "github",
         "owner": "Macleeog",
-        "repo": "pupitre"
+        "repo": "pupitre-releases"
       }
     ]
   },

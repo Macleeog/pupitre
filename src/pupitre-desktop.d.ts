@@ -25,9 +25,31 @@ export type FightEvent =
   | { type: "fight-end"; at: number; durationMs?: number; results?: FightResult[]; ownFighterIds?: string[] }
   | { type: "turn-start" | "turn-end"; fighterId: string; at: number };
 
+export type WantedKind = "wanted" | "archi";
+
+export type WantedMonster = { id: number; name: string; level: number; gfxId?: number; kind?: WantedKind };
+
+export type MapCoords = { x: number; y: number; world?: number };
+
+export type WantedSighting = {
+  type: "wanted-sighting";
+  at: number;
+  mapId: number | null;
+  coords?: MapCoords | null;
+  monsters: WantedMonster[];
+  text: string;
+};
+
 export type GameEvent =
   | FightEvent
-  | { type: "hdv-prices"; at: number; source: "sale"; prices: { itemId: number; unitPrice: number }[] };
+  | {
+      type: "hdv-prices";
+      at: number;
+      source: "sale" | "search" | "average";
+      prices: { itemId: number; unitPrice: number }[];
+    }
+  | WantedSighting
+  | { type: "wanted-absent"; at: number; mapId: number | null };
 
 export type NetState = {
   status: NetStatus;
@@ -50,7 +72,8 @@ export type NetState = {
   fightsSeen: number;
   ownFighterIds?: string[];
   codes?: { state: "ok" | "unknown" | "stale"; knownShare: number | null };
-  lastMarket?: { at: number; source: "sale"; items: number } | null;
+  lastMarket?: { at: number; source: "sale" | "search" | "average"; items: number } | null;
+  lastWanted?: WantedSighting | null;
 };
 
 export type OverlaySize = "compact" | "large";
@@ -69,8 +92,16 @@ declare global {
   interface Window {
     pupitre?: {
       onFarmCommand: (handler: (command: FarmCommand) => void) => () => void;
+      overlayDragStart?: () => void;
       overlayMoveBy?: (dx: number, dy: number) => void;
       overlayDragEnd?: () => void;
+      toast?: {
+        setCount: (count: number) => void;
+        moveBy?: (dx: number, dy: number) => void;
+        dragEnd?: () => void;
+        copy?: (text: string) => void;
+        onCoords?: (handler: (coords: MapCoords | null) => void) => () => void;
+      };
       shortcuts?: {
         set: (map: ShortcutMap) => Promise<Record<ShortcutAction, ShortcutStatus>>;
       };
@@ -92,6 +123,8 @@ declare global {
         openFolder: () => Promise<void>;
         forgetOwn: () => Promise<NetState | null>;
         setActive?: (active: boolean) => void;
+        setWantedNotices?: (enabled: boolean) => void;
+        setArchiNotices?: (enabled: boolean) => void;
         onState: (handler: (state: NetState) => void) => () => void;
         onGameEvent: (handler: (event: GameEvent) => void) => () => void;
       };
