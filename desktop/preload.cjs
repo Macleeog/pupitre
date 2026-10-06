@@ -15,6 +15,9 @@ contextBridge.exposeInMainWorld("pupitre", {
   overlayDragEnd() {
     ipcRenderer.send("overlay:drag-end");
   },
+  overlayHide() {
+    ipcRenderer.send("overlay:hide");
+  },
   toast: {
     setCount(count) {
       ipcRenderer.send("toast:count", count);

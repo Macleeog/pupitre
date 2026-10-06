@@ -120,6 +120,7 @@ type PupitreState = {
   ) => void;
   forgetHdvPrices: () => void;
   removeResource: (id: string) => void;
+  clearResources: () => void;
   removeFarmHistory: (id: string) => void;
 };
 
@@ -416,6 +417,7 @@ export const usePupitre = create<PupitreState>()(
             resources: state.farm.resources.filter((resource) => resource.id !== id),
           },
         })),
+      clearResources: () => set((state) => ({ farm: { ...state.farm, resources: [] } })),
       removeFarmHistory: (id) =>
         set((state) => ({
           farmHistory: state.farmHistory.filter((entry) => entry.id !== id),
@@ -451,19 +453,11 @@ export const usePupitre = create<PupitreState>()(
           saved.me !== undefined
             ? saved.me
             : (mine.find((character) => character.id === focusId) ?? mine[0] ?? null);
-        const savedFarm = saved.farm;
         return {
           ...current,
           ...rest,
-          // A catalog NPC price is not the per-unit average. Drop it so valeur is not qty × that stand-in.
-          farm: savedFarm
-            ? {
-                ...savedFarm,
-                resources: (savedFarm.resources ?? []).map((resource) =>
-                  resource.priceFrom === "catalog" ? { ...resource, price: "", priceFrom: undefined } : resource,
-                ),
-              }
-            : current.farm,
+          // Each launch starts a new farm. History, prices and the character stay.
+          farm: { ...EMPTY_FARM },
           me,
           shortcuts: { ...DEFAULT_SHORTCUTS, ...saved.shortcuts },
           wantedNotices: saved.wantedNotices !== false,

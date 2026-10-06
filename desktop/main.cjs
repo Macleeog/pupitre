@@ -223,6 +223,12 @@ function followDofus(overlay) {
     else moveOverlay(overlay, x + before.width - overlaySize(overlay).width, y);
   };
 
+  const hide = () => {
+    if (overlay.isDestroyed()) return;
+    state.hiddenByUser = true;
+    overlay.hide();
+  };
+
   const toggle = () => {
     if (overlay.isDestroyed()) return;
     state.hiddenByUser = !state.hiddenByUser;
@@ -280,7 +286,7 @@ function followDofus(overlay) {
     overlay.once("ready-to-show", () => {
       if (!state.hiddenByUser) overlay.showInactive();
     });
-    return { watcher: null, toggle, resize, gameBounds: () => state.game, gameHandle: () => state.gameHwnd };
+    return { watcher: null, toggle, hide, resize, gameBounds: () => state.game, gameHandle: () => state.gameHwnd };
   }
 
   // The script sits inside app.asar in the packaged exe, where powershell.exe cannot open it by path.
@@ -327,7 +333,7 @@ function followDofus(overlay) {
       overlay.hide();
     }
   });
-  return { watcher: child, toggle, resize, gameBounds: () => state.game, gameHandle: () => state.gameHwnd };
+  return { watcher: child, toggle, hide, resize, gameBounds: () => state.game, gameHandle: () => state.gameHwnd };
 }
 
 // Passive, read-only: tshark (Wireshark + Npcap) copies the game's packets; nothing is
@@ -507,7 +513,16 @@ function showWantedToast(event) {
 }
 
 // Coordinates arrive a moment after the sighting. Wait briefly so the card opens once, with /travel.
+function copyTravel(event) {
+  const coords = validCoords(event?.coords);
+  if (!coords || coords.world) return;
+  const text = `/travel ${coords.x},${coords.y}`;
+  if (!/^\/travel -?\d{1,4},-?\d{1,4}$/.test(text)) return;
+  clipboard.writeText(text);
+}
+
 function queueWantedToast(event) {
+  copyTravel(event);
   if (event.coords) {
     clearTimeout(toastTimer);
     toastQueued = null;
@@ -622,7 +637,11 @@ app.whenReady().then(async () => {
   });
   overlay.setAlwaysOnTop(true, "screen-saver");
   overlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
-  const { watcher, toggle, resize, gameBounds, gameHandle } = followDofus(overlay);
+  const { watcher, toggle, hide, resize, gameBounds, gameHandle } = followDofus(overlay);
+  ipcMain.on("overlay:hide", (event) => {
+    if (event.sender !== desk.webContents && event.sender !== overlay.webContents) return;
+    hide();
+  });
   gameView = { bounds: gameBounds, handle: gameHandle };
   ipcMain.handle("overlay:get-size", (event) =>
     event.sender === desk.webContents || event.sender === overlay.webContents ? overlay.pupitreSize : null,
