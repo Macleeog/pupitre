@@ -95,6 +95,7 @@ declare global {
       overlayDragStart?: () => void;
       overlayMoveBy?: (dx: number, dy: number) => void;
       overlayDragEnd?: () => void;
+      overlayHide?: () => void;
       toast?: {
         setCount: (count: number) => void;
         moveBy?: (dx: number, dy: number) => void;

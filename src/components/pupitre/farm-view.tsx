@@ -37,6 +37,7 @@ export function FarmView() {
   const addResource = usePupitre((state) => state.addResource);
   const patchResource = usePupitre((state) => state.patchResource);
   const removeResource = usePupitre((state) => state.removeResource);
+  const clearResources = usePupitre((state) => state.clearResources);
   const removeFarmHistory = usePupitre((state) => state.removeFarmHistory);
   const undoFightLoot = usePupitre((state) => state.undoFightLoot);
   const shortcuts = usePupitre((state) => state.shortcuts);
@@ -176,6 +177,17 @@ export function FarmView() {
                     className="min-h-11 rounded-full border border-edge px-3 text-sm disabled:opacity-40"
                   >
                     Supprimer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      clearResources();
+                      setSelected(null);
+                    }}
+                    disabled={farm.resources.length === 0}
+                    className="min-h-11 rounded-full border border-edge px-3 text-sm disabled:opacity-40"
+                  >
+                    Tout vider
                   </button>
                 </div>
               </div>
