@@ -50,9 +50,11 @@ function WantedCard() {
     <section className="rounded-card border border-edge bg-moss p-4">
       <h2 className="font-medium text-fog">Alertes sur la carte</h2>
       <p className="mt-1 text-sm text-mist">
-        En arrivant sur une carte, Pupitre reconnaît les monstres du groupe. Une petite carte montre l'image, le nom
-        et /travel vers cette carte. Glisse-la où tu veux : l'endroit est retenu. Elle part au bout de 10 secondes,
-        ou si tu cliques la croix. La lecture reste allumée tant qu'une des cases est cochée.
+        En arrivant sur une carte, Pupitre reconnaît les monstres du groupe. Un lien de chat garde la carte du
+        monstre, pas la tienne. Une petite carte montre l'image, le nom et /travel. Hors du monde principal, /travel
+        n'est pas proposé : il ouvrirait les mêmes chiffres sur la mauvaise carte. Glisse-la où tu veux : l'endroit
+        est retenu. Elle part au bout de 10 secondes, ou si tu cliques la croix. La lecture reste allumée tant qu'une
+        des cases est cochée.
       </p>
       <label className="mt-3 flex min-h-11 cursor-pointer items-center gap-3 text-sm text-fog">
         <input

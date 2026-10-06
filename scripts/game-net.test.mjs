@@ -496,6 +496,97 @@ test("avis de recherche : un groupe décrit hors de la carte ne prévient pas", 
   assert.equal(events.length, 0);
 });
 
+// Chat link, capture of 2026-09-30: the group position is field 2, not the player's map.
+function groupLink(monsterId, x, y, composition, groupId, world = 1) {
+  const point = Buffer.concat([intFieldSigned(1, x), intFieldSigned(2, y)]);
+  return Buffer.concat([
+    intField(1, monsterId),
+    bytesField(2, point),
+    intField(4, world),
+    bytesField(5, Buffer.from(composition)),
+    intFieldSigned(8, groupId),
+  ]);
+}
+function chatLink(monsterId, x, y, composition, groupId, world = 1) {
+  return bytesField(10, bytesField(2, groupLink(monsterId, x, y, composition, groupId, world)));
+}
+
+test("chat : archimonstre et avis de recherche gardent la carte du message", () => {
+  const events = [];
+  const watch = createWantedWatch((event) => events.push(event));
+  watch.handle({ type: "jpo", value: mapPopulation(205522438, [groupActor(-20001, 3597, 40)]) }, 1000);
+  const archi = chatLink(2473, -2, -56, "5x2473x158|3x3558x156", -20001);
+  watch.handle({ type: "kqf", value: archi }, 1100);
+  const wanted = chatLink(3851, 14, -33, "1x3851x200", -20002);
+  watch.handle({ type: "kqf", value: wanted }, 1200);
+  const sights = events.filter((event) => event.type === "wanted-sighting");
+  assert.deepEqual(
+    sights.map((event) => [event.monsters[0].name, event.monsters[0].kind, event.coords, event.mapId]),
+    [
+      ["Félyssion la Gourmande", "archi", { x: -2, y: -56 }, null],
+      ["Sicogne", "wanted", { x: 14, y: -33 }, null],
+    ],
+  );
+  watch.handle({ type: "kqf", value: archi }, 1300);
+  assert.equal(events.filter((event) => event.type === "wanted-sighting").length, 2);
+});
+
+test("chat : le lien garde -50,-44, et un autre monde n'est pas la carte du joueur", () => {
+  const events = [];
+  const watch = createWantedWatch((event) => events.push(event));
+  watch.handle({ type: "jpo", value: mapPopulation(174851076, [groupActor(-20000, 4737, 170)]) }, 1000);
+  const link = groupLink(3400, -50, -44, "4x3400x190|5x2932x190", -20000, 1);
+  watch.handle({ type: "kqd", value: bytesField(4, bytesField(2, link)) }, 1100);
+  watch.handle({ type: "kqf", value: bytesField(10, bytesField(2, link)) }, 1200);
+  const eggob = events.filter((event) => event.coords);
+  assert.equal(eggob.length, 1);
+  assert.equal(eggob[0].monsters[0].name, "Docteur Eggob");
+  assert.equal(eggob[0].monsters[0].kind, "wanted");
+  assert.deepEqual(eggob[0].coords, { x: -50, y: -44 });
+  assert.equal(eggob[0].mapId, null);
+  assert.equal(eggob[0].text, "Docteur Eggob est en -50,-44.");
+  assert.notEqual(eggob[0].mapId, events[0].mapId);
+  watch.handle({ type: "kqf", value: chatLink(3760, 7, 9, "2x3760x1440", -20002, 14) }, 1300);
+  assert.deepEqual(events.at(-1).coords, { x: 7, y: 9, world: 14 });
+  assert.equal(events.at(-1).monsters[0].name, "Mouchâme");
+  assert.equal(events.at(-1).text, "Mouchâme est en 7,9, sur un autre monde.");
+  watch.handle({ type: "kqf", value: chatLink(2450, -7, 28, "3x2450x66", -20003, 1) }, 1400);
+  assert.deepEqual(events.at(-1).coords, { x: -7, y: 28 });
+  assert.equal(events.at(-1).monsters[0].kind, "archi");
+  watch.handle({ type: "kqf", value: chatLink(4507, 25, 34, "5x4507x200", -20001, 17) }, 1500);
+  assert.deepEqual(events.at(-1).coords, { x: 25, y: 34, world: 17 });
+  watch.handle({ type: "kqd", value: Buffer.from("Recrute {chatmonster,3400}") }, 1600);
+  assert.equal(events.filter((event) => event.type === "wanted-sighting").length, 5);
+});
+
+test("lecteur : le lien de chat ne remplace pas la carte par celle du joueur", async () => {
+  const events = [];
+  let lookups = 0;
+  const reader = new GameNetReader({
+    capturesDir: os.tmpdir(),
+    onEvent: (event) => events.push(event),
+    mapLookup: async () => {
+      lookups += 1;
+      return { x: 27, y: -29 };
+    },
+  });
+  const inbound = framed(event("kqf", chatLink(2473, -2, -56, "5x2473x158|3x3558x156", -20001)));
+  reader.handleLine(["1700000000.5", "5555", "11", "100", "", inbound.toString("hex")].join("\t"));
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  const sight = events.filter((entry) => entry.type === "wanted-sighting").at(-1);
+  assert.equal(sight.monsters[0].kind, "archi");
+  assert.deepEqual(sight.coords, { x: -2, y: -56 });
+  assert.equal(lookups, 0);
+  const otherWorld = framed(event("kqf", chatLink(3760, 7, 9, "2x3760x1440", -20002, 14)));
+  reader.handleLine(
+    ["1700000001.5", "5555", "11", String(100 + inbound.length), "", otherWorld.toString("hex")].join("\t"),
+  );
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  const distant = events.filter((entry) => entry.type === "wanted-sighting").at(-1);
+  assert.deepEqual(distant.coords, { x: 7, y: 9, world: 14 });
+  assert.equal(lookups, 0);
+});
+
 test("archimonstre : Kiroyal est signalé, marqué archi, sans se mêler des avis de recherche", () => {
   const events = [];
   const watch = createWantedWatch((event) => events.push(event));

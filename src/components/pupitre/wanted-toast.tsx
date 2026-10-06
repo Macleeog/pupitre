@@ -15,6 +15,8 @@ export function ArchiIcon({ className = "size-4" }: { className?: string }) {
 export function travelCommand(coords: MapCoords | null | undefined): string | null {
   if (!coords || !Number.isInteger(coords.x) || !Number.isInteger(coords.y)) return null;
   if (coords.x < -256 || coords.x > 256 || coords.y < -256 || coords.y > 256) return null;
+  // Same numbers on another world are a different map. /travel would open the main one.
+  if (coords.world && coords.world !== 1) return null;
   return `/travel ${coords.x},${coords.y}`;
 }
 
@@ -53,9 +55,15 @@ export function coordsFromValue(value: unknown): MapCoords | null {
   const raw =
     value && typeof value === "object" && "coords" in value ? (value as { coords?: unknown }).coords : value;
   if (!raw || typeof raw !== "object") return null;
-  const row = raw as { x?: unknown; y?: unknown };
+  const row = raw as { x?: unknown; y?: unknown; world?: unknown };
   if (typeof row.x !== "number" || typeof row.y !== "number") return null;
-  return travelCommand({ x: row.x, y: row.y }) ? { x: row.x, y: row.y } : null;
+  if (!Number.isInteger(row.x) || !Number.isInteger(row.y)) return null;
+  if (row.x < -256 || row.x > 256 || row.y < -256 || row.y > 256) return null;
+  const coords: MapCoords = { x: row.x, y: row.y };
+  if (typeof row.world === "number" && Number.isInteger(row.world) && row.world > 1 && row.world <= 64) {
+    coords.world = row.world;
+  }
+  return coords;
 }
 
 export function WantedToast({ cards, coords }: { cards: WantedCard[]; coords: MapCoords | null }) {
@@ -162,23 +170,32 @@ function WantedSquare({
           </p>
         </div>
       </div>
-      {command && coords ? (
-        <button
-          type="button"
-          onClick={() => {
-            window.pupitre?.toast?.copy?.(command);
-            void navigator.clipboard?.writeText(command).then(
-              () => setCopied(true),
-              () => setCopied(true),
-            );
-          }}
-          className="shrink-0 bg-pine/90 px-1.5 py-1 text-center leading-tight"
-        >
-          <span className="block text-[10px] text-mist">
-            {coords.x},{coords.y}
-          </span>
-          <span className="block text-[11px] font-medium text-fog">{copied ? "Copié" : command}</span>
-        </button>
+      {coords ? (
+        command ? (
+          <button
+            type="button"
+            onClick={() => {
+              window.pupitre?.toast?.copy?.(command);
+              void navigator.clipboard?.writeText(command).then(
+                () => setCopied(true),
+                () => setCopied(true),
+              );
+            }}
+            className="shrink-0 bg-pine/90 px-1.5 py-1 text-center leading-tight"
+          >
+            <span className="block text-[10px] text-mist">
+              {coords.x},{coords.y}
+            </span>
+            <span className="block text-[11px] font-medium text-fog">{copied ? "Copié" : command}</span>
+          </button>
+        ) : (
+          <div className="shrink-0 bg-pine/90 px-1.5 py-1 text-center leading-tight">
+            <span className="block text-[10px] text-mist">
+              {coords.x},{coords.y}
+            </span>
+            <span className="block text-[11px] font-medium text-fog">Autre monde</span>
+          </div>
+        )
       ) : (
         <div className="h-8 shrink-0" />
       )}
