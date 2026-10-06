@@ -99,7 +99,19 @@ export function Overlay() {
               {wanted ? sighting?.text : STATUS[farm.status]}
             </p>
           </div>
-          <p className={"font-display leading-none " + (large ? "text-3xl" : "text-2xl")}>{formatDuration(elapsed)}</p>
+          <div className="flex items-start gap-2">
+            <p className={"font-display leading-none " + (large ? "text-3xl" : "text-2xl")}>{formatDuration(elapsed)}</p>
+            <button
+              type="button"
+              aria-label="Cacher le bandeau"
+              onClick={() => window.pupitre?.overlayHide?.()}
+              className="flex size-7 items-center justify-center rounded-full border border-edge bg-moss text-fog"
+            >
+              <svg viewBox="0 0 16 16" className="size-3.5" aria-hidden="true">
+                <path d="M3 8h10" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
         </div>
         {stats.length > 0 ? (
           <dl className="grid grid-cols-3 gap-x-2 gap-y-1">

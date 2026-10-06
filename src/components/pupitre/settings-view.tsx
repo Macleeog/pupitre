@@ -6,7 +6,7 @@ import { useUpdateState } from "@/lib/pupitre/updates";
 import { ShortcutsView } from "@/components/pupitre/shortcuts-view";
 import type { OverlaySize, UpdateState } from "@/pupitre-desktop";
 
-const RELEASES = "https://github.com/Macleeog/pupitre-releases/releases";
+const RELEASES = "https://github.com/Macleeog/pupitre/releases";
 
 export function SettingsView() {
   return (
@@ -165,8 +165,19 @@ function OverlayCard() {
   const capacity = overlayCapacity(size, buttons);
   return (
     <section className="rounded-card border border-edge bg-moss p-4">
-      <h2 className="font-medium text-fog">Bandeau</h2>
-      <p className="mt-1 text-sm text-mist">Ce que le bandeau affiche sur la fenêtre Dofus, en plus du chrono.</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="font-medium text-fog">Bandeau</h2>
+          <p className="mt-1 text-sm text-mist">Ce que le bandeau affiche sur la fenêtre Dofus, en plus du chrono.</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => window.pupitre?.overlayHide?.()}
+          className="min-h-11 rounded-full border border-edge px-4 text-sm text-fog"
+        >
+          Cacher le bandeau
+        </button>
+      </div>
       <div className="mt-4 grid grid-cols-2 gap-2" role="radiogroup" aria-label="Taille du bandeau">
         {SIZES.map((entry) => (
           <button

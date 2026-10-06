@@ -291,7 +291,7 @@ Pour changer l'icône : éditer les deux SVG, puis lancer `node scripts/make-ico
 
 Ce qui déclenche l'exe, c'est une **étiquette** `v*` poussée sur GitHub, pas une pull request et pas un merge. Le fichier est `.github/workflows/windows-exe.yml`. Il tourne sur `windows-latest` : un poste Linux ne peut pas produire l'installeur NSIS.
 
-Une pull request sert à relire le code avant. Elle ne publie rien. On peut étiqueter un commit qui n'est pas encore sur `main`. Les copies déjà installées lisent les [téléchargements](https://github.com/Macleeog/pupitre-releases/releases), pas les branches et pas le dépôt du code.
+Une pull request sert à relire le code avant. Elle ne publie rien. On peut étiqueter un commit qui n'est pas encore sur `main`. Les copies déjà installées lisent les [versions](https://github.com/Macleeog/pupitre/releases) de ce dépôt. Le dépôt doit être public au moment de l'étiquette, sinon `releases.atom` répond 404.
 
 1. Monter `version` dans `package.json`. Le même numéro, deux fois, à la racine de `package-lock.json` (le champ du haut et celui du paquet `""`). Ne pas toucher aux versions des dépendances.
 2. Commit, puis pousser la branche qui contient ce commit.
@@ -302,7 +302,7 @@ git tag v0.1.16
 git push origin v0.1.16
 ```
 
-4. GitHub Actions, sur le dépôt du code, lance `npm run desktop:build`, puis `electron-builder --win nsis`. Il joint `Pupitre-Setup-<version>.exe`, son `.blockmap`, et `latest.yml` ou `beta.yml` à une version du dépôt public `Macleeog/pupitre-releases`. Compter quelques minutes. La page Actions du dépôt privé montre l'échec s'il y en a un. Le secret `RELEASES_TOKEN` doit exister, sinon cette étape s'arrête.
+4. Le dépôt est public. GitHub Actions lance `npm run desktop:build`, puis `electron-builder --win nsis`. Il joint `Pupitre-Setup-<version>.exe`, son `.blockmap`, et `latest.yml` ou `beta.yml` à la version de **ce** dépôt. Compter quelques minutes. Pas de second dépôt, pas de jeton.
 5. Sans tiret dans l'étiquette (`v0.1.16`) : version stable, `latest.yml`, marquée comme la dernière, proposée à tout le monde au prochain lancement (puis toutes les 4 heures).
 6. Avec un tiret (`v0.1.16-beta.1`) : bêta, `beta.yml`, pas marquée dernière. Seules les copies déjà en bêta la reçoivent. Passer d'une bêta à une stable demande d'installer le Setup stable une fois.
 
@@ -310,39 +310,15 @@ L'installeur est par utilisateur, sans droit administrateur, raccourci Bureau et
 
 Si l'étiquette a été poussée trop tôt, on ne la réécrit pas. On monte encore le numéro (0.1.17) et on recommence. Réutiliser `v0.1.16` pour un autre commit casse les copies qui ont déjà téléchargé le premier fichier.
 
-### 5.13 Dépôt privé, téléchargements publics
+### 5.13 Un seul dépôt, public le temps d'une mise à jour
 
-GitHub ne sépare pas les deux. Si le dépôt du code est privé, ses versions le sont aussi : l'application appelle `releases.atom`, reçoit un 404, et affiche une erreur. Ce n'est pas un jeton manquant dans Pupitre.
+Le code et les installeurs vivent sur `Macleeog/pupitre`. Pas de second dépôt, pas de jeton dans l'exe, pas de secret `RELEASES_TOKEN`.
 
-On ne met pas de jeton GitHub dans l'exe. Quelqu'un qui l'en extrairait pourrait lire le code. Le contournement est un second dépôt, **public, sans code**, qui ne reçoit que l'installeur.
+GitHub ne sépare pas le code et les versions. Si le dépôt est privé, `releases.atom` répond 404 et les copies installées ne voient pas la mise à jour.
 
-Aujourd'hui :
+Pour publier : passe le dépôt en public, puis pousse l'étiquette (section 5.12). Quand tu n'as plus de mise à jour à faire, tu peux le remettre en privé. Tant qu'il est privé, la recherche automatique échoue. Elle repart dès qu'il est de nouveau public.
 
-| Rôle | Dépôt |
-|---|---|
-| Code, issues, Actions | `Macleeog/pupitre`, privé |
-| Installeurs et mise à jour automatique | `Macleeog/pupitre-releases`, public |
-
-Le dépôt public a besoin d'au moins un commit (un README suffit, branche `main`). Il ne faut pas y copier le code. La première version publiée là-dessus s'installe **à la main** : les copies déjà en 0.1.16 cherchent encore l'ancien dépôt privé, et ne peuvent pas découvrir la nouvelle adresse toutes seules. À partir de cette installation, la recherche automatique repart.
-
-Préparer le dépôt public, une fois :
-
-1. Créer `Macleeog/pupitre-releases`, public, avec un README et la branche `main`.
-2. Créer un jeton fin (fine-grained) : seulement ce dépôt, permission **Contents** en lecture et écriture. Pas d'accès à `Macleeog/pupitre`.
-3. Sur le dépôt privé : Settings, Secrets and variables, Actions, secret `RELEASES_TOKEN`, coller le jeton.
-4. Pousser une étiquette `v*` comme en 5.12. Le workflow dépose l'exe sur le dépôt public.
-
-Pour viser un autre compte ou un autre nom, changer les quatre endroits **avant** l'étiquette. Les copies déjà construites gardent l'ancienne adresse gravée dans `app-update.yml`.
-
-| Endroit | Quoi |
-|---|---|
-| `package.json`, bloc `build.publish` | `owner` et `repo` du dépôt **public**. electron-builder l'écrit dans l'exe. C'est cette paire que la mise à jour interroge |
-| `.github/workflows/windows-exe.yml` | `repository:` du même dépôt, et le secret utilisé comme `token` |
-| `desktop/updates.cjs` | La constante `RELEASES`, le lien quand la copie ne peut pas se mettre à jour seule |
-| `src/components/pupitre/settings-view.tsx` | La même constante, le bouton dans Réglages |
-| `README.md` | Le lien « versions » du mode d'emploi |
-
-Le workflow ne publie pas avec le jeton automatique du dépôt privé : ce jeton n'a pas le droit d'écrire sur l'autre dépôt.
+`build.publish` dans `package.json` vise `Macleeog/pupitre`. electron-builder grave cette adresse dans l'exe. Le workflow dépose l'installeur avec le jeton automatique du dépôt (`contents: write`). Les liens de `desktop/updates.cjs`, des Réglages et du README pointent au même endroit.
 
 ---
 
@@ -460,5 +436,5 @@ Garde `contextIsolation: true`, `sandbox: true` et `nodeIntegration: false` dans
 | Pas d'alerte sur un monstre connu | Case décochée dans Réglages, ou id absent du JSON, ou `jpo` renommé. Pas de seconde alerte sans changer de carte |
 | `/travel` absent | DofusDB `map-positions` n'a pas répondu. L'alerte reste valable sans coordonnées. Le cache est `map-coords.json` |
 | Les raccourcis ne marchent pas dans l'aperçu web | Normal : seulement dans l'exe, et si la combinaison est libre |
-| « La recherche a échoué » et un 404 sur `releases.atom` | Le dépôt du code est privé. Section 5.13 : les installeurs vont sur le dépôt public. La copie déjà installée se met à jour une fois à la main |
+| « La recherche a échoué » et un 404 sur `releases.atom` | Le dépôt est privé. Section 5.13 : le rendre public le temps de la mise à jour |
 | Une bêta ne passe pas à la stable | Voulu. Installer le Setup stable une fois |
