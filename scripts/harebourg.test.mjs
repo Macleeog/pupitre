@@ -279,6 +279,82 @@ test("a Dofus window line carries the rectangle, and a minimized window does not
   assert.equal(parseWindowLine("Dofus\tLumi - Dofus\t0\t0\t10\t10").rect, null)
 })
 
+test("the 2026-10-09 fight still follows the session character and does not invent life", () => {
+  const { hare, events } = watch()
+  const player = "59884044583"
+  hare.handle(
+    {
+      type: "jwj",
+      fields: {
+        1: [
+          {
+            1: [-1],
+            2: [{ 3: [320] }],
+            3: [{ 4: [{ 6: [{ 3: [{ 1: [1], 2: [220], 3: [3416] }] }] }] }],
+          },
+        ],
+      },
+    },
+    1,
+  )
+  hare.handle(
+    {
+      type: "jwj",
+      fields: {
+        1: [
+          {
+            1: [player],
+            2: [{ 3: [329] }],
+            3: [{ 4: [{ 5: [{ 4: ["Mitarashii"] }] }] }],
+          },
+        ],
+      },
+    },
+    2,
+  )
+  hare.handle({ type: "jxi", fields: { 1: [player] } }, 3, "in", "c1")
+  hare.handle(
+    {
+      type: "kjl",
+      fields: {
+        2: [
+          { 2: [player], 3: [329], 4: [7] },
+          { 2: [-1], 3: [320], 4: [3] },
+        ],
+      },
+    },
+    4,
+  )
+  hare.handle(
+    {
+      type: "jsq",
+      fields: {
+        2: [{ 2: [{ 1: [57060], 2: [21976] }], 3: [1], 5: [316], 6: [player] }],
+        22: [300],
+        36: [player],
+      },
+    },
+    5,
+  )
+  hare.setForeground("Dofus", "Dofus")
+  let view = events.at(-1)
+  assert.equal(view.active, true)
+  assert.equal(view.comteCell, 320)
+  assert.equal(view.followedId, player)
+  assert.equal(view.unidentified, false)
+  assert.equal(view.fighters[0].name, "Mitarashii")
+  assert.equal(view.fighters[0].life, null)
+  assert.equal(view.mark, null)
+
+  hare.handle({ type: "jsq", fields: { 5: [{ 1: [player], 2: [398], 3: [411] }], 22: [5], 36: [-4] } }, 6)
+  assert.equal(events.at(-1).fighters[0].cell, 411)
+  hare.handle({ type: "jsq", fields: { 20: [{ 1: [360], 2: [player] }], 22: [4], 36: [player] } }, 7)
+  assert.equal(events.at(-1).fighters[0].cell, 360)
+  hare.handle({ type: "jvj", fields: { 2: [430], 3: [player], 4: [150], 7: [1] } }, 8)
+  assert.equal(events.at(-1).fighters[0].melee, 0)
+  assert.equal(events.at(-1).mark, null)
+})
+
 test("September slide uses from-cell and to-cell", () => {
   const { hare, events } = watch()
   hare.handle(playerSheet(174), 1)

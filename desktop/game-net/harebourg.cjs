@@ -1,6 +1,10 @@
 // Read-only Comte Harebourg tracker. It never writes a packet back to the game.
-// Message shapes are taken from captures of 2026-10-08 (jsq / jvj / jwj / kjl)
-// and from the September fight messages (jue / jwd) already used by fights.cjs.
+// Message shapes are taken from captures of 2026-10-08 (jsq / jvj / jwj / kjl),
+// from the September fight messages (jue / jwd), and checked again on 2026-10-09.
+// That capture still carries the sheet (jwj / juo), the session id (jxi), cells (kjl),
+// turns (jvj) and slides (jsq 4 / 5 / 8). It has no current/max life update: jue is
+// gone, jsq 300 is a spell pair, and the sheet total (1050 for the player, 13000 for
+// the Comte) does not move when damage lands. Without remaining HP the aim cell stays hidden.
 
 const HAREBOURG_ID = 3416;
 const GFX_ID = 993;

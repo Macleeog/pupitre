@@ -112,18 +112,33 @@ function monsterIdsFrom(composition) {
   return [...composition.matchAll(COMPOSITION)].map((match) => Number(match[2]));
 }
 
-// Chat link for a monster group, capture of 2026-09-30: field 2 is { 1: x, 2: y }.
-// Those are the group's coordinates, not the map the player is standing on.
+// Chat link for a monster group. The point is the group's map, not the player's.
+// 2026-09-30: field 2 is { 1: x, 2: y }.
+// 2026-10-09 (kpy): field 2 is { 1: y, 3: x }. Alhoui (2472) was published as
+// { 1: -55, 3: -1 }, which is the map -1,-55 in Village des Kanigs, his subarea.
+// Reading those two numbers as x then y would point at a different subarea.
 function coordinatePair(fields) {
   const entry = fields.get(2)?.[0];
   if (!entry || entry.wireType !== 2 || entry.raw.length > 24) return null;
   const point = parseMessage(entry.raw);
   if (!point) return null;
-  const xRaw = varintField(point, 1);
-  const yRaw = varintField(point, 2);
-  if (xRaw === undefined || yRaw === undefined) return null;
+  const first = varintField(point, 1);
+  const second = varintField(point, 2);
+  const third = varintField(point, 3);
+  let xRaw;
+  let yRaw;
+  let allowed;
+  if (first !== undefined && second !== undefined && third === undefined) {
+    xRaw = first;
+    yRaw = second;
+    allowed = new Set([1, 2]);
+  } else if (first !== undefined && second === undefined && third !== undefined) {
+    yRaw = first;
+    xRaw = third;
+    allowed = new Set([1, 3]);
+  } else return null;
   for (const [field, entries] of point) {
-    if (field !== 1 && field !== 2) return null;
+    if (!allowed.has(field)) return null;
     if (entries.some((item) => item.wireType !== 0)) return null;
   }
   const x = Number(signed(xRaw));
@@ -133,10 +148,13 @@ function coordinatePair(fields) {
   return { x, y };
 }
 
-// Same block, capture of 2026-09-30: field 4 is the world map (1 = Monde des Douze).
+// 2026-09-30: field 4 is the world (1 = Monde des Douze).
+// 2026-10-09: field 4 is the group id and field 3 is the world.
 // 7,9 on world 14 is not 7,9 on world 1. /travel only knows the world the player is on.
 function worldId(fields) {
-  const world = Number(varintField(fields, 4) ?? 0);
+  const field4 = signed(varintField(fields, 4));
+  const raw = isGroup(field4) ? varintField(fields, 3) : varintField(fields, 4);
+  const world = Number(raw ?? 0);
   if (!Number.isInteger(world) || world < 1 || world > 64) return null;
   return world;
 }
