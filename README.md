@@ -47,6 +47,22 @@ Les codes des messages de combat (`desktop/game-net/fights.cjs`) viennent de Bli
 
 Les conditions d'utilisation d'Ankama interdisent les logiciels tiers qui lisent le trafic du jeu. À tes risques pour ton compte.
 
+## Guides de quêtes
+
+L'onglet **Quêtes** suit les guides (Dofus, secondaires, alignements, événements). Cocher une quête avance la barre du guide. Le texte de suivi est celui qu'on lit en jeu ; une position comme `[8,3]` copie `/travel 8,3` (sans espace en trop, les coordonnées négatives passent). Sur un autre monde, Pupitre ne propose pas `/travel`.
+
+Les récompenses affichées sont les kamas des quêtes et des succès déjà connus. Pupitre n'invente pas d'expérience absolue.
+
+Données issues de DofusDB. Utilisation soumise à la LPNC-IA 1.0.
+
+## Veille : archimonstres, avis de recherche, Comte Harebourg
+
+Deux réglages séparés : **Archimonstres** et **Avis de recherche**. Quand l'un est sur la carte, ou qu'un message du chat donne sa position, une carte avec le portrait s'affiche. Sur le monde principal, le bouton copie `/travel x,y`. Ailleurs, pas de commande.
+
+Le **Comte Harebourg** (monstre 3416) est suivi pendant le combat. Pupitre reconnaît le personnage depuis la fenêtre Dofus ouverte : aucun nom ni classe n'est écrit en dur. Le panneau dit pour qui il calcule. La case verte est dessinée sur la fenêtre du jeu, seulement quand ce personnage et ses points de vie sont connus. Sinon, aucune case. Survoler un allié montre sa rotation dans le panneau, sans déplacer la marque. Les flèches calent l'origine et l'échelle une fois, pour tout le monde.
+
+La lecture réseau reste allumée tant que la veille ou les alertes sont activées. Elle ne fait qu'écouter.
+
 ## Développement
 
 ```bash

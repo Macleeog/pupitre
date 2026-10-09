@@ -377,7 +377,7 @@ test("lecteur : ligne tshark → messages, combat détecté, fichier de capture"
   assert.equal(state.messages, 3);
   assert.equal(state.capture.count, 3);
   assert.deepEqual(
-    events.map((e) => e.type),
+    events.map((event) => event.type).filter((type) => type !== "harebourg-state"),
     ["fight-start", "fight-end"],
   );
   assert.deepEqual(

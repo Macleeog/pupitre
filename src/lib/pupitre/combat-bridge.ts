@@ -36,12 +36,3 @@ export function setCombatSnapshot(next: CombatSnapshot) {
 export function getCombatSnapshot() {
   return snapshot;
 }
-
-declare global {
-  interface Window {
-    pupitre?: {
-      onCombatUpdate: (fn: (s: CombatSnapshot) => void) => () => void;
-      sendCombatSnapshot: (s: CombatSnapshot) => void;
-    };
-  }
-}

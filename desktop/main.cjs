@@ -1,12 +1,24 @@
-const { app, BrowserWindow, dialog, globalShortcut, ipcMain, screen, shell } = require("electron");
+const { app, BrowserWindow, clipboard, dialog, globalShortcut, ipcMain, screen, shell } = require("electron");
 const { spawn } = require("node:child_process");
 const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
 const { GameNetReader } = require("./game-net/reader.cjs");
+const { lookupMapCoords, validCoords } = require("./game-net/map-coords.cjs");
 const { watchForUpdates } = require("./updates.cjs");
 
 const PORT = 47321;
+const TOAST_W = 168;
+const TOAST_H = 176;
+const TOAST_GAP = 8;
+let deskWindow = null;
+let harebourgLayer = null;
+let harebourgEnabled = true;
+let wantedToast = null;
+let toastPlacement = null;
+let toastShownAt = null;
+let toastTimer = null;
+let toastQueued = null;
 const DEFAULT_PLACEMENT = { right: 12, top: 48 };
 const OVERLAY_SIZES = {
   compact: { width: 300, height: 150 },
@@ -262,8 +274,210 @@ function followDofus(overlay) {
   return { watcher: child, toggle, resize };
 }
 
+function pageBase() {
+  return `http://127.0.0.1:${PORT}`;
+}
+
+function toastHeight(count) {
+  return TOAST_H * count + TOAST_GAP * Math.max(0, count - 1);
+}
+
+function wantedCards(monsters) {
+  if (!Array.isArray(monsters)) return [];
+  const cards = [];
+  for (const monster of monsters) {
+    if (cards.length >= 3) break;
+    if (!monster || typeof monster.name !== "string" || !Number.isFinite(monster.id)) continue;
+    const card = { id: monster.id, name: monster.name.slice(0, 48) };
+    if (Number.isFinite(monster.gfxId) && monster.gfxId > 0) card.gfxId = monster.gfxId;
+    if (monster.kind === "archi") card.kind = "archi";
+    cards.push(card);
+  }
+  return cards;
+}
+
+function placeWantedToast(win, count) {
+  const area = screen.getPrimaryDisplay().workArea;
+  const x = toastPlacement ? toastPlacement.x : Math.round(area.x + 16);
+  const y = toastPlacement ? toastPlacement.y : Math.round(area.y + 16);
+  win.setBounds({ x, y, width: TOAST_W, height: toastHeight(count) });
+}
+
+function closeWantedToast() {
+  const win = wantedToast;
+  if (!win || win.isDestroyed()) return;
+  wantedToast = null;
+  win.close();
+}
+
+function showWantedToast(event) {
+  const cards = wantedCards(event?.monsters);
+  const coords = validCoords(event?.coords);
+  if (cards.length === 0) {
+    closeWantedToast();
+    return;
+  }
+  if (wantedToast && !wantedToast.isDestroyed() && toastShownAt === event.at) {
+    if (coords) wantedToast.webContents.send("toast:coords", coords);
+    return;
+  }
+  toastShownAt = event.at;
+  const url = `${pageBase()}/avis?m=${encodeURIComponent(JSON.stringify({ cards, coords }))}`;
+  if (!wantedToast || wantedToast.isDestroyed()) {
+    const win = new BrowserWindow({
+      width: TOAST_W,
+      height: toastHeight(cards.length),
+      frame: false,
+      transparent: true,
+      alwaysOnTop: true,
+      skipTaskbar: true,
+      resizable: false,
+      hasShadow: false,
+      show: false,
+      focusable: true,
+      backgroundColor: "#00000000",
+      webPreferences: webPreferences(),
+    });
+    wantedToast = win;
+    win.setAlwaysOnTop(true, "screen-saver");
+    win.on("closed", () => {
+      if (wantedToast === win) wantedToast = null;
+    });
+    placeWantedToast(win, cards.length);
+    win.once("ready-to-show", () => {
+      if (!win.isDestroyed()) win.showInactive();
+    });
+    void win.loadURL(url);
+    return;
+  }
+  placeWantedToast(wantedToast, cards.length);
+  void wantedToast.loadURL(url);
+  if (!wantedToast.isVisible()) wantedToast.showInactive();
+}
+
+function queueWantedToast(event) {
+  if (event.coords) {
+    clearTimeout(toastTimer);
+    toastQueued = null;
+    showWantedToast(event);
+    return;
+  }
+  toastQueued = event;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    if (toastQueued) showWantedToast(toastQueued);
+    toastQueued = null;
+  }, 1500);
+}
+
+function closeHarebourgLayer() {
+  const win = harebourgLayer;
+  if (!win || win.isDestroyed()) return;
+  harebourgLayer = null;
+  win.close();
+}
+
+function ensureHarebourgLayer() {
+  if (harebourgLayer && !harebourgLayer.isDestroyed()) return harebourgLayer;
+  const win = new BrowserWindow({
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 200,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    focusable: false,
+    resizable: false,
+    movable: false,
+    hasShadow: false,
+    thickFrame: false,
+    show: false,
+    backgroundColor: "#00000000",
+    webPreferences: { ...webPreferences(), backgroundThrottling: false },
+  });
+  harebourgLayer = win;
+  win.setIgnoreMouseEvents(true);
+  win.setAlwaysOnTop(true, "screen-saver");
+  win.on("closed", () => {
+    if (harebourgLayer === win) harebourgLayer = null;
+  });
+  void win.loadURL(`${pageBase()}/marque`);
+  return win;
+}
+
+function syncHarebourgLayer(event) {
+  const rect = event?.dofusWindow;
+  const draw = Boolean(
+    harebourgEnabled && event?.active && event?.mark && rect && rect.width >= 80 && rect.height >= 80,
+  );
+  if (!draw) {
+    if (harebourgLayer && !harebourgLayer.isDestroyed() && harebourgLayer.isVisible()) harebourgLayer.hide();
+    return;
+  }
+  const win = ensureHarebourgLayer();
+  let bounds = rect;
+  try {
+    bounds = screen.screenToDipRect(win, rect);
+  } catch {
+    bounds = rect;
+  }
+  win.setBounds({
+    x: Math.round(bounds.x),
+    y: Math.round(bounds.y),
+    width: Math.max(80, Math.round(bounds.width)),
+    height: Math.max(80, Math.round(bounds.height)),
+  });
+  win.setIgnoreMouseEvents(true);
+  if (!win.isVisible()) win.showInactive();
+}
+
+function fromDesk(event) {
+  return Boolean(deskWindow && !deskWindow.isDestroyed() && event.sender === deskWindow.webContents);
+}
+
+ipcMain.on("clipboard:travel", (_event, text) => {
+  if (typeof text === "string" && /^\/travel -?\d{1,4},-?\d{1,4}$/.test(text)) clipboard.writeText(text);
+});
+
+ipcMain.on("harebourg:enabled", (event, enabled) => {
+  if (!fromDesk(event) || typeof enabled !== "boolean") return;
+  harebourgEnabled = enabled;
+  if (!enabled && harebourgLayer && !harebourgLayer.isDestroyed()) harebourgLayer.hide();
+});
+
+ipcMain.on("toast:count", (event, count) => {
+  if (!wantedToast || wantedToast.isDestroyed() || event.sender !== wantedToast.webContents) return;
+  const next = Number(count);
+  if (!Number.isInteger(next) || next <= 0) {
+    closeWantedToast();
+    return;
+  }
+  placeWantedToast(wantedToast, Math.min(3, next));
+});
+
+ipcMain.on("toast:move-by", (event, dx, dy) => {
+  if (!wantedToast || wantedToast.isDestroyed() || event.sender !== wantedToast.webContents) return;
+  if (!Number.isFinite(dx) || !Number.isFinite(dy)) return;
+  const bounds = wantedToast.getBounds();
+  wantedToast.setBounds({
+    x: Math.round(bounds.x + dx),
+    y: Math.round(bounds.y + dy),
+    width: bounds.width,
+    height: bounds.height,
+  });
+  toastPlacement = { x: Math.round(bounds.x + dx), y: Math.round(bounds.y + dy) };
+});
+
+ipcMain.on("toast:drag-end", (event) => {
+  if (!wantedToast || wantedToast.isDestroyed() || event.sender !== wantedToast.webContents) return;
+  if (toastPlacement) writeJson("toast.json", toastPlacement);
+});
+
 // Passive, read-only: tshark (Wireshark + Npcap) copies the game's packets; nothing is
-// injected, redirected or sent anywhere.
+// injected, redirected or sent anywhere. Fight loot stays on the desk so the farm overlay
+// cannot count the same combat twice.
 function readGameNetwork(desk) {
   const capturesDir = path.join(app.getPath("userData"), "packet-captures");
   const toDesk = (channel, payload) => {
@@ -272,13 +486,29 @@ function readGameNetwork(desk) {
   const reader = new GameNetReader({
     capturesDir,
     onState: (state) => toDesk("net:state", state),
-    onEvent: (event) => toDesk("game-event", event),
+    onEvent: (event) => {
+      toDesk("game-event", event);
+      if (harebourgLayer && !harebourgLayer.isDestroyed() && event?.type === "harebourg-state") {
+        harebourgLayer.webContents.send("game-event", event);
+      }
+      if (event.type === "wanted-absent") {
+        clearTimeout(toastTimer);
+        toastQueued = null;
+        closeWantedToast();
+      }
+      if (event.type === "wanted-sighting") queueWantedToast(event);
+      if (event.type === "harebourg-state") syncHarebourgLayer(event);
+    },
     cacheFile: path.join(app.getPath("userData"), "game-servers.json"),
     ownFighterIds: loadOwnFighters(),
     onOwnFighters: (ids) => writeJson("own-fighters.json", ids),
+    mapLookup: (mapId) => lookupMapCoords(mapId, { cacheFile: path.join(app.getPath("userData"), "map-coords.json") }),
   });
   const fromDesk = (event) => event.sender === desk.webContents;
-  ipcMain.handle("net:get-state", (event) => (fromDesk(event) ? reader.snapshot() : null));
+  ipcMain.handle("net:get-state", (event) => {
+    const marque = harebourgLayer && !harebourgLayer.isDestroyed() && event.sender === harebourgLayer.webContents;
+    return fromDesk(event) || marque ? reader.snapshot() : null;
+  });
   ipcMain.handle("net:capture-start", (event) => (fromDesk(event) ? reader.startCapture() : null));
   ipcMain.handle("net:capture-stop", (event) => (fromDesk(event) ? reader.stopCapture() : null));
   ipcMain.handle("net:restart", async (event) => {
@@ -288,6 +518,12 @@ function readGameNetwork(desk) {
   });
   ipcMain.on("net:set-active", (event, active) => {
     if (fromDesk(event) && typeof active === "boolean") reader.setActive(active);
+  });
+  ipcMain.on("net:set-wanted-notices", (event, enabled) => {
+    if (fromDesk(event) && typeof enabled === "boolean") reader.wantedNotices = enabled;
+  });
+  ipcMain.on("net:set-archi-notices", (event, enabled) => {
+    if (fromDesk(event) && typeof enabled === "boolean") reader.archiNotices = enabled;
   });
   ipcMain.handle("net:forget-own", (event) => {
     if (!fromDesk(event)) return null;
@@ -359,7 +595,7 @@ app.whenReady().then(async () => {
     minWidth: 390,
     minHeight: 640,
     title: pupitreVersion() ? `Pupitre ${pupitreVersion()}` : "Pupitre",
-    backgroundColor: "#1a120c",
+    backgroundColor: "#121212",
     show: false,
     autoHideMenuBar: true,
     webPreferences: webPreferences(),
@@ -402,11 +638,19 @@ app.whenReady().then(async () => {
     return registerShortcuts(clean, runShortcut);
   });
 
+  deskWindow = desk;
+  const savedToast = readJson("toast.json");
+  if (Number.isFinite(savedToast?.x) && Number.isFinite(savedToast?.y)) {
+    toastPlacement = { x: Math.round(savedToast.x), y: Math.round(savedToast.y) };
+  }
   desk.once("ready-to-show", () => desk.show());
   network = readGameNetwork(desk);
   watchForUpdates(desk);
   await Promise.all([desk.loadURL(`http://127.0.0.1:${PORT}/`), overlay.loadURL(`http://127.0.0.1:${PORT}/overlay`)]);
   desk.on("closed", () => {
+    deskWindow = null;
+    closeHarebourgLayer();
+    closeWantedToast();
     if (watcher && !watcher.killed) watcher.kill();
     if (!overlay.isDestroyed()) overlay.close();
     shutdown();

@@ -1,0 +1,4878 @@
+{
+  "guides": [
+    {
+      "slug": "dofawa",
+      "title": "Dofawa",
+      "levelMin": 10,
+      "levelMax": 20,
+      "section": "dofus",
+      "itemId": 7113,
+      "iconId": 23009,
+      "questIds": [
+        1958,
+        1959
+      ],
+      "chapters": [
+        {
+          "title": "Un citoyen modèle",
+          "questIds": [
+            1958,
+            1959
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dofus-argente",
+      "title": "Dofus Argenté",
+      "levelMin": 15,
+      "levelMax": 40,
+      "section": "dofus",
+      "itemId": 19629,
+      "iconId": 23025,
+      "questIds": [
+        1629,
+        1630,
+        1631,
+        1632,
+        1642,
+        1643,
+        1634,
+        1639,
+        1640,
+        1641,
+        1633,
+        1655,
+        1644,
+        1645,
+        1649,
+        2512,
+        1646,
+        1637,
+        1647,
+        1650,
+        1651,
+        2513,
+        1648,
+        1635,
+        1638,
+        2004,
+        1958,
+        1975,
+        1959,
+        1978,
+        2009,
+        1960,
+        1992,
+        1994,
+        1981,
+        1998,
+        1996,
+        1980,
+        1984,
+        718,
+        1988,
+        1982,
+        1999,
+        2000,
+        1989,
+        1962,
+        1976,
+        1977,
+        1990,
+        1985,
+        1986,
+        1983,
+        1979,
+        1987,
+        1991,
+        2007,
+        2008
+      ],
+      "chapters": [
+        {
+          "title": "Tutoriel",
+          "questIds": [
+            1629,
+            1630,
+            1631
+          ]
+        },
+        {
+          "title": "Quêtes d'Incarnam",
+          "questIds": [
+            1632,
+            1642,
+            1643,
+            1634,
+            1639,
+            1640,
+            1641,
+            1633,
+            1655,
+            1644,
+            1645,
+            1649,
+            2512,
+            1646,
+            1637,
+            1647,
+            1650,
+            1651,
+            2513,
+            1648,
+            1635,
+            1638,
+            2004
+          ]
+        },
+        {
+          "title": "Quêtes d'Astrub",
+          "questIds": [
+            1958,
+            1975,
+            1959,
+            1978,
+            2009,
+            1960,
+            1992,
+            1994,
+            1981,
+            1998,
+            1996,
+            1980,
+            1984,
+            718,
+            1988,
+            1982,
+            1999,
+            2000,
+            1989,
+            1962,
+            1976,
+            1977,
+            1990,
+            1985,
+            1986,
+            1983,
+            1979,
+            1987,
+            1991,
+            2007,
+            2008
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dofus-cawotte",
+      "title": "Dofus Cawotte",
+      "levelMin": 40,
+      "levelMax": 80,
+      "section": "dofus",
+      "itemId": 972,
+      "iconId": 23006,
+      "questIds": [
+        1958,
+        1959,
+        2009,
+        1960,
+        1962,
+        2149,
+        2192,
+        827,
+        2193,
+        836,
+        837,
+        838,
+        839,
+        840,
+        841,
+        842,
+        843,
+        833,
+        834,
+        835
+      ],
+      "chapters": [
+        {
+          "title": "Astrub",
+          "questIds": [
+            1958,
+            1959,
+            2009,
+            1960,
+            1975,
+            1962
+          ],
+          "info": "Succès prérequis « Un citoyen modèle »."
+        },
+        {
+          "title": "Introduction",
+          "questIds": [
+            2149,
+            2192,
+            827,
+            2193
+          ]
+        },
+        {
+          "title": "Première partie",
+          "questIds": [
+            836,
+            837,
+            838,
+            839,
+            840,
+            841,
+            842,
+            843,
+            833,
+            834
+          ]
+        },
+        {
+          "title": "Seconde partie",
+          "questIds": [
+            835
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dokoko",
+      "title": "Dokoko",
+      "levelMin": 50,
+      "levelMax": 100,
+      "section": "dofus",
+      "itemId": 17078,
+      "iconId": 23022,
+      "questIds": [
+        1666,
+        1667,
+        1668,
+        1669,
+        1670
+      ],
+      "chapters": [
+        {
+          "title": "Koko Boy",
+          "questIds": [
+            1666,
+            1667,
+            1668,
+            1669,
+            1670
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dofus-emeraude",
+      "title": "Dofus Émeraude",
+      "levelMin": 40,
+      "levelMax": 110,
+      "section": "dofus",
+      "itemId": 737,
+      "iconId": 23002,
+      "questIds": [
+        1958,
+        1959,
+        2009,
+        1960,
+        1975,
+        1962,
+        2149,
+        2192,
+        827,
+        2193,
+        2194,
+        2450,
+        2195,
+        1462,
+        1463,
+        1464,
+        1465,
+        1466,
+        1467,
+        1469,
+        1470,
+        1471
+      ],
+      "chapters": [
+        {
+          "title": "Astrub",
+          "questIds": [
+            1958,
+            1959,
+            2009,
+            1960,
+            1975,
+            1962
+          ],
+          "info": "Succès prérequis « Un citoyen modèle ».",
+          "kind": "prereq"
+        },
+        {
+          "title": "Introduction aux Dofus",
+          "questIds": [
+            2149,
+            2192,
+            827,
+            2193,
+            2194,
+            2450,
+            2195,
+            1462
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Vert Émeraude",
+          "questIds": [
+            1463,
+            1464,
+            1465,
+            1466,
+            1467,
+            1469,
+            1470,
+            1471
+          ],
+          "kind": "main"
+        }
+      ],
+      "notice": "Prévoyez le sort Capture d’âmes, Éleveur niveau 20 et un métier niveau 50."
+    },
+    {
+      "slug": "dofus-des-veilleurs",
+      "title": "Dofus des Veilleurs",
+      "levelMin": 100,
+      "levelMax": 100,
+      "section": "dofus",
+      "itemId": 16061,
+      "iconId": 23020,
+      "questIds": [
+        1484,
+        1485,
+        1486,
+        1530,
+        1531,
+        1532,
+        1571,
+        1572,
+        1573,
+        1608,
+        1609,
+        1610,
+        1611,
+        1612,
+        1613
+      ],
+      "chapters": [
+        {
+          "title": "D'un monde à l'autre",
+          "questIds": [
+            1484,
+            1485,
+            1486
+          ]
+        },
+        {
+          "title": "Aux portes de la nuit",
+          "questIds": [
+            1530,
+            1531,
+            1532
+          ]
+        },
+        {
+          "title": "Générations futures",
+          "questIds": [
+            1571,
+            1572,
+            1573
+          ]
+        },
+        {
+          "title": "Par delà les apparences",
+          "questIds": [
+            1608,
+            1609,
+            1610,
+            1611,
+            1612,
+            1613
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dotruche",
+      "title": "Dotruche",
+      "levelMin": 15,
+      "levelMax": 130,
+      "section": "dofus",
+      "itemId": 15235,
+      "iconId": 23019,
+      "questIds": [
+        1199,
+        1201,
+        1200,
+        1517
+      ],
+      "chapters": [
+        {
+          "title": "Faire le keke",
+          "questIds": [
+            1199,
+            1201,
+            1200
+          ]
+        },
+        {
+          "title": "La Haute Truche",
+          "questIds": [
+            1517
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dofus-pourpre",
+      "title": "Dofus Pourpre",
+      "levelMin": 110,
+      "levelMax": 130,
+      "section": "dofus",
+      "itemId": 694,
+      "iconId": 23001,
+      "questIds": [
+        1958,
+        1959,
+        2009,
+        1960,
+        1975,
+        1962,
+        2149,
+        2192,
+        827,
+        2193,
+        2194,
+        2450,
+        2195,
+        1462,
+        1521,
+        1522,
+        1527,
+        2538,
+        1523,
+        1524,
+        1525,
+        1526,
+        1528,
+        1529
+      ],
+      "chapters": [
+        {
+          "title": "Astrub",
+          "questIds": [
+            1958,
+            1959,
+            2009,
+            1960,
+            1975,
+            1962
+          ],
+          "info": "Succès prérequis « Un citoyen modèle ».",
+          "kind": "prereq"
+        },
+        {
+          "title": "Introduction",
+          "questIds": [
+            2149,
+            2192,
+            827,
+            2193,
+            2194,
+            2450,
+            2195,
+            1462
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Pourpre profond",
+          "questIds": [
+            1521,
+            1522,
+            1527,
+            2538,
+            1523,
+            1524,
+            1525,
+            1526,
+            1528,
+            1529
+          ],
+          "takeQuestIds": [
+            1523,
+            1524,
+            1525,
+            1526
+          ],
+          "kind": "main"
+        }
+      ]
+    },
+    {
+      "slug": "domakuro",
+      "title": "Domakuro",
+      "levelMin": 30,
+      "levelMax": 140,
+      "section": "dofus",
+      "itemId": 23237,
+      "iconId": 23032,
+      "questIds": [
+        2149,
+        2150,
+        2151,
+        2152,
+        2153,
+        2154,
+        2155,
+        2197
+      ],
+      "chapters": [
+        {
+          "title": "Les grands esprits se rencontrent",
+          "questIds": [
+            2149,
+            2150,
+            2151,
+            2152,
+            2153,
+            2154,
+            2155,
+            2197
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dorigami",
+      "title": "Dorigami",
+      "levelMin": 140,
+      "levelMax": 170,
+      "section": "dofus",
+      "itemId": 23408,
+      "iconId": 23033,
+      "questIds": [
+        1958,
+        1959,
+        2009,
+        1960,
+        1975,
+        1962,
+        2149,
+        2192,
+        827,
+        2193,
+        2194,
+        2450,
+        2195,
+        1462,
+        1463,
+        1464,
+        1465,
+        2150,
+        2151,
+        2152,
+        2153,
+        2154,
+        2155,
+        2197,
+        2179,
+        2180,
+        2198
+      ],
+      "chapters": [
+        {
+          "title": "Astrub",
+          "questIds": [
+            1958,
+            1959,
+            2009,
+            1960,
+            1975,
+            1962
+          ],
+          "info": "Succès prérequis « Un citoyen modèle ».",
+          "kind": "prereq"
+        },
+        {
+          "title": "Introduction",
+          "questIds": [
+            2149,
+            2192,
+            827,
+            2193,
+            2194,
+            2450,
+            2195,
+            1462
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Début Émeraude",
+          "questIds": [
+            1463,
+            1464,
+            1465
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Domakuro",
+          "questIds": [
+            2150,
+            2151,
+            2152,
+            2153,
+            2154,
+            2155,
+            2197
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Le gardien de l'immaculé",
+          "questIds": [
+            2179,
+            2180,
+            2198
+          ],
+          "kind": "main"
+        }
+      ]
+    },
+    {
+      "slug": "dofus-turquoise",
+      "title": "Dofus Turquoise",
+      "levelMin": 100,
+      "levelMax": 180,
+      "section": "dofus",
+      "itemId": 739,
+      "iconId": 23003,
+      "questIds": [
+        1958,
+        1959,
+        2009,
+        1960,
+        1975,
+        1962,
+        2149,
+        2192,
+        827,
+        2193,
+        2194,
+        2450,
+        2195,
+        1462,
+        1653,
+        1654,
+        1656,
+        1657,
+        1660,
+        1658,
+        1661,
+        1659,
+        1662,
+        1663
+      ],
+      "chapters": [
+        {
+          "title": "Astrub",
+          "questIds": [
+            1958,
+            1959,
+            2009,
+            1960,
+            1975,
+            1962
+          ],
+          "info": "Succès prérequis « Un citoyen modèle ».",
+          "kind": "prereq"
+        },
+        {
+          "title": "Introduction",
+          "questIds": [
+            2149,
+            2192,
+            827,
+            2193,
+            2194,
+            2450,
+            2195,
+            1462
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Bleu turquoise",
+          "questIds": [
+            1653,
+            1654,
+            1656,
+            1657,
+            1660,
+            1658,
+            1661,
+            1659,
+            1662,
+            1663
+          ],
+          "takeQuestIds": [
+            1657,
+            1660,
+            1658,
+            1661,
+            1659,
+            1662
+          ],
+          "kind": "main"
+        }
+      ]
+    },
+    {
+      "slug": "dofus-ocre",
+      "title": "Dofus Ocre",
+      "levelMin": 40,
+      "levelMax": 180,
+      "section": "dofus",
+      "itemId": 7754,
+      "iconId": 23012,
+      "questIds": [
+        231,
+        232,
+        439
+      ],
+      "chapters": [
+        {
+          "title": "Accès à Otomaï",
+          "questIds": [
+            231,
+            232
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Quête du Dofus",
+          "questIds": [
+            439
+          ],
+          "kind": "main"
+        }
+      ]
+    },
+    {
+      "slug": "dofus-des-glaces",
+      "title": "Dofus des Glaces",
+      "levelMin": 100,
+      "levelMax": 200,
+      "section": "dofus",
+      "itemId": 7043,
+      "iconId": 23005,
+      "questIds": [
+        710,
+        612,
+        613,
+        614,
+        556,
+        615,
+        649,
+        619,
+        631,
+        589,
+        711,
+        1316,
+        557,
+        590,
+        558,
+        650,
+        577,
+        543,
+        591,
+        620,
+        578,
+        628,
+        629,
+        579,
+        581,
+        582,
+        583,
+        1286,
+        566,
+        567,
+        568,
+        646,
+        559,
+        592,
+        621,
+        560,
+        593,
+        561,
+        594,
+        622,
+        562,
+        595,
+        1317,
+        623,
+        651,
+        569,
+        570,
+        596,
+        678,
+        563,
+        624,
+        564,
+        625,
+        597,
+        565,
+        598,
+        1318,
+        626,
+        655,
+        653,
+        652,
+        1330,
+        571,
+        572,
+        1335,
+        1320,
+        1321,
+        1322,
+        1319,
+        1323,
+        1336,
+        1337,
+        1338,
+        1339,
+        1309,
+        1334,
+        1326,
+        1324,
+        1325,
+        1333,
+        1327,
+        1310,
+        1329,
+        573,
+        574,
+        575,
+        919,
+        2079
+      ],
+      "chapters": [
+        {
+          "title": "Bourgade & Champs de glace",
+          "questIds": [
+            710,
+            612,
+            613,
+            614,
+            556,
+            615,
+            649,
+            619,
+            631,
+            589,
+            711,
+            1316
+          ]
+        },
+        {
+          "title": "Forêt & Lac gelé",
+          "questIds": [
+            557,
+            590,
+            558,
+            650,
+            577,
+            543,
+            591,
+            620,
+            578,
+            628,
+            629,
+            579,
+            581,
+            582,
+            583,
+            1286,
+            566,
+            567,
+            568,
+            646
+          ]
+        },
+        {
+          "title": "Fin de Frigost I",
+          "questIds": [
+            559,
+            592,
+            621,
+            560,
+            593,
+            561,
+            594,
+            622,
+            562,
+            595,
+            1317,
+            623,
+            651,
+            569,
+            570
+          ]
+        },
+        {
+          "title": "Frigost II",
+          "questIds": [
+            596,
+            678,
+            563,
+            624,
+            564,
+            625,
+            597,
+            565,
+            598,
+            1318,
+            626,
+            655,
+            653,
+            652,
+            1330,
+            571,
+            572
+          ]
+        },
+        {
+          "title": "Frigost III",
+          "questIds": [
+            1335,
+            1320,
+            1321,
+            1322,
+            1319,
+            1323,
+            1336,
+            1337,
+            1338,
+            1339,
+            1309,
+            1334,
+            1326,
+            1324,
+            1325,
+            1333,
+            1327,
+            1310,
+            1329,
+            573,
+            574,
+            575,
+            919,
+            2079
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dofus-tachete",
+      "title": "Dofus Tacheté",
+      "levelMin": 200,
+      "levelMax": 200,
+      "section": "dofus",
+      "itemId": 7112,
+      "iconId": 23008,
+      "questIds": [
+        1958,
+        1959,
+        2009,
+        1960,
+        1975,
+        1962,
+        2149,
+        2192,
+        827,
+        2193,
+        2194,
+        2450,
+        2195,
+        1462,
+        1463,
+        1464,
+        1465,
+        2150,
+        2151,
+        2152,
+        2153,
+        2154,
+        2155,
+        2197,
+        2179,
+        2180,
+        2198,
+        2200,
+        2201,
+        2158,
+        2202
+      ],
+      "chapters": [
+        {
+          "title": "Astrub",
+          "questIds": [
+            1958,
+            1959,
+            2009,
+            1960,
+            1975,
+            1962
+          ],
+          "info": "Succès prérequis « Un citoyen modèle ».",
+          "kind": "prereq"
+        },
+        {
+          "title": "Introduction",
+          "questIds": [
+            2149,
+            2192,
+            827,
+            2193,
+            2194,
+            2450,
+            2195,
+            1462
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Début du Dofus Émeraude",
+          "questIds": [
+            1463,
+            1464,
+            1465
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Domakuro",
+          "questIds": [
+            2150,
+            2151,
+            2152,
+            2153,
+            2154,
+            2155,
+            2197
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Dorigami",
+          "questIds": [
+            2179,
+            2180,
+            2198
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Un rêve en clair-obscur",
+          "questIds": [
+            2200,
+            2201,
+            2158,
+            2202
+          ],
+          "kind": "main"
+        }
+      ]
+    },
+    {
+      "slug": "dofus-abyssal",
+      "title": "Dofus Abyssal",
+      "levelMin": 200,
+      "levelMax": 200,
+      "section": "dofus",
+      "itemId": 18043,
+      "iconId": 23023,
+      "questIds": [
+        1751,
+        1753,
+        1754,
+        1755,
+        1764,
+        1731,
+        1737,
+        1738,
+        1739,
+        1740,
+        1442,
+        1433,
+        1438,
+        1439,
+        1441,
+        1440,
+        1443,
+        1741,
+        1742,
+        1733,
+        1734,
+        1735,
+        1736,
+        1743,
+        1744,
+        1745,
+        1746,
+        1747,
+        1756,
+        1758,
+        1759,
+        1760,
+        1748,
+        1752,
+        1750,
+        1749,
+        1757,
+        1766,
+        1765,
+        1732
+      ],
+      "chapters": [
+        {
+          "title": "Prélude",
+          "questIds": [
+            1751
+          ]
+        },
+        {
+          "title": "Quêtes de farm",
+          "questIds": [
+            1753,
+            1754,
+            1755,
+            1764
+          ]
+        },
+        {
+          "title": "Guerre des profondeurs",
+          "questIds": [
+            1731,
+            1737,
+            1738,
+            1739,
+            1740
+          ]
+        },
+        {
+          "title": "Test d'étanchéité",
+          "questIds": [
+            1442,
+            1433,
+            1438,
+            1439,
+            1441,
+            1440,
+            1443
+          ]
+        },
+        {
+          "title": "Guerre des profondeurs",
+          "questIds": [
+            1741,
+            1742
+          ]
+        },
+        {
+          "title": "La mer en héritage",
+          "questIds": [
+            1733,
+            1734,
+            1735,
+            1736,
+            1743,
+            1744
+          ]
+        },
+        {
+          "title": "L'appel de Koutoulou",
+          "questIds": [
+            1745,
+            1746,
+            1747,
+            1756,
+            1758,
+            1759
+          ]
+        },
+        {
+          "title": "Dernière ligne droite",
+          "questIds": [
+            1760,
+            1748,
+            1752,
+            1750,
+            1749,
+            1757,
+            1766,
+            1765,
+            1732
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dofus-ivoire",
+      "title": "Dofus Ivoire",
+      "levelMin": 200,
+      "levelMax": 200,
+      "section": "dofus",
+      "itemId": 7115,
+      "iconId": 23011,
+      "questIds": [
+        1958,
+        1959,
+        2009,
+        1960,
+        1975,
+        1962,
+        2149,
+        2192,
+        827,
+        2193,
+        2194,
+        2450,
+        2195,
+        1462,
+        1903,
+        1917,
+        710,
+        612,
+        613,
+        614,
+        615,
+        649,
+        589,
+        577,
+        578,
+        628,
+        629,
+        579,
+        650,
+        1317,
+        1910,
+        1504,
+        1505,
+        1506,
+        1507,
+        1510,
+        1871,
+        1872,
+        1607,
+        1845,
+        1851,
+        1846,
+        1848,
+        1847,
+        1849,
+        1850,
+        1854,
+        1731,
+        1733,
+        1734,
+        1735,
+        1736,
+        1905,
+        1906,
+        1907,
+        1908,
+        1909,
+        1914,
+        1911,
+        1912,
+        1913,
+        1915
+      ],
+      "chapters": [
+        {
+          "title": "Astrub",
+          "questIds": [
+            1958,
+            1959,
+            2009,
+            1960,
+            1975,
+            1962
+          ],
+          "info": "Succès prérequis « Un citoyen modèle ».",
+          "kind": "prereq"
+        },
+        {
+          "title": "Introduction",
+          "questIds": [
+            2149,
+            2192,
+            827,
+            2193,
+            2194,
+            2450,
+            2195,
+            1462
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Alignement 100",
+          "questIds": [
+            1903,
+            1917
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Passage à Frigost",
+          "questIds": [
+            710,
+            612,
+            613,
+            614,
+            615,
+            649,
+            589,
+            577,
+            578,
+            628,
+            629,
+            579,
+            650,
+            1317,
+            1910
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Quelques quêtes d'Enutrosor",
+          "questIds": [
+            1504,
+            1505,
+            1506,
+            1507,
+            1510
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Passage dans les Landes",
+          "questIds": [
+            1871,
+            1872
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Succès Nimotopia",
+          "questIds": [
+            1607,
+            1845,
+            1851,
+            1846,
+            1848,
+            1847,
+            1849,
+            1850,
+            1854
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Zone du Capitaine Meno",
+          "questIds": [
+            1731,
+            1733,
+            1734,
+            1735,
+            1736
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Blanc ivoire",
+          "questIds": [
+            1905,
+            1906,
+            1907,
+            1908,
+            1909,
+            1914,
+            1911,
+            1912,
+            1913,
+            1915
+          ],
+          "kind": "main"
+        }
+      ],
+      "notice": "Vous devez avoir terminé les 100 quêtes d’alignement et être Ordre 5."
+    },
+    {
+      "slug": "dofus-ebene",
+      "title": "Dofus Ébène",
+      "levelMin": 200,
+      "levelMax": 200,
+      "section": "dofus",
+      "itemId": 7114,
+      "iconId": 23007,
+      "questIds": [
+        1958,
+        1959,
+        2009,
+        1960,
+        1975,
+        1962,
+        1988,
+        1989,
+        1990,
+        1991,
+        894,
+        2149,
+        2192,
+        827,
+        2193,
+        2194,
+        2450,
+        2195,
+        1462,
+        1607,
+        1845,
+        1851,
+        1853,
+        1867,
+        1868,
+        1869,
+        1938,
+        2010,
+        2011,
+        2019,
+        2012,
+        2013,
+        2014,
+        2035,
+        2036,
+        2037,
+        2038,
+        2039,
+        2040,
+        2041,
+        2042,
+        2043,
+        2044
+      ],
+      "chapters": [
+        {
+          "title": "Astrub",
+          "questIds": [
+            1958,
+            1959,
+            2009,
+            1960,
+            1975,
+            1962
+          ],
+          "info": "Succès prérequis « Un citoyen modèle ».",
+          "kind": "prereq"
+        },
+        {
+          "title": "La grande biblioquête",
+          "questIds": [
+            1988,
+            1989,
+            1990,
+            1991
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Une petite quête d'Astrub",
+          "questIds": [
+            894
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Introduction",
+          "questIds": [
+            2149,
+            2192,
+            827,
+            2193,
+            2194,
+            2450,
+            2195,
+            1462
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "La fratrie des oubliés",
+          "questIds": [
+            1607,
+            1845,
+            1851,
+            1853,
+            1867,
+            1868,
+            1869
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "La colère des dieux",
+          "questIds": [
+            1938
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Zone Martegel",
+          "questIds": [
+            2010,
+            2011,
+            2019,
+            2012,
+            2013,
+            2014
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Noir d'ébène",
+          "questIds": [
+            2035,
+            2036,
+            2037,
+            2038,
+            2039,
+            2040,
+            2041,
+            2042,
+            2043,
+            2044
+          ],
+          "kind": "main"
+        }
+      ]
+    },
+    {
+      "slug": "dofus-nebuleux",
+      "title": "Dofus Nébuleux",
+      "levelMin": 100,
+      "levelMax": 200,
+      "section": "dofus",
+      "itemId": 8698,
+      "iconId": 23016,
+      "questIds": [
+        1484,
+        1485,
+        1486,
+        1530,
+        1531,
+        1532,
+        1571,
+        1572,
+        1573,
+        1608,
+        1609,
+        1610,
+        1611,
+        1612,
+        1613,
+        1487,
+        1501,
+        1504,
+        1505,
+        1506,
+        1488,
+        1490,
+        1502,
+        1497,
+        1498,
+        1499,
+        1507,
+        1508,
+        1509,
+        1500,
+        1491,
+        1489,
+        1492,
+        1493,
+        1494,
+        1503,
+        1510,
+        1511,
+        1512,
+        1513,
+        1515,
+        1516,
+        1514,
+        1495,
+        1496,
+        1588,
+        1591,
+        1592,
+        1593,
+        1575,
+        1577,
+        1583,
+        1584,
+        1585,
+        1586,
+        1589,
+        1594,
+        1595,
+        1596,
+        1579,
+        1580,
+        1581,
+        1582,
+        1601,
+        1590,
+        1597,
+        1598,
+        1599,
+        1600,
+        1602,
+        1533,
+        1538,
+        1541,
+        1542,
+        1543,
+        1534,
+        1536,
+        1539,
+        1544,
+        1545,
+        1546,
+        1547,
+        1553,
+        1554,
+        1555,
+        1535,
+        1537,
+        1562,
+        1561,
+        1559,
+        1560,
+        1548,
+        1549,
+        1550,
+        1551,
+        1552,
+        1540,
+        1556,
+        1557,
+        1558,
+        1614
+      ],
+      "chapters": [
+        {
+          "title": "D'un monde à l'autre",
+          "questIds": [
+            1484,
+            1485,
+            1486
+          ]
+        },
+        {
+          "title": "Aux portes de la nuit",
+          "questIds": [
+            1530,
+            1531,
+            1532
+          ]
+        },
+        {
+          "title": "Générations futures",
+          "questIds": [
+            1571,
+            1572,
+            1573
+          ]
+        },
+        {
+          "title": "Par delà les apparences",
+          "questIds": [
+            1608,
+            1609,
+            1610,
+            1611,
+            1612,
+            1613
+          ]
+        },
+        {
+          "title": "Enutrosor - Partie I",
+          "questIds": [
+            1487,
+            1501,
+            1504,
+            1505,
+            1506
+          ]
+        },
+        {
+          "title": "Enutrosor - Partie II",
+          "questIds": [
+            1488,
+            1490,
+            1502,
+            1497,
+            1498,
+            1499,
+            1507,
+            1508,
+            1509,
+            1500
+          ]
+        },
+        {
+          "title": "Enutrosor - Partie III",
+          "questIds": [
+            1491,
+            1489,
+            1492,
+            1493,
+            1494,
+            1503,
+            1510,
+            1511,
+            1512,
+            1513,
+            1515,
+            1516,
+            1514,
+            1495,
+            1496
+          ]
+        },
+        {
+          "title": "Xélorium - Partie I",
+          "questIds": [
+            1588,
+            1591,
+            1592,
+            1593
+          ]
+        },
+        {
+          "title": "Xélorium - Partie II",
+          "questIds": [
+            1575,
+            1577,
+            1583,
+            1584,
+            1585,
+            1586,
+            1589,
+            1594,
+            1595,
+            1596
+          ]
+        },
+        {
+          "title": "Xélorium - Partie III",
+          "questIds": [
+            1579,
+            1580,
+            1581,
+            1582,
+            1601,
+            1590,
+            1597,
+            1598,
+            1599,
+            1600,
+            1602
+          ]
+        },
+        {
+          "title": "Srambad - Partie I",
+          "questIds": [
+            1533,
+            1538,
+            1541,
+            1542,
+            1543
+          ]
+        },
+        {
+          "title": "Srambad - Partie II",
+          "questIds": [
+            1534,
+            1536,
+            1539,
+            1544,
+            1545,
+            1546,
+            1547,
+            1553,
+            1554,
+            1555
+          ]
+        },
+        {
+          "title": "Srambad - Partie III",
+          "questIds": [
+            1535,
+            1537,
+            1562,
+            1561,
+            1559,
+            1560,
+            1548,
+            1549,
+            1550,
+            1551,
+            1552,
+            1540,
+            1556,
+            1557,
+            1558
+          ]
+        },
+        {
+          "title": "Fin et obtention",
+          "questIds": [
+            1614
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dofus-vulbis",
+      "title": "Dofus Vulbis",
+      "levelMin": 200,
+      "levelMax": 200,
+      "section": "dofus",
+      "itemId": 6980,
+      "iconId": 23004,
+      "questIds": [
+        657,
+        2062,
+        2063,
+        2064,
+        2085,
+        2086,
+        2087,
+        2078,
+        2079,
+        2080,
+        2081,
+        2082,
+        2083
+      ],
+      "chapters": [
+        {
+          "title": "Barnabé",
+          "questIds": [
+            657
+          ]
+        },
+        {
+          "title": "Eliocalypse : Résonance",
+          "questIds": [
+            2062,
+            2063,
+            2064
+          ]
+        },
+        {
+          "title": "Larmes de crocodaille",
+          "questIds": [
+            2085,
+            2086,
+            2087
+          ]
+        },
+        {
+          "title": "Première partie",
+          "questIds": [
+            2078,
+            2079
+          ]
+        },
+        {
+          "title": "Deuxiéme partie",
+          "questIds": [
+            2080,
+            2081,
+            2082,
+            2083
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dofus-forgelave",
+      "title": "Dofus Forgelave",
+      "levelMin": 200,
+      "levelMax": 200,
+      "section": "dofus",
+      "itemId": 19398,
+      "iconId": 23024,
+      "questIds": [
+        894,
+        1607,
+        1845,
+        1853,
+        1867,
+        1868,
+        1869,
+        1934,
+        1935,
+        1938,
+        1936,
+        1937,
+        1954,
+        1939,
+        1948,
+        1951,
+        1952,
+        1949,
+        1950,
+        1953,
+        1940,
+        1956,
+        1955,
+        1942,
+        1943,
+        1944,
+        1945,
+        1946,
+        1947
+      ],
+      "chapters": [
+        {
+          "title": "Astrub",
+          "questIds": [
+            894
+          ],
+          "info": "Succès prérequis « Un citoyen modèle »."
+        },
+        {
+          "title": "La fratrie des oubliés",
+          "questIds": [
+            1607,
+            1845,
+            1853,
+            1867,
+            1868,
+            1869,
+            1934,
+            1935,
+            1938,
+            1936,
+            1937
+          ]
+        },
+        {
+          "title": "Prologue",
+          "questIds": [
+            1954,
+            1939
+          ]
+        },
+        {
+          "title": "Marches Magmatiques & Sidimote",
+          "questIds": [
+            1948,
+            1951,
+            1952,
+            1949,
+            1950,
+            1953,
+            1940,
+            1956
+          ]
+        },
+        {
+          "title": "Frigost & Épaves Silencieuses",
+          "questIds": [
+            1955,
+            1942,
+            1943,
+            1944,
+            1945,
+            1946,
+            1947
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dofus-argente-scintillant",
+      "title": "Dofus Argenté Scintillant",
+      "levelMin": 180,
+      "levelMax": 200,
+      "section": "dofus",
+      "itemId": 20286,
+      "iconId": 23027,
+      "questIds": [
+        2149,
+        2150,
+        1665,
+        1782,
+        1784,
+        1785,
+        1786,
+        1787,
+        1788,
+        1789,
+        1791,
+        1792,
+        1793,
+        1484,
+        1485,
+        1486,
+        1487,
+        1501,
+        1504,
+        1505,
+        1506,
+        1488,
+        1490,
+        1502,
+        1497,
+        1498,
+        1499,
+        1507,
+        1508,
+        1509,
+        1500,
+        1491,
+        1489,
+        1492,
+        1493,
+        1494,
+        1503,
+        1510,
+        1511,
+        1512,
+        1513,
+        1515,
+        1516,
+        1514,
+        1495,
+        1496,
+        2048,
+        2051
+      ],
+      "chapters": [
+        {
+          "title": "Pandala",
+          "questIds": [
+            2149,
+            2150
+          ]
+        },
+        {
+          "title": "Quatre sur Six",
+          "questIds": [
+            1665,
+            1782,
+            1784,
+            1785,
+            1786,
+            1787,
+            1788,
+            1789,
+            1791,
+            1792,
+            1793
+          ]
+        },
+        {
+          "title": "Le pays des Vermeils",
+          "questIds": [
+            1484,
+            1485,
+            1486,
+            1487,
+            1501,
+            1504,
+            1505,
+            1506,
+            1488,
+            1490,
+            1502,
+            1497,
+            1498,
+            1499,
+            1507,
+            1508,
+            1509,
+            1500,
+            1491,
+            1489,
+            1492,
+            1493,
+            1494,
+            1503,
+            1510,
+            1511,
+            1512,
+            1513,
+            1515,
+            1516,
+            1514,
+            1495,
+            1496
+          ]
+        },
+        {
+          "title": "Fin et obtention",
+          "questIds": [
+            2048,
+            2051
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dofus-du-cauchemar",
+      "title": "Dofus du Cauchemar",
+      "levelMin": 200,
+      "levelMax": 200,
+      "section": "dofus",
+      "itemId": 26066,
+      "iconId": 23034,
+      "questIds": [
+        2149,
+        2192,
+        827,
+        2193,
+        2194,
+        2450,
+        2195,
+        1462,
+        1463,
+        1464,
+        1465,
+        1607,
+        1845,
+        1851,
+        1853,
+        1867,
+        1868,
+        1869,
+        2150,
+        2164,
+        2161,
+        2151,
+        2152,
+        2153,
+        2154,
+        2155,
+        2197,
+        2179,
+        2180,
+        2198,
+        2200,
+        2201,
+        2158,
+        2202,
+        657,
+        2062,
+        2063,
+        2064,
+        2097,
+        2098,
+        2099,
+        2120,
+        2133,
+        2135,
+        2162,
+        2204,
+        1618,
+        1619,
+        1620,
+        1621,
+        2406,
+        2408,
+        2407,
+        2160,
+        1473,
+        1474,
+        1475,
+        2411,
+        2412,
+        2413,
+        2424,
+        2121,
+        2122,
+        2111,
+        2115,
+        2116,
+        2130,
+        1938,
+        2131,
+        2132,
+        2117,
+        2118,
+        2119,
+        2112,
+        2113,
+        2114,
+        2138,
+        2136,
+        2137,
+        2421,
+        2422,
+        2423,
+        2425
+      ],
+      "chapters": [
+        {
+          "title": "Introduction",
+          "questIds": [
+            2149,
+            2192,
+            827,
+            2193,
+            2194,
+            2450,
+            2195,
+            1462,
+            1463,
+            1464,
+            1465
+          ]
+        },
+        {
+          "title": "La fratrie des oubliés",
+          "questIds": [
+            1607,
+            1845,
+            1851,
+            1853,
+            1867,
+            1868,
+            1869
+          ]
+        },
+        {
+          "title": "Domakuro",
+          "questIds": [
+            2150,
+            2164,
+            2161,
+            2151,
+            2152,
+            2153,
+            2154,
+            2155,
+            2197
+          ]
+        },
+        {
+          "title": "Dorigami & Tacheté",
+          "questIds": [
+            2179,
+            2180,
+            2198,
+            2200,
+            2201,
+            2158,
+            2202
+          ]
+        },
+        {
+          "title": "Eliocalypse : Résonance",
+          "questIds": [
+            657,
+            2062,
+            2063,
+            2064,
+            2097,
+            2098,
+            2099,
+            2120,
+            2133,
+            2135
+          ]
+        },
+        {
+          "title": "Divers Pandala",
+          "questIds": [
+            2162,
+            2204
+          ]
+        },
+        {
+          "title": "Début du Sylvestre",
+          "questIds": [
+            1618,
+            1619,
+            1620,
+            1621
+          ]
+        },
+        {
+          "title": "Après la pluie",
+          "questIds": [
+            2406,
+            2408,
+            2407,
+            2160
+          ]
+        },
+        {
+          "title": "Prérequis zone Kanig",
+          "questIds": [
+            1473,
+            1474,
+            1475
+          ]
+        },
+        {
+          "title": "Ravagés",
+          "questIds": [
+            2411,
+            2412,
+            2413,
+            2424
+          ]
+        },
+        {
+          "title": "L'avenir du futur",
+          "questIds": [
+            2121,
+            2122
+          ]
+        },
+        {
+          "title": "La guerre eternelle",
+          "questIds": [
+            2111,
+            2115,
+            2116
+          ]
+        },
+        {
+          "title": "Je suis malade, complètement malade",
+          "questIds": [
+            2130,
+            1938,
+            2131,
+            2132
+          ]
+        },
+        {
+          "title": "Jugement dernier",
+          "questIds": [
+            2117,
+            2118,
+            2119
+          ]
+        },
+        {
+          "title": "Prisonniers de la mer",
+          "questIds": [
+            2112,
+            2113,
+            2114
+          ]
+        },
+        {
+          "title": "L'avenir du futur",
+          "questIds": [
+            2138,
+            2136,
+            2137
+          ]
+        },
+        {
+          "title": "Eliocalypse : Réminiscence",
+          "questIds": [
+            2421,
+            2422,
+            2423,
+            2425
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dom-de-pin",
+      "title": "Dom de Pin",
+      "levelMin": 200,
+      "levelMax": 200,
+      "section": "dofus",
+      "itemId": 27803,
+      "iconId": 23035,
+      "questIds": [
+        2150,
+        2164,
+        2161,
+        2151,
+        2152,
+        2153,
+        2154,
+        2155,
+        2197,
+        2179,
+        2180,
+        2198,
+        2200,
+        2201,
+        2158,
+        2202,
+        657,
+        2062,
+        2063,
+        2064,
+        2097,
+        2098,
+        2099,
+        2120,
+        2133,
+        2135,
+        2162,
+        2204,
+        1618,
+        1619,
+        1620,
+        1621,
+        2406,
+        2408,
+        2407,
+        2160,
+        1423,
+        1781,
+        2442,
+        2443,
+        2444,
+        2445,
+        2446,
+        2451,
+        2447,
+        2448,
+        1473,
+        1474,
+        1475,
+        2411,
+        2412,
+        2413,
+        2424,
+        2121,
+        2122,
+        2111,
+        2115,
+        2116,
+        2130,
+        1938,
+        2131,
+        2132,
+        2117,
+        2118,
+        2119,
+        2112,
+        2113,
+        2114,
+        2138,
+        2136,
+        2137,
+        2421,
+        2422,
+        1665,
+        1782,
+        1784,
+        1785,
+        1786,
+        1787,
+        1788,
+        1789,
+        1791,
+        1792,
+        1793,
+        2048,
+        2049,
+        2050,
+        2463,
+        2464,
+        2465,
+        2466,
+        2468,
+        2471,
+        2472,
+        2473,
+        2474,
+        2482,
+        2475,
+        2477,
+        2478,
+        2479,
+        2480,
+        2481,
+        2409,
+        2420,
+        2449
+      ],
+      "chapters": [
+        {
+          "title": "Domakuro",
+          "questIds": [
+            2150,
+            2164,
+            2161,
+            2151,
+            2152,
+            2153,
+            2154,
+            2155,
+            2197
+          ]
+        },
+        {
+          "title": "Dorigami & Tacheté",
+          "questIds": [
+            2179,
+            2180,
+            2198,
+            2200,
+            2201,
+            2158,
+            2202
+          ]
+        },
+        {
+          "title": "Eliocalypse : Résonance",
+          "questIds": [
+            657,
+            2062,
+            2063,
+            2064,
+            2097,
+            2098,
+            2099,
+            2120,
+            2133,
+            2135
+          ]
+        },
+        {
+          "title": "Divers Pandala",
+          "questIds": [
+            2162,
+            2204
+          ]
+        },
+        {
+          "title": "Début du Sylvestre",
+          "questIds": [
+            1618,
+            1619,
+            1620,
+            1621
+          ]
+        },
+        {
+          "title": "Après la pluie",
+          "questIds": [
+            2406,
+            2408,
+            2407,
+            2160
+          ]
+        },
+        {
+          "title": "Ocre d'Ambre",
+          "questIds": [
+            1423,
+            1781,
+            2442,
+            2443,
+            2444,
+            2445,
+            2446,
+            2451,
+            2447,
+            2448
+          ]
+        },
+        {
+          "title": "Prérequis zone Kanig",
+          "questIds": [
+            1473,
+            1474,
+            1475
+          ]
+        },
+        {
+          "title": "Ravagés",
+          "questIds": [
+            2411,
+            2412,
+            2413,
+            2424
+          ]
+        },
+        {
+          "title": "L'avenir du futur",
+          "questIds": [
+            2121,
+            2122
+          ]
+        },
+        {
+          "title": "La guerre eternelle",
+          "questIds": [
+            2111,
+            2115,
+            2116
+          ]
+        },
+        {
+          "title": "Je suis malade, complètement malade",
+          "questIds": [
+            2130,
+            1938,
+            2131,
+            2132
+          ]
+        },
+        {
+          "title": "Jugement dernier",
+          "questIds": [
+            2117,
+            2118,
+            2119
+          ]
+        },
+        {
+          "title": "Prisonniers de la mer",
+          "questIds": [
+            2112,
+            2113,
+            2114
+          ]
+        },
+        {
+          "title": "L'avenir du futur",
+          "questIds": [
+            2138,
+            2136,
+            2137
+          ]
+        },
+        {
+          "title": "Eliocalypse : Réminiscence",
+          "questIds": [
+            2421,
+            2422
+          ]
+        },
+        {
+          "title": "Quatre sur Six",
+          "questIds": [
+            1665,
+            1782,
+            1784,
+            1785,
+            1786,
+            1787,
+            1788,
+            1789,
+            1791,
+            1792,
+            1793
+          ]
+        },
+        {
+          "title": "Six sur Six",
+          "questIds": [
+            2048,
+            2049,
+            2050
+          ]
+        },
+        {
+          "title": "Archipel de Valonia",
+          "questIds": [
+            2463,
+            2464,
+            2465,
+            2466,
+            2468,
+            2471,
+            2472,
+            2473,
+            2474,
+            2482,
+            2475,
+            2477,
+            2478,
+            2479,
+            2480,
+            2481
+          ]
+        },
+        {
+          "title": "Le secret des Dofus : Prologue",
+          "questIds": [
+            2409,
+            2420,
+            2449
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dofus-sylvestre",
+      "title": "Dofus Sylvestre",
+      "levelMin": 200,
+      "levelMax": 200,
+      "section": "dofus",
+      "itemId": 29134,
+      "iconId": 23036,
+      "questIds": [
+        2150,
+        2164,
+        2161,
+        2151,
+        2152,
+        2153,
+        2154,
+        2155,
+        2197,
+        2179,
+        2180,
+        2198,
+        2200,
+        2201,
+        2158,
+        2202,
+        657,
+        2062,
+        2063,
+        2064,
+        2097,
+        2098,
+        2099,
+        2120,
+        2133,
+        2135,
+        2162,
+        2176,
+        2204,
+        1618,
+        1619,
+        1620,
+        1621,
+        2406,
+        2408,
+        2407,
+        2160,
+        1423,
+        1781,
+        2442,
+        2443,
+        2444,
+        2445,
+        2446,
+        2451,
+        2447,
+        2448,
+        1473,
+        1474,
+        1475,
+        2411,
+        2412,
+        2413,
+        2424,
+        2121,
+        2122,
+        2111,
+        2115,
+        2116,
+        2130,
+        1938,
+        2131,
+        2132,
+        2117,
+        2118,
+        2119,
+        2112,
+        2113,
+        2114,
+        2138,
+        2136,
+        2137,
+        2421,
+        2422,
+        2423,
+        2425,
+        1665,
+        1782,
+        1784,
+        1785,
+        1786,
+        1787,
+        1788,
+        1789,
+        1791,
+        1792,
+        1793,
+        2048,
+        2049,
+        2050,
+        2463,
+        2464,
+        2465,
+        2466,
+        2468,
+        2471,
+        2472,
+        2473,
+        2474,
+        2482,
+        2475,
+        2477,
+        2478,
+        2479,
+        2480,
+        2481,
+        2409,
+        2420,
+        2449,
+        2486,
+        2487,
+        2488,
+        2489
+      ],
+      "chapters": [
+        {
+          "title": "Domakuro",
+          "questIds": [
+            2150,
+            2164,
+            2161,
+            2151,
+            2152,
+            2153,
+            2154,
+            2155,
+            2197
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Dorigami & Tacheté",
+          "questIds": [
+            2179,
+            2180,
+            2198,
+            2200,
+            2201,
+            2158,
+            2202
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Eliocalypse : Résonance",
+          "questIds": [
+            657,
+            2062,
+            2063,
+            2064,
+            2097,
+            2098,
+            2099,
+            2120,
+            2133,
+            2135
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Divers Pandala",
+          "questIds": [
+            2162,
+            2176,
+            2204
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Début du Sylvestre",
+          "questIds": [
+            1618,
+            1619,
+            1620,
+            1621
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Après la pluie",
+          "questIds": [
+            2406,
+            2408,
+            2407,
+            2160
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Ocre d'Ambre",
+          "questIds": [
+            1423,
+            1781,
+            2442,
+            2443,
+            2444,
+            2445,
+            2446,
+            2451,
+            2447,
+            2448
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Prérequis zone Kanig",
+          "questIds": [
+            1473,
+            1474,
+            1475
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Ravagés",
+          "questIds": [
+            2411,
+            2412,
+            2413,
+            2424
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "L'avenir du futur",
+          "questIds": [
+            2121,
+            2122
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "La guerre eternelle",
+          "questIds": [
+            2111,
+            2115,
+            2116
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Je suis malade, complètement malade",
+          "questIds": [
+            2130,
+            1938,
+            2131,
+            2132
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Jugement dernier",
+          "questIds": [
+            2117,
+            2118,
+            2119
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Prisonniers de la mer",
+          "questIds": [
+            2112,
+            2113,
+            2114
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "L'avenir du futur",
+          "questIds": [
+            2138,
+            2136,
+            2137
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Eliocalypse : Réminiscence",
+          "questIds": [
+            2421,
+            2422,
+            2423,
+            2425
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Quatre sur Six",
+          "questIds": [
+            1665,
+            1782,
+            1784,
+            1785,
+            1786,
+            1787,
+            1788,
+            1789,
+            1791,
+            1792,
+            1793
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Six sur Six",
+          "questIds": [
+            2048,
+            2049,
+            2050
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Archipel de Valonia",
+          "questIds": [
+            2463,
+            2464,
+            2465,
+            2466,
+            2468,
+            2471,
+            2472,
+            2473,
+            2474,
+            2482,
+            2475,
+            2477,
+            2478,
+            2479,
+            2480,
+            2481
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "Le secret des Dofus : Prologue",
+          "questIds": [
+            2409,
+            2420,
+            2449
+          ],
+          "kind": "prereq"
+        },
+        {
+          "title": "En attendant le printemps",
+          "questIds": [
+            2486,
+            2487,
+            2488,
+            2489
+          ],
+          "kind": "main"
+        }
+      ]
+    },
+    {
+      "slug": "dofoozbz",
+      "title": "Dofoozbz",
+      "levelMin": 170,
+      "levelMax": 200,
+      "section": "dofus",
+      "itemId": 31794,
+      "iconId": 23039,
+      "questIds": [
+        1484,
+        2515,
+        2520,
+        2516,
+        2521,
+        2522,
+        2523,
+        2517,
+        2530,
+        2531,
+        2518,
+        2532,
+        2533,
+        2519
+      ],
+      "chapters": [
+        {
+          "title": "Introduction",
+          "questIds": [
+            1484
+          ]
+        },
+        {
+          "title": "Première partie",
+          "questIds": [
+            2515,
+            2520,
+            2516,
+            2521,
+            2522,
+            2523
+          ]
+        },
+        {
+          "title": "Deuxiéme partie",
+          "questIds": [
+            2517,
+            2530,
+            2531,
+            2518,
+            2532,
+            2533,
+            2519
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dofus-cacao",
+      "title": "Dofus Cacao",
+      "levelMin": 20,
+      "levelMax": 50,
+      "section": "secondaires",
+      "itemId": 20987,
+      "iconId": 23029,
+      "questIds": [
+        2149,
+        2056,
+        2066,
+        2061,
+        2057,
+        2058,
+        2059,
+        2060
+      ],
+      "chapters": [
+        {
+          "title": "Accès à Pandala",
+          "questIds": [
+            2149
+          ]
+        },
+        {
+          "title": "Dofus Caco",
+          "questIds": [
+            2056,
+            2066,
+            2061,
+            2057,
+            2058,
+            2059,
+            2060
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dofus-kaliptus",
+      "title": "Dofus Kaliptus",
+      "levelMin": 100,
+      "levelMax": 120,
+      "section": "secondaires",
+      "itemId": 8072,
+      "iconId": 23010,
+      "questIds": [],
+      "chapters": []
+    },
+    {
+      "slug": "dokille",
+      "title": "Dokille",
+      "levelMin": 20,
+      "levelMax": 200,
+      "section": "secondaires",
+      "itemId": 10907,
+      "iconId": 23017,
+      "questIds": [
+        724,
+        742,
+        737,
+        738,
+        739,
+        740
+      ],
+      "chapters": [
+        {
+          "title": "Prérequis",
+          "questIds": [
+            724,
+            742
+          ]
+        },
+        {
+          "title": "Quêtes",
+          "questIds": [
+            737,
+            738,
+            739,
+            740
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "dolmanax",
+      "title": "Dolmanax",
+      "levelMin": 20,
+      "levelMax": 200,
+      "section": "secondaires",
+      "itemId": 13344,
+      "iconId": 23018,
+      "questIds": [
+        954
+      ],
+      "chapters": [
+        {
+          "title": "Quêtes",
+          "questIds": [
+            954
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "alignement-bonta",
+      "title": "Alignement Bonta",
+      "levelMin": 20,
+      "levelMax": 200,
+      "section": "alignement",
+      "itemId": null,
+      "iconId": null,
+      "questIds": [
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        257,
+        258,
+        259,
+        260,
+        261,
+        262,
+        263,
+        264,
+        265,
+        266,
+        280,
+        281,
+        282,
+        283,
+        284,
+        285,
+        286,
+        290,
+        289,
+        291,
+        293,
+        294,
+        295,
+        296,
+        302,
+        298,
+        299,
+        303,
+        304,
+        333,
+        318,
+        321,
+        325,
+        326,
+        334,
+        335,
+        328,
+        451,
+        456,
+        457,
+        337,
+        343,
+        1715,
+        1717,
+        1719,
+        1721,
+        1723,
+        1728,
+        1729,
+        1730,
+        1885,
+        1887,
+        1889,
+        1891,
+        1893,
+        1895,
+        1897,
+        1899,
+        1901,
+        1903,
+        434,
+        111,
+        121,
+        423,
+        1917
+      ],
+      "chapters": [
+        {
+          "title": "Quêtes 1 à 10",
+          "questIds": [
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64
+          ]
+        },
+        {
+          "title": "Quêtes 11 à 20",
+          "questIds": [
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74
+          ]
+        },
+        {
+          "title": "Quêtes 21 à 30",
+          "questIds": [
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            81,
+            82,
+            83,
+            84
+          ]
+        },
+        {
+          "title": "Quêtes 31 à 40",
+          "questIds": [
+            85,
+            86,
+            87,
+            88,
+            89,
+            90,
+            91,
+            92,
+            93,
+            94
+          ]
+        },
+        {
+          "title": "Quêtes 41 à 50",
+          "questIds": [
+            257,
+            258,
+            259,
+            260,
+            261,
+            262,
+            263,
+            264,
+            265,
+            266
+          ]
+        },
+        {
+          "title": "Quêtes 51 à 60",
+          "questIds": [
+            280,
+            281,
+            282,
+            283,
+            284,
+            285,
+            286,
+            290,
+            289,
+            291
+          ]
+        },
+        {
+          "title": "Quêtes 61 à 70",
+          "questIds": [
+            293,
+            294,
+            295,
+            296,
+            302,
+            298,
+            299,
+            303,
+            304,
+            333
+          ]
+        },
+        {
+          "title": "Quêtes 71 à 80",
+          "questIds": [
+            318,
+            321,
+            325,
+            326,
+            334,
+            335,
+            328,
+            451,
+            456,
+            457
+          ]
+        },
+        {
+          "title": "Quêtes 81 à 90",
+          "questIds": [
+            337,
+            343,
+            1715,
+            1717,
+            1719,
+            1721,
+            1723,
+            1728,
+            1729,
+            1730
+          ]
+        },
+        {
+          "title": "Quêtes 91 à 100",
+          "questIds": [
+            1885,
+            1887,
+            1889,
+            1891,
+            1893,
+            1895,
+            1897,
+            1899,
+            1901,
+            1903
+          ]
+        },
+        {
+          "title": "Ordre de l'Esprit Salvateur",
+          "questIds": [
+            434,
+            111,
+            121,
+            423,
+            1917
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "alignement-brakmar",
+      "title": "Alignement Brâkmar",
+      "levelMin": 20,
+      "levelMax": 200,
+      "section": "alignement",
+      "itemId": null,
+      "iconId": null,
+      "questIds": [
+        1958,
+        1959,
+        2009,
+        1960,
+        1962,
+        2149,
+        827,
+        703,
+        1858,
+        1859,
+        375,
+        376,
+        377,
+        378,
+        379,
+        380,
+        381,
+        382,
+        383,
+        384,
+        385,
+        386,
+        387,
+        388,
+        389,
+        390,
+        391,
+        392,
+        393,
+        394,
+        395,
+        396,
+        397,
+        398,
+        399,
+        400,
+        401,
+        402,
+        403,
+        404,
+        405,
+        406,
+        407,
+        408,
+        409,
+        410,
+        411,
+        412,
+        413,
+        414,
+        246,
+        247,
+        248,
+        250,
+        251,
+        252,
+        253,
+        255,
+        256,
+        445,
+        267,
+        268,
+        446,
+        270,
+        271,
+        273,
+        275,
+        276,
+        277,
+        278,
+        279,
+        305,
+        306,
+        307,
+        308,
+        309,
+        310,
+        311,
+        313,
+        314,
+        315,
+        317,
+        319,
+        320,
+        322,
+        323,
+        327,
+        324,
+        329,
+        330,
+        331,
+        332,
+        352,
+        474,
+        1716,
+        1718,
+        1720,
+        1722,
+        1724,
+        1725,
+        1726,
+        1727,
+        1886,
+        1888,
+        1890,
+        1892,
+        1894,
+        1896,
+        1898,
+        1900,
+        1902,
+        1904,
+        1966,
+        125,
+        1965,
+        1677,
+        1967,
+        1920,
+        1919,
+        1974,
+        1968,
+        2470,
+        123,
+        1973,
+        112,
+        1921,
+        1841,
+        1964,
+        938,
+        438,
+        1971,
+        1972,
+        436,
+        1963,
+        1970,
+        422,
+        424,
+        1615,
+        426,
+        124,
+        113,
+        437,
+        704,
+        1969,
+        716,
+        114
+      ],
+      "chapters": [
+        {
+          "title": "Prérequis",
+          "questIds": [
+            1958,
+            1959,
+            2009,
+            1960,
+            1962,
+            2149,
+            827,
+            703,
+            1858,
+            1859
+          ]
+        },
+        {
+          "title": "Les alignements - 1 à 100",
+          "questIds": [
+            375,
+            376,
+            377,
+            378,
+            379,
+            380,
+            381,
+            382,
+            383,
+            384,
+            385,
+            386,
+            387,
+            388,
+            389,
+            390,
+            391,
+            392,
+            393,
+            394,
+            395,
+            396,
+            397,
+            398,
+            399,
+            400,
+            401,
+            402,
+            403,
+            404,
+            405,
+            406,
+            407,
+            408,
+            409,
+            410,
+            411,
+            412,
+            413,
+            414,
+            246,
+            247,
+            248,
+            250,
+            251,
+            252,
+            253,
+            255,
+            256,
+            445,
+            267,
+            268,
+            446,
+            270,
+            271,
+            273,
+            275,
+            276,
+            277,
+            278,
+            279,
+            305,
+            306,
+            307,
+            308,
+            309,
+            310,
+            311,
+            313,
+            314,
+            315,
+            317,
+            319,
+            320,
+            322,
+            323,
+            327,
+            324,
+            329,
+            330,
+            331,
+            332,
+            352,
+            474,
+            1716,
+            1718,
+            1720,
+            1722,
+            1724,
+            1725,
+            1726,
+            1727,
+            1886,
+            1888,
+            1890,
+            1892,
+            1894,
+            1896,
+            1898,
+            1900,
+            1902,
+            1904
+          ]
+        },
+        {
+          "title": "Autres quêtes d'alignement",
+          "questIds": [
+            1966,
+            125,
+            1965,
+            1677,
+            1967,
+            1920,
+            1919,
+            1974,
+            1968,
+            2470,
+            123,
+            1973,
+            112,
+            1921,
+            1841,
+            1964,
+            938,
+            438,
+            1971,
+            1972,
+            436,
+            1963,
+            1970,
+            422,
+            424,
+            1615,
+            426,
+            124,
+            113,
+            437,
+            704,
+            1969,
+            716,
+            114
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "halouine",
+      "title": "Halouine",
+      "levelMin": 100,
+      "levelMax": 100,
+      "section": "evenements",
+      "itemId": null,
+      "iconId": null,
+      "questIds": [
+        2033,
+        2034,
+        2045,
+        2046
+      ],
+      "chapters": [
+        {
+          "title": "Succès 'Même pas peur'.",
+          "questIds": [
+            2033,
+            2034,
+            2045,
+            2046
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "les-dofus-de-pandala",
+      "title": "Les Dofus de Pandala",
+      "levelMin": 200,
+      "levelMax": 200,
+      "section": "fusion",
+      "itemId": 7112,
+      "iconId": 23008,
+      "questIds": [
+        1629,
+        1630,
+        1631,
+        1632,
+        1634,
+        1635,
+        2004,
+        1958,
+        1959,
+        2009,
+        1960,
+        1962,
+        2149,
+        2164,
+        2192,
+        827,
+        2193,
+        2194,
+        2450,
+        2195,
+        1462,
+        1463,
+        1464,
+        1465,
+        158,
+        2150,
+        2151,
+        2152,
+        2153,
+        2154,
+        2155,
+        2197,
+        2179,
+        2180,
+        2198,
+        2200,
+        2201,
+        2158,
+        2202
+      ],
+      "chapters": [
+        {
+          "title": "Liste des quêtes",
+          "questIds": [
+            1629,
+            1630,
+            1631,
+            1632,
+            1634,
+            1635,
+            2004,
+            1958,
+            1959,
+            2009,
+            1960,
+            1962,
+            2149,
+            2164,
+            2192,
+            827,
+            2193,
+            2194,
+            2450,
+            2195,
+            1462,
+            1463,
+            1464,
+            1465,
+            158,
+            2150,
+            2151,
+            2152,
+            2153,
+            2154,
+            2155,
+            2197,
+            2179,
+            2180,
+            2198,
+            2200,
+            2201,
+            2158,
+            2202
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "ebene-et-forgelave",
+      "title": "Ébène & Forgelave",
+      "levelMin": 200,
+      "levelMax": 200,
+      "section": "fusion",
+      "itemId": 7114,
+      "iconId": 23007,
+      "questIds": [
+        2502,
+        1629,
+        1630,
+        1631,
+        1632,
+        1634,
+        1635,
+        2004,
+        1958,
+        1959,
+        2009,
+        1960,
+        1988,
+        1989,
+        1990,
+        1991,
+        1962,
+        2149,
+        2450,
+        2192,
+        827,
+        2193,
+        2194,
+        2195,
+        1462,
+        2010,
+        894,
+        1851,
+        1607,
+        1845,
+        1853,
+        1867,
+        1868,
+        1869,
+        1934,
+        1935,
+        1938,
+        1939,
+        1936,
+        1937,
+        2011,
+        2019,
+        2012,
+        2013,
+        2014,
+        2035,
+        2036,
+        2037,
+        1954,
+        1956,
+        1955,
+        1940,
+        1944,
+        1945,
+        1946,
+        1947,
+        1949,
+        1952,
+        2038,
+        2044,
+        2039,
+        2040,
+        2041,
+        2042,
+        2043
+      ],
+      "chapters": [
+        {
+          "title": "Prérequis",
+          "questIds": [
+            2502,
+            1629,
+            1630,
+            1631,
+            1632,
+            1634,
+            1635,
+            2004,
+            1958,
+            1959,
+            2009,
+            1960,
+            1988,
+            1989,
+            1990,
+            1991,
+            1962,
+            2149,
+            2450,
+            2192,
+            827,
+            2193,
+            2194,
+            2195,
+            1462,
+            2010,
+            894,
+            1851
+          ]
+        },
+        {
+          "title": "Quêtes",
+          "questIds": [
+            1607,
+            1845,
+            1853,
+            1867,
+            1868,
+            1869,
+            1934,
+            1935,
+            1938,
+            1939,
+            1936,
+            1937,
+            2011,
+            2019,
+            2012,
+            2013,
+            2014
+          ]
+        },
+        {
+          "title": "Ebène - Partie 1/2",
+          "questIds": [
+            2035,
+            2036,
+            2037
+          ]
+        },
+        {
+          "title": "Zone Bethel",
+          "questIds": [
+            1954,
+            1956,
+            1955,
+            1940,
+            1944,
+            1945,
+            1946,
+            1947
+          ]
+        },
+        {
+          "title": "Zone Solar",
+          "questIds": [
+            1949,
+            1952,
+            2038,
+            1954,
+            2044
+          ]
+        },
+        {
+          "title": "Ebène - Partie 2/2",
+          "questIds": [
+            2039,
+            2040,
+            2041,
+            2042,
+            2043,
+            2044,
+            1954
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "rsa-rush-sylvestre-accelere",
+      "title": "Rush Sylvestre accéléré",
+      "levelMin": 200,
+      "levelMax": 200,
+      "section": "fusion",
+      "itemId": 29134,
+      "iconId": 23036,
+      "questIds": [
+        2502,
+        1629,
+        1630,
+        1631,
+        1632,
+        1634,
+        1635,
+        2004,
+        1958,
+        1959,
+        2009,
+        1960,
+        718,
+        1962,
+        1989,
+        2000,
+        1990,
+        1607,
+        1991,
+        827,
+        2149,
+        2192,
+        2193,
+        2194,
+        703,
+        2450,
+        2195,
+        1462,
+        231,
+        232,
+        1484,
+        1485,
+        1486,
+        1530,
+        1531,
+        1532,
+        1571,
+        1572,
+        1573,
+        1608,
+        1609,
+        1610,
+        1611,
+        1612,
+        1613,
+        1845,
+        1851,
+        1849,
+        1867,
+        1868,
+        1869,
+        1938,
+        1871,
+        1872,
+        612,
+        613,
+        649,
+        589,
+        650,
+        577,
+        578,
+        628,
+        629,
+        579,
+        1858,
+        1859,
+        1317,
+        1504,
+        1505,
+        1506,
+        1507,
+        1510,
+        2010,
+        2014,
+        1910,
+        1731,
+        1733,
+        1734,
+        1735,
+        1736,
+        1463,
+        1464,
+        1465,
+        1466,
+        1467,
+        1469,
+        1470,
+        1471,
+        1521,
+        1522,
+        1527,
+        2538,
+        1523,
+        1524,
+        1525,
+        1526,
+        1528,
+        1529,
+        1653,
+        1654,
+        1656,
+        1657,
+        1660,
+        1658,
+        1661,
+        1659,
+        1662,
+        1663,
+        439,
+        2035,
+        2036,
+        2424,
+        2037,
+        2038,
+        2039,
+        2040,
+        2041,
+        2042,
+        2043,
+        2044,
+        1905,
+        1906,
+        1907,
+        1908,
+        1909,
+        1911,
+        1912,
+        1913,
+        1914,
+        1915,
+        1423,
+        1781,
+        2442,
+        2443,
+        2444,
+        2445,
+        2451,
+        2446,
+        2447,
+        2448,
+        1665,
+        1782,
+        1784,
+        1785,
+        1786,
+        1787,
+        1788,
+        1789,
+        1791,
+        1792,
+        1793,
+        158,
+        2150,
+        581,
+        582,
+        590,
+        1286,
+        593,
+        624,
+        597,
+        611,
+        1326,
+        1327,
+        2164,
+        2152,
+        2153,
+        2154,
+        2155,
+        2197,
+        2180,
+        2162,
+        2198,
+        2200,
+        2201,
+        2158,
+        2202,
+        2204,
+        1618,
+        1619,
+        1620,
+        1621,
+        657,
+        2062,
+        2063,
+        2064,
+        2097,
+        2098,
+        2099,
+        2120,
+        2133,
+        2135,
+        2406,
+        2409,
+        2160,
+        2408,
+        2407,
+        2411,
+        2412,
+        2413,
+        2421,
+        2422,
+        2463,
+        2464,
+        2465,
+        2466,
+        2468,
+        2471,
+        2472,
+        2473,
+        2474,
+        2475,
+        2478,
+        2480,
+        2482,
+        2481,
+        1473,
+        1474,
+        1475,
+        2121,
+        2122,
+        2112,
+        2117,
+        2118,
+        2130,
+        2131,
+        2111,
+        2132,
+        2119,
+        2113,
+        2114,
+        2115,
+        2116,
+        2138,
+        2136,
+        2137,
+        2423,
+        2425,
+        2449,
+        2048,
+        2049,
+        2050,
+        2486,
+        2487,
+        2488,
+        2489
+      ],
+      "chapters": [
+        {
+          "title": "Incarnam",
+          "questIds": [
+            2502,
+            1629,
+            1630,
+            1631,
+            1632,
+            1634,
+            1635,
+            2004
+          ],
+          "takeQuestIds": [
+            1635
+          ]
+        },
+        {
+          "title": "Astrub",
+          "questIds": [
+            1958,
+            1959,
+            2009,
+            1960,
+            718,
+            1962,
+            1989,
+            2000,
+            1990,
+            1607,
+            1991
+          ],
+          "info": "Succès prérequis « Un citoyen modèle ».",
+          "takeQuestIds": [
+            718,
+            1989
+          ]
+        },
+        {
+          "title": "Les prérequis des Dofus Primordiaux",
+          "questIds": [
+            1962,
+            827,
+            2149,
+            2192,
+            2193,
+            2194,
+            703,
+            2450,
+            2195,
+            1462,
+            231,
+            232
+          ]
+        },
+        {
+          "title": "Dofus des Veilleurs",
+          "questIds": [
+            1484,
+            1485,
+            1486,
+            1530,
+            1531,
+            1532,
+            1571,
+            1572,
+            1573,
+            1608,
+            1609,
+            1610,
+            1611,
+            1612,
+            1613,
+            1845,
+            1851,
+            1849,
+            1867,
+            1868,
+            1869,
+            1938,
+            1871,
+            1872,
+            612,
+            613,
+            649,
+            589,
+            650,
+            577,
+            578,
+            628,
+            629,
+            579,
+            1858,
+            1859,
+            1317,
+            1504,
+            1505,
+            1506,
+            1507,
+            1510,
+            2010,
+            2014,
+            1910,
+            1731,
+            1733,
+            1734,
+            1735,
+            1736
+          ]
+        },
+        {
+          "title": "Dofus Emeraude",
+          "questIds": [
+            1463,
+            1464,
+            1465,
+            1466,
+            1467,
+            1469,
+            1470,
+            1471
+          ]
+        },
+        {
+          "title": "Dofus Pourpre",
+          "questIds": [
+            1521,
+            1522,
+            1527,
+            2538,
+            1523,
+            1524,
+            1525,
+            1526,
+            1528,
+            1529
+          ],
+          "takeQuestIds": [
+            1523,
+            1524,
+            1525,
+            1526
+          ]
+        },
+        {
+          "title": "Dofus Turquoise",
+          "questIds": [
+            1653,
+            1654,
+            1656,
+            1657,
+            1660,
+            1658,
+            1661,
+            1659,
+            1662,
+            1663
+          ],
+          "takeQuestIds": [
+            1657,
+            1660,
+            1658,
+            1661,
+            1659,
+            1662
+          ]
+        },
+        {
+          "title": "Dofus Ocre",
+          "questIds": [
+            439
+          ]
+        },
+        {
+          "title": "Dofus Ébène",
+          "questIds": [
+            2035,
+            2036,
+            2424,
+            2037,
+            2038,
+            2039,
+            2040,
+            2041,
+            2042,
+            2043,
+            2044
+          ],
+          "takeQuestIds": [
+            2424,
+            2037
+          ]
+        },
+        {
+          "title": "Dofus Ivoire",
+          "questIds": [
+            1905,
+            1906,
+            1907,
+            1908,
+            1909,
+            1911,
+            1912,
+            1913,
+            1914,
+            1915
+          ],
+          "takeQuestIds": [
+            1909,
+            1911,
+            1912,
+            1913,
+            1914
+          ]
+        },
+        {
+          "title": "Ocre d'Ambre",
+          "questIds": [
+            1423,
+            1781,
+            2442,
+            2443,
+            2444,
+            2445,
+            2451,
+            2446,
+            2447,
+            2448
+          ]
+        },
+        {
+          "title": "Quatre sur six",
+          "questIds": [
+            1665,
+            1782,
+            1784,
+            1785,
+            1786,
+            1787,
+            1788,
+            1789,
+            1791,
+            1792,
+            1793
+          ],
+          "takeQuestIds": [
+            1786,
+            1787,
+            1788,
+            1789,
+            1791
+          ]
+        },
+        {
+          "title": "Six sur six - Prérequis",
+          "questIds": [
+            158,
+            2150
+          ]
+        },
+        {
+          "title": "Frigost",
+          "questIds": [
+            581,
+            582,
+            590,
+            1286,
+            593,
+            624,
+            597,
+            611,
+            1326,
+            1327
+          ],
+          "takeQuestIds": [
+            597,
+            611
+          ]
+        },
+        {
+          "title": "Pandala",
+          "questIds": [
+            2164,
+            2152,
+            2153,
+            2154,
+            2155,
+            2197,
+            2180,
+            2162,
+            2198,
+            2200,
+            2201,
+            2158,
+            2202,
+            2204
+          ],
+          "takeQuestIds": [
+            2201,
+            2158,
+            2200
+          ]
+        },
+        {
+          "title": "Silvosse",
+          "questIds": [
+            1618,
+            1619,
+            1620,
+            1621
+          ]
+        },
+        {
+          "title": "Eliocalypse : Résonance",
+          "questIds": [
+            657,
+            2062,
+            2063,
+            2064,
+            2097,
+            2098,
+            2099,
+            2120,
+            2133,
+            2135,
+            2406,
+            2409,
+            2160,
+            2408,
+            2407
+          ]
+        },
+        {
+          "title": "Ravagés",
+          "questIds": [
+            2411,
+            2412,
+            2413
+          ]
+        },
+        {
+          "title": "Ravageurs",
+          "questIds": [
+            2424,
+            2421,
+            2422
+          ]
+        },
+        {
+          "title": "Archipel de Valonia",
+          "questIds": [
+            2463,
+            2464,
+            2465,
+            2466,
+            2468,
+            2471,
+            2472,
+            2473,
+            2474,
+            2475,
+            2478,
+            2480,
+            2482,
+            2481
+          ]
+        },
+        {
+          "title": "Les quatres cavaliers",
+          "questIds": [
+            1473,
+            1474,
+            1475,
+            2121,
+            2122
+          ],
+          "takeQuestIds": [
+            2122
+          ]
+        },
+        {
+          "title": "Zone Servitude 1/2",
+          "questIds": [
+            2112
+          ]
+        },
+        {
+          "title": "Zone Misère",
+          "questIds": [
+            2117,
+            2118
+          ]
+        },
+        {
+          "title": "Zone Corruption",
+          "questIds": [
+            2130,
+            2131
+          ]
+        },
+        {
+          "title": "Les donjons",
+          "questIds": [
+            2111,
+            2132,
+            2119,
+            2113
+          ]
+        },
+        {
+          "title": "Zone Servitude 2/2",
+          "questIds": [
+            2114
+          ]
+        },
+        {
+          "title": "Zone Guerre",
+          "questIds": [
+            2115,
+            2116,
+            2122,
+            2138,
+            2136,
+            2137,
+            2423,
+            2425,
+            2449
+          ],
+          "takeQuestIds": [
+            2138,
+            2423,
+            2425
+          ]
+        },
+        {
+          "title": "Six sur six",
+          "questIds": [
+            2048,
+            2049,
+            2050
+          ]
+        },
+        {
+          "title": "Dofus Sylvestre",
+          "questIds": [
+            2486,
+            2487,
+            2488,
+            2489
+          ],
+          "takeQuestIds": [
+            2488,
+            2489
+          ]
+        }
+      ],
+      "notice": "Parcours accéléré pour personnages niveau 200 : uniquement les quêtes nécessaires au Sylvestre."
+    }
+  ]
+}

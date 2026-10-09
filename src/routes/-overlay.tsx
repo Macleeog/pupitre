@@ -34,7 +34,7 @@ export default function Overlay() {
 
   useEffect(() => {
     const api = window.pupitre;
-    if (!api) return;
+    if (!api?.onCombatUpdate) return;
     return api.onCombatUpdate((next) => {
       setSnapshot(next);
       const candidate = next.fighters.find(f => f.cellId != null && f.team === 1) ?? next.fighters.find(f => f.cellId != null);

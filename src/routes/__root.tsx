@@ -16,7 +16,7 @@ export const Route = createRootRoute({
         content:
           "Fan site indépendant. Pupitre n'est pas lié à Ankama. Dofus est une marque d'Ankama.",
       },
-      { name: "theme-color", content: "#1a120c" },
+      { name: "theme-color", content: "#121212" },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },

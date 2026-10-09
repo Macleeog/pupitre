@@ -1,5 +1,6 @@
-import { Outlet } from '@tanstack/react-router';
+import { createFileRoute } from "@tanstack/react-router";
+import { Overlay } from "@/components/pupitre/overlay";
 
-export default function OverlayRoute() {
-  return <Outlet />;
-}
+export const Route = createFileRoute("/overlay")({
+  component: Overlay,
+});

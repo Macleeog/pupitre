@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
-import { Radio, RefreshCw, Settings, Timer } from "lucide-react";
+import { BookOpen, Eye, Radio, RefreshCw, Settings, Timer } from "lucide-react";
 import { classById } from "@/lib/pupitre/classes";
 import { usePupitre, type DeskTab } from "@/lib/pupitre/store";
 import { Sigil } from "@/components/pupitre/sigil";
 import { CharacterView } from "@/components/pupitre/character-view";
 import { FarmView } from "@/components/pupitre/farm-view";
 import { NetworkView } from "@/components/pupitre/network-view";
+import { QuetesView } from "@/components/pupitre/quetes-view";
 import { SettingsView } from "@/components/pupitre/settings-view";
+import { VeilleView } from "@/components/pupitre/veille-view";
 import { bindGameEvents } from "@/lib/pupitre/game-net";
 import { bindFarmHotkeys, bindFarmSync } from "@/lib/pupitre/farm-sync";
 import { bindShortcuts } from "@/lib/pupitre/shortcuts";
 import { useUpdateState } from "@/lib/pupitre/updates";
 import { APP_VERSION } from "@/lib/pupitre/version";
+import { loadWatchSettings, pushWatchSettings, readerShouldRun } from "@/lib/pupitre/watch-settings";
 
 const TABS: { id: DeskTab; label: string; icon: typeof Timer }[] = [
   { id: "session", label: "Session", icon: Timer },
+  { id: "quetes", label: "Quêtes", icon: BookOpen },
+  { id: "veille", label: "Veille", icon: Eye },
   { id: "reseau", label: "Réseau", icon: Radio },
   { id: "reglages", label: "Réglages", icon: Settings },
 ];
@@ -31,7 +36,9 @@ export function Desk() {
   useEffect(() => {
     const syncReader = () => {
       const { farm, tab } = usePupitre.getState();
-      window.pupitre?.net?.setActive?.(farm.status === "running" || tab === "reseau");
+      const watch = loadWatchSettings();
+      pushWatchSettings(watch);
+      window.pupitre?.net?.setActive?.(readerShouldRun(watch, farm.status === "running", tab === "reseau"));
     };
     const unsub = usePupitre.subscribe(syncReader);
     void Promise.resolve(usePupitre.persist.rehydrate()).then(() => {
@@ -64,7 +71,7 @@ export function Desk() {
               Dofus 3 <span className="tracking-normal text-mist normal-case">· v{APP_VERSION}</span>
             </p>
             <h1 className="font-display text-4xl leading-none text-fog">Pupitre</h1>
-            <p className="mt-2 max-w-sm text-sm text-mist">Le compagnon de tes sessions de farm.</p>
+            <p className="mt-2 max-w-sm text-sm text-mist">Sessions, guides de quêtes et veille sur le jeu.</p>
             <p className="mt-2 max-w-sm text-xs text-mist">
               Fan site. Aucun lien avec Ankama. Dofus, ses symboles et illustrations de classes sont la propriété
               d'Ankama.
@@ -90,6 +97,8 @@ export function Desk() {
             <FarmView />
           </div>
         ) : null}
+        {current === "quetes" ? <QuetesView /> : null}
+        {current === "veille" ? <VeilleView /> : null}
         {current === "reseau" ? <NetworkView /> : null}
         {current === "reglages" ? <SettingsView /> : null}
         <About />
@@ -99,7 +108,7 @@ export function Desk() {
         className="fixed inset-x-0 bottom-0 z-20 border-t border-edge bg-moss/95 backdrop-blur"
         aria-label="Sections"
       >
-        <div className={"mx-auto grid grid-cols-3 px-2 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom))] " + frame}>
+        <div className={"mx-auto grid grid-cols-5 px-1 pt-1 pb-[max(0.4rem,env(safe-area-inset-bottom))] " + frame}>
           {TABS.map((item) => {
             const Icon = item.icon;
             const active = current === item.id;
@@ -110,7 +119,7 @@ export function Desk() {
                 onClick={() => setTab(item.id)}
                 aria-current={active ? "page" : undefined}
                 className={
-                  "flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-xl text-xs font-medium " +
+                  "flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-medium sm:text-xs " +
                   (active ? "text-lamp" : "text-mist")
                 }
               >
@@ -159,9 +168,10 @@ function About() {
       {open ? (
         <p className="mt-2 max-w-prose basis-full">
           Pupitre est un fan site. Il n'est pas lié, approuvé ni soutenu par Ankama. Dofus, Dofus Touch et
-          Ankama sont des marques d'Ankama. L'exe pose un bandeau sur la fenêtre du jeu et accepte des raccourcis
-          pour la session. Avec Wireshark installé, il lit en lecture seule les messages du jeu (onglet Réseau) :
-          il ne les modifie pas et n'envoie rien au serveur. Il vérifie les nouvelles versions sur GitHub.
+          Ankama sont des marques d'Ankama. L'exe pose un bandeau de farm sur la fenêtre du jeu, une case verte
+          pendant le Comte Harebourg, et des alertes d'archimonstres. Avec Wireshark installé, il lit les messages
+          du jeu en lecture seule : il ne les modifie pas et n'envoie rien au serveur. Les guides viennent de
+          DofusDB (LPNC-IA 1.0). Il vérifie les nouvelles versions sur GitHub.
         </p>
       ) : null}
     </section>

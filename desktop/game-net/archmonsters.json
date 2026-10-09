@@ -1,0 +1,1838 @@
+[
+  {
+    "id": 2270,
+    "name": "Piradain le Pingre",
+    "level": 80,
+    "gfxId": 434
+  },
+  {
+    "id": 2271,
+    "name": "Pékeutar le Tireur",
+    "level": 80,
+    "gfxId": 436
+  },
+  {
+    "id": 2272,
+    "name": "Pichakoté le Dégoutant",
+    "level": 16,
+    "gfxId": 509
+  },
+  {
+    "id": 2273,
+    "name": "Ratlbol l'Aigri",
+    "level": 52,
+    "gfxId": 239
+  },
+  {
+    "id": 2275,
+    "name": "Ratéhaifaim le Professeur",
+    "level": 52,
+    "gfxId": 243
+  },
+  {
+    "id": 2276,
+    "name": "Ribibi le Cher",
+    "level": 34,
+    "gfxId": 56
+  },
+  {
+    "id": 2277,
+    "name": "Rostensyl la Cuisinière",
+    "level": 19,
+    "gfxId": 256
+  },
+  {
+    "id": 2278,
+    "name": "Pétarfoutu le Mouillé",
+    "level": 132,
+    "gfxId": 659
+  },
+  {
+    "id": 2279,
+    "name": "Sampi l'Eternel",
+    "level": 40,
+    "gfxId": 185
+  },
+  {
+    "id": 2280,
+    "name": "Scapé l'Epée",
+    "level": 34,
+    "gfxId": 136
+  },
+  {
+    "id": 2281,
+    "name": "Scarfayss le Balafré",
+    "level": 34,
+    "gfxId": 105
+  },
+  {
+    "id": 2282,
+    "name": "Scarouarze l'Epopée",
+    "level": 34,
+    "gfxId": 104
+  },
+  {
+    "id": 2283,
+    "name": "Scaramel le Fondant",
+    "level": 34,
+    "gfxId": 135
+  },
+  {
+    "id": 2285,
+    "name": "Scorpitène l'Enflammé",
+    "level": 62,
+    "gfxId": 186
+  },
+  {
+    "id": 2286,
+    "name": "Serpistol l'Illustre",
+    "level": 52,
+    "gfxId": 176
+  },
+  {
+    "id": 2287,
+    "name": "Serpistule le Purulent",
+    "level": 120,
+    "gfxId": 461
+  },
+  {
+    "id": 2289,
+    "name": "Susbewl l'Hypocrite",
+    "level": 35,
+    "gfxId": 92
+  },
+  {
+    "id": 2292,
+    "name": "Tikosto le Mousse",
+    "level": 42,
+    "gfxId": 108
+  },
+  {
+    "id": 2293,
+    "name": "Tiwalpé le Dévêtu",
+    "level": 41,
+    "gfxId": 48
+  },
+  {
+    "id": 2294,
+    "name": "Tiwoflan le Lâche",
+    "level": 40,
+    "gfxId": 28
+  },
+  {
+    "id": 2295,
+    "name": "Tortenssia la Fleurie",
+    "level": 42,
+    "gfxId": 119
+  },
+  {
+    "id": 2296,
+    "name": "Tortilleur le Coulé",
+    "level": 42,
+    "gfxId": 120
+  },
+  {
+    "id": 2297,
+    "name": "Tortorak le Cornu",
+    "level": 42,
+    "gfxId": 118
+  },
+  {
+    "id": 2298,
+    "name": "Torthur la Lutte",
+    "level": 42,
+    "gfxId": 121
+  },
+  {
+    "id": 2299,
+    "name": "Tronkoneuz la Tranchante",
+    "level": 33,
+    "gfxId": 146
+  },
+  {
+    "id": 2300,
+    "name": "Trooyé l'Oxydé",
+    "level": 112,
+    "gfxId": 129
+  },
+  {
+    "id": 2301,
+    "name": "Trukul le Lent",
+    "level": 92,
+    "gfxId": 114
+  },
+  {
+    "id": 2302,
+    "name": "Vampunor le Glacial",
+    "level": 32,
+    "gfxId": 72
+  },
+  {
+    "id": 2303,
+    "name": "Crachefouxtre le Surpris",
+    "level": 132,
+    "gfxId": 660
+  },
+  {
+    "id": 2304,
+    "name": "Wabbitud le Constant",
+    "level": 44,
+    "gfxId": 25
+  },
+  {
+    "id": 2305,
+    "name": "Watdogue le Bien Nommé",
+    "level": 48,
+    "gfxId": 100
+  },
+  {
+    "id": 2306,
+    "name": "Warkolad l'Etreinte",
+    "level": 74,
+    "gfxId": 413
+  },
+  {
+    "id": 2307,
+    "name": "Wara l'Amer",
+    "level": 106,
+    "gfxId": 412
+  },
+  {
+    "id": 2308,
+    "name": "Wokènrôl le Danseur",
+    "level": 52,
+    "gfxId": 49
+  },
+  {
+    "id": 2309,
+    "name": "Abrakroc l'édenté",
+    "level": 38,
+    "gfxId": 13
+  },
+  {
+    "id": 2310,
+    "name": "Arakule la Revancharde",
+    "level": 16,
+    "gfxId": 15
+  },
+  {
+    "id": 2311,
+    "name": "Arabord la Cruche",
+    "level": 40,
+    "gfxId": 149
+  },
+  {
+    "id": 2312,
+    "name": "Arachitik la Souffreteuse",
+    "level": 11,
+    "gfxId": 261
+  },
+  {
+    "id": 2313,
+    "name": "Bandapar l'Exclu",
+    "level": 42,
+    "gfxId": 255
+  },
+  {
+    "id": 2314,
+    "name": "Bandson le Tonitruant",
+    "level": 37,
+    "gfxId": 661
+  },
+  {
+    "id": 2315,
+    "name": "Boudalf le Blanc",
+    "level": 22,
+    "gfxId": 73
+  },
+  {
+    "id": 2316,
+    "name": "Boulgourvil le Lointain",
+    "level": 22,
+    "gfxId": 76
+  },
+  {
+    "id": 2317,
+    "name": "Boufdégou le Refoulant",
+    "level": 22,
+    "gfxId": 3
+  },
+  {
+    "id": 2318,
+    "name": "Boudur le Raide",
+    "level": 35,
+    "gfxId": 79
+  },
+  {
+    "id": 2319,
+    "name": "Chafemal le Bagarreur",
+    "level": 32,
+    "gfxId": 16
+  },
+  {
+    "id": 2320,
+    "name": "Chafmarcel le Fêtard",
+    "level": 42,
+    "gfxId": 179
+  },
+  {
+    "id": 2321,
+    "name": "Chafalfer l'Optimiste",
+    "level": 25,
+    "gfxId": 57
+  },
+  {
+    "id": 2322,
+    "name": "Chalan le Commerçant",
+    "level": 42,
+    "gfxId": 178
+  },
+  {
+    "id": 2323,
+    "name": "Chamchie le Difficile",
+    "level": 16,
+    "gfxId": 21
+  },
+  {
+    "id": 2324,
+    "name": "Bouflet le Puéril",
+    "level": 22,
+    "gfxId": 75
+  },
+  {
+    "id": 2325,
+    "name": "Chonstip la Passagère",
+    "level": 42,
+    "gfxId": 68
+  },
+  {
+    "id": 2326,
+    "name": "Craquetuss le Piquant",
+    "level": 62,
+    "gfxId": 268
+  },
+  {
+    "id": 2327,
+    "name": "Craraboss le Féérique",
+    "level": 42,
+    "gfxId": 24
+  },
+  {
+    "id": 2328,
+    "name": "Forboyar l'Enigmatique",
+    "level": 42,
+    "gfxId": 66
+  },
+  {
+    "id": 2329,
+    "name": "Mallopiée l'Épineuse",
+    "level": 57,
+    "gfxId": 662
+  },
+  {
+    "id": 2331,
+    "name": "Larvapstrè le Subjectif",
+    "level": 16,
+    "gfxId": 12
+  },
+  {
+    "id": 2332,
+    "name": "Larchimaide la Poussée",
+    "level": 16,
+    "gfxId": 2
+  },
+  {
+    "id": 2333,
+    "name": "Milipatte la Griffe",
+    "level": 22,
+    "gfxId": 84
+  },
+  {
+    "id": 2334,
+    "name": "Milipussien le Géant",
+    "level": 22,
+    "gfxId": 239
+  },
+  {
+    "id": 2335,
+    "name": "Minsinistre l'Elu",
+    "level": 42,
+    "gfxId": 65
+  },
+  {
+    "id": 2336,
+    "name": "Mosketère le Dévoué",
+    "level": 16,
+    "gfxId": 22
+  },
+  {
+    "id": 2337,
+    "name": "Muloufok l'Hilarant",
+    "level": 92,
+    "gfxId": 52
+  },
+  {
+    "id": 2338,
+    "name": "Pichdourse le Puissant",
+    "level": 16,
+    "gfxId": 507
+  },
+  {
+    "id": 2339,
+    "name": "Larvomatik le Propre",
+    "level": 16,
+    "gfxId": 663
+  },
+  {
+    "id": 2340,
+    "name": "Pichtoire l'Erudit",
+    "level": 16,
+    "gfxId": 506
+  },
+  {
+    "id": 2341,
+    "name": "Pioustone le Problème",
+    "level": 11,
+    "gfxId": 275
+  },
+  {
+    "id": 2342,
+    "name": "Pioulbrineur le Mercenaire",
+    "level": 11,
+    "gfxId": 277
+  },
+  {
+    "id": 2343,
+    "name": "Pioufe la Maquillée",
+    "level": 11,
+    "gfxId": 276
+  },
+  {
+    "id": 2344,
+    "name": "Pioulette la Coquine",
+    "level": 11,
+    "gfxId": 273
+  },
+  {
+    "id": 2345,
+    "name": "Pioukas la Plante",
+    "level": 11,
+    "gfxId": 274
+  },
+  {
+    "id": 2346,
+    "name": "Pichduitre le Totem",
+    "level": 16,
+    "gfxId": 508
+  },
+  {
+    "id": 2347,
+    "name": "Pioussokrim le Délétère",
+    "level": 11,
+    "gfxId": 131
+  },
+  {
+    "id": 2348,
+    "name": "Pissdane l'Insipide",
+    "level": 16,
+    "gfxId": 33
+  },
+  {
+    "id": 2349,
+    "name": "Preskapwal le Tendancieux",
+    "level": 22,
+    "gfxId": 53
+  },
+  {
+    "id": 2350,
+    "name": "Radoutable le Craint",
+    "level": 22,
+    "gfxId": 254
+  },
+  {
+    "id": 2351,
+    "name": "Rauligo le Sale",
+    "level": 42,
+    "gfxId": 511
+  },
+  {
+    "id": 2352,
+    "name": "Roz la Magicienne",
+    "level": 16,
+    "gfxId": 32
+  },
+  {
+    "id": 2353,
+    "name": "Sangria le Fruité",
+    "level": 22,
+    "gfxId": 54
+  },
+  {
+    "id": 2354,
+    "name": "Sousourizoto le Collant",
+    "level": 1,
+    "gfxId": 71
+  },
+  {
+    "id": 2355,
+    "name": "Tofuldebeu l'Explosif",
+    "level": 32,
+    "gfxId": 9
+  },
+  {
+    "id": 2356,
+    "name": "Tofurapin le Pétri",
+    "level": 11,
+    "gfxId": 260
+  },
+  {
+    "id": 2357,
+    "name": "Tofumanchou l'Empereur",
+    "level": 32,
+    "gfxId": 58
+  },
+  {
+    "id": 2358,
+    "name": "Tour le Vice",
+    "level": 16,
+    "gfxId": 14
+  },
+  {
+    "id": 2359,
+    "name": "Maître Champeur le Sabreur",
+    "level": 62,
+    "gfxId": 194
+  },
+  {
+    "id": 2360,
+    "name": "Ecorfé la Vive",
+    "level": 128,
+    "gfxId": 599
+  },
+  {
+    "id": 2361,
+    "name": "Tourbiket le Virevoletant",
+    "level": 101,
+    "gfxId": 582
+  },
+  {
+    "id": 2363,
+    "name": "Bouliver le Géant",
+    "level": 95,
+    "gfxId": 583
+  },
+  {
+    "id": 2367,
+    "name": "Kwakamole l'Appétissant",
+    "level": 42,
+    "gfxId": 130
+  },
+  {
+    "id": 2368,
+    "name": "Kwakwatique le Trempé",
+    "level": 42,
+    "gfxId": 37
+  },
+  {
+    "id": 2369,
+    "name": "Kwaké le Piraté",
+    "level": 42,
+    "gfxId": 34
+  },
+  {
+    "id": 2370,
+    "name": "Tsucékoi la Colporteuse",
+    "level": 152,
+    "gfxId": 664
+  },
+  {
+    "id": 2371,
+    "name": "Geloliaine l'Aérien",
+    "level": 54,
+    "gfxId": 18
+  },
+  {
+    "id": 2372,
+    "name": "Dragmoclaiss le Fataliste",
+    "level": 62,
+    "gfxId": 41
+  },
+  {
+    "id": 2373,
+    "name": "Champoul l'Illuminé",
+    "level": 172,
+    "gfxId": 638
+  },
+  {
+    "id": 2374,
+    "name": "Jiankor le Radoteur",
+    "level": 152,
+    "gfxId": 665
+  },
+  {
+    "id": 2376,
+    "name": "Gelaviv le Glaçon",
+    "level": 54,
+    "gfxId": 19
+  },
+  {
+    "id": 2377,
+    "name": "Dragstayr le Fonceur",
+    "level": 62,
+    "gfxId": 31
+  },
+  {
+    "id": 2378,
+    "name": "Cromikay le Néophyte",
+    "level": 62,
+    "gfxId": 187
+  },
+  {
+    "id": 2379,
+    "name": "Draglida la Disparue",
+    "level": 55,
+    "gfxId": 96
+  },
+  {
+    "id": 2381,
+    "name": "Abrinos le Clair",
+    "level": 152,
+    "gfxId": 571
+  },
+  {
+    "id": 2382,
+    "name": "Toutouf le Velu",
+    "level": 144,
+    "gfxId": 559
+  },
+  {
+    "id": 2383,
+    "name": "Poolopo la Traditionnelle",
+    "level": 142,
+    "gfxId": 567
+  },
+  {
+    "id": 2384,
+    "name": "Aboudbra le Porteur",
+    "level": 35,
+    "gfxId": 86
+  },
+  {
+    "id": 2385,
+    "name": "Abrakadnuzar",
+    "level": 42,
+    "gfxId": 345
+  },
+  {
+    "id": 2386,
+    "name": "Abraklette le Fondant",
+    "level": 82,
+    "gfxId": 346
+  },
+  {
+    "id": 2388,
+    "name": "Abrakanette l'Encapsulé",
+    "level": 78,
+    "gfxId": 144
+  },
+  {
+    "id": 2389,
+    "name": "Abrakildas le Vénérable",
+    "level": 74,
+    "gfxId": 13
+  },
+  {
+    "id": 2391,
+    "name": "Ameur la Laide",
+    "level": 35,
+    "gfxId": 85
+  },
+  {
+    "id": 2392,
+    "name": "Floriste la Cannibale",
+    "level": 102,
+    "gfxId": 666
+  },
+  {
+    "id": 2393,
+    "name": "Araknay la Galopante",
+    "level": 22,
+    "gfxId": 145
+  },
+  {
+    "id": 2396,
+    "name": "Bistou le Quêteur",
+    "level": 24,
+    "gfxId": 166
+  },
+  {
+    "id": 2397,
+    "name": "Porfavor le Quémandeur",
+    "level": 42,
+    "gfxId": 192
+  },
+  {
+    "id": 2398,
+    "name": "Rooroku l'Imposant",
+    "level": 132,
+    "gfxId": 667
+  },
+  {
+    "id": 2399,
+    "name": "Bilvoezé le Bonimenteur",
+    "level": 24,
+    "gfxId": 167
+  },
+  {
+    "id": 2400,
+    "name": "Bi le Partageur",
+    "level": 24,
+    "gfxId": 168
+  },
+  {
+    "id": 2401,
+    "name": "Bistou le Rieur",
+    "level": 24,
+    "gfxId": 169
+  },
+  {
+    "id": 2402,
+    "name": "Tiwa'Missou le Gateux",
+    "level": 42,
+    "gfxId": 27
+  },
+  {
+    "id": 2403,
+    "name": "Wagnagnah le Sanglant",
+    "level": 46,
+    "gfxId": 26
+  },
+  {
+    "id": 2404,
+    "name": "Blorie l'Assourdissante",
+    "level": 52,
+    "gfxId": 162
+  },
+  {
+    "id": 2405,
+    "name": "Blordur l'Infect",
+    "level": 52,
+    "gfxId": 164
+  },
+  {
+    "id": 2406,
+    "name": "Bloporte le Veule",
+    "level": 52,
+    "gfxId": 163
+  },
+  {
+    "id": 2407,
+    "name": "Blof l'Apathique",
+    "level": 52,
+    "gfxId": 165
+  },
+  {
+    "id": 2408,
+    "name": "Boombata le Garde",
+    "level": 82,
+    "gfxId": 124
+  },
+  {
+    "id": 2411,
+    "name": "Robiolego l'Assemblé",
+    "level": 55,
+    "gfxId": 668
+  },
+  {
+    "id": 2412,
+    "name": "Lichangora l'Immaculée",
+    "level": 132,
+    "gfxId": 669
+  },
+  {
+    "id": 2413,
+    "name": "Robocoop l'Échangé",
+    "level": 53,
+    "gfxId": 237
+  },
+  {
+    "id": 2414,
+    "name": "Tétonée la Plantureuse",
+    "level": 122,
+    "gfxId": 670
+  },
+  {
+    "id": 2415,
+    "name": "Bulsavon le Gonflé",
+    "level": 102,
+    "gfxId": 671
+  },
+  {
+    "id": 2416,
+    "name": "Bworkasse le Dégoutant",
+    "level": 42,
+    "gfxId": 489
+  },
+  {
+    "id": 2417,
+    "name": "Barchwork le Multicolore",
+    "level": 37,
+    "gfxId": 29
+  },
+  {
+    "id": 2418,
+    "name": "Bwormage le Respectueux",
+    "level": 42,
+    "gfxId": 10
+  },
+  {
+    "id": 2419,
+    "name": "Caboume l'Artilleur",
+    "level": 82,
+    "gfxId": 127
+  },
+  {
+    "id": 2420,
+    "name": "Cavordemal le Sorcier",
+    "level": 42,
+    "gfxId": 191
+  },
+  {
+    "id": 2421,
+    "name": "Chaffoin le Sournois",
+    "level": 33,
+    "gfxId": 193
+  },
+  {
+    "id": 2422,
+    "name": "Chafrit le Barbare",
+    "level": 42,
+    "gfxId": 180
+  },
+  {
+    "id": 2423,
+    "name": "Ramitant le Dilettante",
+    "level": 52,
+    "gfxId": 241
+  },
+  {
+    "id": 2424,
+    "name": "Champayt l'Odorant",
+    "level": 35,
+    "gfxId": 349
+  },
+  {
+    "id": 2425,
+    "name": "Chamflay le Ballonné",
+    "level": 35,
+    "gfxId": 350
+  },
+  {
+    "id": 2426,
+    "name": "Chamdblé le Cultivé",
+    "level": 35,
+    "gfxId": 348
+  },
+  {
+    "id": 2427,
+    "name": "Champayr le Disjoncté",
+    "level": 35,
+    "gfxId": 347
+  },
+  {
+    "id": 2428,
+    "name": "Crok le Beau",
+    "level": 61,
+    "gfxId": 152
+  },
+  {
+    "id": 2429,
+    "name": "Koamag'oel le Défiguré",
+    "level": 102,
+    "gfxId": 424
+  },
+  {
+    "id": 2430,
+    "name": "Chevaustine le Reconstruit",
+    "level": 32,
+    "gfxId": 23
+  },
+  {
+    "id": 2431,
+    "name": "Étoilette la Bouchée",
+    "level": 42,
+    "gfxId": 512
+  },
+  {
+    "id": 2432,
+    "name": "Farlon l'Enfant",
+    "level": 90,
+    "gfxId": 334
+  },
+  {
+    "id": 2433,
+    "name": "Codenlgaz le Problème",
+    "level": 35,
+    "gfxId": 91
+  },
+  {
+    "id": 2434,
+    "name": "Tilolo la Bien Moulée",
+    "level": 122,
+    "gfxId": 672
+  },
+  {
+    "id": 2436,
+    "name": "Crakmitaine le Faucheur",
+    "level": 62,
+    "gfxId": 4
+  },
+  {
+    "id": 2437,
+    "name": "Corpat le Vampire",
+    "level": 102,
+    "gfxId": 170
+  },
+  {
+    "id": 2438,
+    "name": "Cramikaz le Suicidaire",
+    "level": 62,
+    "gfxId": 181
+  },
+  {
+    "id": 2439,
+    "name": "Crolnareff l'Exilé",
+    "level": 42,
+    "gfxId": 151
+  },
+  {
+    "id": 2440,
+    "name": "Crognan le Barbare",
+    "level": 62,
+    "gfxId": 673
+  },
+  {
+    "id": 2442,
+    "name": "Doktopuss le Maléfique",
+    "level": 70,
+    "gfxId": 414
+  },
+  {
+    "id": 2445,
+    "name": "Fouflay le Retombé",
+    "level": 64,
+    "gfxId": 674
+  },
+  {
+    "id": 2446,
+    "name": "Bourde le Maladroit",
+    "level": 51,
+    "gfxId": 675
+  },
+  {
+    "id": 2447,
+    "name": "Souristiti l'Immortalisée",
+    "level": 54,
+    "gfxId": 182
+  },
+  {
+    "id": 2448,
+    "name": "Larvaloeil l'Émue",
+    "level": 56,
+    "gfxId": 676
+  },
+  {
+    "id": 2449,
+    "name": "Dragnostik le Sceptique",
+    "level": 62,
+    "gfxId": 42
+  },
+  {
+    "id": 2450,
+    "name": "Dragkouine la Déguisée",
+    "level": 62,
+    "gfxId": 40
+  },
+  {
+    "id": 2451,
+    "name": "Kwakolak le Chocolaté",
+    "level": 42,
+    "gfxId": 36
+  },
+  {
+    "id": 2452,
+    "name": "Dragobert le Monarque",
+    "level": 112,
+    "gfxId": 482
+  },
+  {
+    "id": 2453,
+    "name": "Porsalé le Râleur",
+    "level": 80,
+    "gfxId": 68
+  },
+  {
+    "id": 2454,
+    "name": "Dragminster le Magicien",
+    "level": 92,
+    "gfxId": 491
+  },
+  {
+    "id": 2455,
+    "name": "Vétaurine l'Énergisé",
+    "level": 66,
+    "gfxId": 677
+  },
+  {
+    "id": 2456,
+    "name": "Dragtarus le Bellâtre",
+    "level": 92,
+    "gfxId": 492
+  },
+  {
+    "id": 2457,
+    "name": "Moumoute la Douce",
+    "level": 42,
+    "gfxId": 529
+  },
+  {
+    "id": 2458,
+    "name": "Draquetteur le Voleur",
+    "level": 92,
+    "gfxId": 481
+  },
+  {
+    "id": 2459,
+    "name": "Dragioli le Succulent",
+    "level": 112,
+    "gfxId": 678
+  },
+  {
+    "id": 2460,
+    "name": "Drageaufol la Joyeuse",
+    "level": 92,
+    "gfxId": 490
+  },
+  {
+    "id": 2461,
+    "name": "Dragonienne l'Econome",
+    "level": 112,
+    "gfxId": 480
+  },
+  {
+    "id": 2462,
+    "name": "Drakolage le Tentateur",
+    "level": 90,
+    "gfxId": 427
+  },
+  {
+    "id": 2464,
+    "name": "Dragdikal le Décisif",
+    "level": 112,
+    "gfxId": 478
+  },
+  {
+    "id": 2465,
+    "name": "Dragnoute l'Irascible",
+    "level": 60,
+    "gfxId": 106
+  },
+  {
+    "id": 2466,
+    "name": "Fanlabiz le Véloce",
+    "level": 42,
+    "gfxId": 514
+  },
+  {
+    "id": 2467,
+    "name": "Fandanleuil le Précis",
+    "level": 42,
+    "gfxId": 201
+  },
+  {
+    "id": 2468,
+    "name": "Fantrask la Rêveuse",
+    "level": 42,
+    "gfxId": 202
+  },
+  {
+    "id": 2469,
+    "name": "Tambouille le Gastronome",
+    "level": 152,
+    "gfxId": 679
+  },
+  {
+    "id": 2470,
+    "name": "Kaonucléair l'Instable",
+    "level": 162,
+    "gfxId": 680
+  },
+  {
+    "id": 2471,
+    "name": "Onabuémangé la Rassasiée",
+    "level": 152,
+    "gfxId": 681
+  },
+  {
+    "id": 2472,
+    "name": "Alhoui le Répondeur",
+    "level": 152,
+    "gfxId": 682
+  },
+  {
+    "id": 2473,
+    "name": "Félyssion la Gourmande",
+    "level": 150,
+    "gfxId": 683
+  },
+  {
+    "id": 2474,
+    "name": "Pantacour le Long",
+    "level": 150,
+    "gfxId": 684
+  },
+  {
+    "id": 2475,
+    "name": "Kanibière l'Encordée",
+    "level": 151,
+    "gfxId": 685
+  },
+  {
+    "id": 2476,
+    "name": "Orfélyre le Charmeur",
+    "level": 151,
+    "gfxId": 686
+  },
+  {
+    "id": 2477,
+    "name": "Tsumani l'Inondeur",
+    "level": 162,
+    "gfxId": 687
+  },
+  {
+    "id": 2482,
+    "name": "Fossamoel le Juteux",
+    "level": 101,
+    "gfxId": 426
+  },
+  {
+    "id": 2483,
+    "name": "Bakaglace le Congelé",
+    "level": 162,
+    "gfxId": 688
+  },
+  {
+    "id": 2484,
+    "name": "Fourapin le Chaud",
+    "level": 92,
+    "gfxId": 116
+  },
+  {
+    "id": 2486,
+    "name": "Garsim le Mort",
+    "level": 32,
+    "gfxId": 281
+  },
+  {
+    "id": 2487,
+    "name": "Gelanal le Huileux",
+    "level": 54,
+    "gfxId": 17
+  },
+  {
+    "id": 2493,
+    "name": "Ginsenk le Stimulant",
+    "level": 35,
+    "gfxId": 94
+  },
+  {
+    "id": 2494,
+    "name": "Gobstiniais le Têtu",
+    "level": 32,
+    "gfxId": 99
+  },
+  {
+    "id": 2495,
+    "name": "Gloubibou le Gars",
+    "level": 92,
+    "gfxId": 115
+  },
+  {
+    "id": 2497,
+    "name": "Guerrite le Veilleur",
+    "level": 101,
+    "gfxId": 416
+  },
+  {
+    "id": 2498,
+    "name": "Grandilok le Clameur",
+    "level": 52,
+    "gfxId": 50
+  },
+  {
+    "id": 2502,
+    "name": "Kannibal le Lecteur",
+    "level": 52,
+    "gfxId": 110
+  },
+  {
+    "id": 2503,
+    "name": "Kanasukr le Mielleux",
+    "level": 62,
+    "gfxId": 175
+  },
+  {
+    "id": 2505,
+    "name": "Kannémik le Maigre",
+    "level": 52,
+    "gfxId": 113
+  },
+  {
+    "id": 2506,
+    "name": "Kannisterik le Forcené",
+    "level": 52,
+    "gfxId": 111
+  },
+  {
+    "id": 2507,
+    "name": "Kapota la Fraise",
+    "level": 52,
+    "gfxId": 112
+  },
+  {
+    "id": 2508,
+    "name": "Kiroyal le Sirupeux",
+    "level": 35,
+    "gfxId": 90
+  },
+  {
+    "id": 2509,
+    "name": "Koaskette la Chapelière",
+    "level": 80,
+    "gfxId": 417
+  },
+  {
+    "id": 2510,
+    "name": "Bebetto l'Intellectuel",
+    "level": 122,
+    "gfxId": 689
+  },
+  {
+    "id": 2511,
+    "name": "Inopenope le Négatif",
+    "level": 132,
+    "gfxId": 690
+  },
+  {
+    "id": 2512,
+    "name": "Fangshui la Dysorthographiée",
+    "level": 132,
+    "gfxId": 691
+  },
+  {
+    "id": 2513,
+    "name": "Koamaembair le Coulant",
+    "level": 80,
+    "gfxId": 418
+  },
+  {
+    "id": 2514,
+    "name": "Koalaboi le Calorifère",
+    "level": 104,
+    "gfxId": 422
+  },
+  {
+    "id": 2515,
+    "name": "Koasossyal le Psychopathe",
+    "level": 80,
+    "gfxId": 435
+  },
+  {
+    "id": 2516,
+    "name": "Koakofrui le Confit",
+    "level": 80,
+    "gfxId": 419
+  },
+  {
+    "id": 2517,
+    "name": "Koalastrof la Naturelle",
+    "level": 60,
+    "gfxId": 415
+  },
+  {
+    "id": 2518,
+    "name": "Koarmit la Batracienne",
+    "level": 80,
+    "gfxId": 420
+  },
+  {
+    "id": 2519,
+    "name": "Koalvissie le Chauve",
+    "level": 102,
+    "gfxId": 411
+  },
+  {
+    "id": 2520,
+    "name": "Kolforthe l'Indécollable",
+    "level": 62,
+    "gfxId": 188
+  },
+  {
+    "id": 2521,
+    "name": "Krapahut le Randonneur",
+    "level": 110,
+    "gfxId": 467
+  },
+  {
+    "id": 2522,
+    "name": "Kwoanneur le Frimeur",
+    "level": 32,
+    "gfxId": 80
+  },
+  {
+    "id": 2524,
+    "name": "Ouassébo l'Esthète",
+    "level": 32,
+    "gfxId": 280
+  },
+  {
+    "id": 2525,
+    "name": "Let le Rond",
+    "level": 35,
+    "gfxId": 93
+  },
+  {
+    "id": 2526,
+    "name": "Bigbadaboum l'Élémentaire",
+    "level": 132,
+    "gfxId": 692
+  },
+  {
+    "id": 2527,
+    "name": "Parapadkouï l'Émasculé",
+    "level": 122,
+    "gfxId": 693
+  },
+  {
+    "id": 2528,
+    "name": "Mamakomou l'Âge",
+    "level": 90,
+    "gfxId": 421
+  },
+  {
+    "id": 2529,
+    "name": "Mandalo l'Aqueuse",
+    "level": 100,
+    "gfxId": 466
+  },
+  {
+    "id": 2531,
+    "name": "Maître Koantik le Théoricien",
+    "level": 108,
+    "gfxId": 423
+  },
+  {
+    "id": 2532,
+    "name": "Maître Amboat le Moqueur",
+    "level": 37,
+    "gfxId": 69
+  },
+  {
+    "id": 2533,
+    "name": "Minoskour le Sauveur",
+    "level": 102,
+    "gfxId": 465
+  },
+  {
+    "id": 2534,
+    "name": "Momikonos la Bandelette",
+    "level": 106,
+    "gfxId": 425
+  },
+  {
+    "id": 2538,
+    "name": "Nakuneuye le Borgne",
+    "level": 82,
+    "gfxId": 125
+  },
+  {
+    "id": 2539,
+    "name": "Nelvin le Boulet",
+    "level": 35,
+    "gfxId": 89
+  },
+  {
+    "id": 2540,
+    "name": "Nipulnislip l'Exhibitionniste",
+    "level": 35,
+    "gfxId": 88
+  },
+  {
+    "id": 2541,
+    "name": "Nodkoku le Trahi",
+    "level": 42,
+    "gfxId": 117
+  },
+  {
+    "id": 2542,
+    "name": "Neufedur le Flottant",
+    "level": 20,
+    "gfxId": 77
+  },
+  {
+    "id": 2543,
+    "name": "Craquecrac l'Endurant",
+    "level": 62,
+    "gfxId": 694
+  },
+  {
+    "id": 2544,
+    "name": "Abrakine le Sombre",
+    "level": 131,
+    "gfxId": 601
+  },
+  {
+    "id": 2545,
+    "name": "Barebourd le Comte",
+    "level": 58,
+    "gfxId": 573
+  },
+  {
+    "id": 2546,
+    "name": "Bitoven le Musicien",
+    "level": 130,
+    "gfxId": 566
+  },
+  {
+    "id": 2547,
+    "name": "Toufou le Benêt",
+    "level": 97,
+    "gfxId": 558
+  },
+  {
+    "id": 2548,
+    "name": "Bambouské le Camouflé",
+    "level": 102,
+    "gfxId": 695
+  },
+  {
+    "id": 2549,
+    "name": "Boostif l'Affamé",
+    "level": 25,
+    "gfxId": 59
+  },
+  {
+    "id": 2550,
+    "name": "Brouste l'Humiliant",
+    "level": 127,
+    "gfxId": 597
+  },
+  {
+    "id": 2551,
+    "name": "Champolyon le Polyglotte",
+    "level": 172,
+    "gfxId": 639
+  },
+  {
+    "id": 2552,
+    "name": "Chamoute le Duveteux",
+    "level": 172,
+    "gfxId": 636
+  },
+  {
+    "id": 2553,
+    "name": "Chamilero le Malchanceux",
+    "level": 172,
+    "gfxId": 635
+  },
+  {
+    "id": 2554,
+    "name": "Chiendanlémin l'Illusionniste",
+    "level": 125,
+    "gfxId": 600
+  },
+  {
+    "id": 2555,
+    "name": "Corboyard l'Enigmatique",
+    "level": 38,
+    "gfxId": 560
+  },
+  {
+    "id": 2556,
+    "name": "Craquetou le Fissuré",
+    "level": 93,
+    "gfxId": 562
+  },
+  {
+    "id": 2557,
+    "name": "Crustterus l'Organique",
+    "level": 36,
+    "gfxId": 584
+  },
+  {
+    "id": 2558,
+    "name": "Crustensyl le Pragmatique",
+    "level": 36,
+    "gfxId": 585
+  },
+  {
+    "id": 2559,
+    "name": "Cruskof le Rustre",
+    "level": 36,
+    "gfxId": 587
+  },
+  {
+    "id": 2560,
+    "name": "Crusmeyer le Pervers",
+    "level": 36,
+    "gfxId": 586
+  },
+  {
+    "id": 2561,
+    "name": "Crathdogue le Cruel",
+    "level": 96,
+    "gfxId": 561
+  },
+  {
+    "id": 2562,
+    "name": "Diskord le Belliqueux",
+    "level": 114,
+    "gfxId": 579
+  },
+  {
+    "id": 2563,
+    "name": "Fantoch le Pantin",
+    "level": 42,
+    "gfxId": 203
+  },
+  {
+    "id": 2564,
+    "name": "Madgang le Docteur",
+    "level": 162,
+    "gfxId": 696
+  },
+  {
+    "id": 2565,
+    "name": "Floanna la Blonde",
+    "level": 129,
+    "gfxId": 564
+  },
+  {
+    "id": 2566,
+    "name": "Gastroth la Contagieuse",
+    "level": 117,
+    "gfxId": 577
+  },
+  {
+    "id": 2567,
+    "name": "Faufoll la Joyeuse",
+    "level": 108,
+    "gfxId": 433
+  },
+  {
+    "id": 2568,
+    "name": "Germinol l'Indigent",
+    "level": 120,
+    "gfxId": 357
+  },
+  {
+    "id": 2569,
+    "name": "Guerumoth le Collant",
+    "level": 120,
+    "gfxId": 578
+  },
+  {
+    "id": 2570,
+    "name": "Kaskapointhe la Couverte",
+    "level": 152,
+    "gfxId": 568
+  },
+  {
+    "id": 2571,
+    "name": "Kido l'Âtre",
+    "level": 95,
+    "gfxId": 593
+  },
+  {
+    "id": 2572,
+    "name": "Kilimanj'haro le Grimpeur",
+    "level": 98,
+    "gfxId": 594
+  },
+  {
+    "id": 2573,
+    "name": "Koktèle le Secoué",
+    "level": 42,
+    "gfxId": 109
+  },
+  {
+    "id": 2574,
+    "name": "Larvonika l'Instrument",
+    "level": 16,
+    "gfxId": 1
+  },
+  {
+    "id": 2575,
+    "name": "Ouashouash l'Exubérant",
+    "level": 92,
+    "gfxId": 279
+  },
+  {
+    "id": 2577,
+    "name": "Meuroup le Prêtre",
+    "level": 143,
+    "gfxId": 570
+  },
+  {
+    "id": 2578,
+    "name": "Don Kizoth l'Obstiné",
+    "level": 126,
+    "gfxId": 576
+  },
+  {
+    "id": 2579,
+    "name": "Nerdeubeu le Flagellant",
+    "level": 126,
+    "gfxId": 598
+  },
+  {
+    "id": 2580,
+    "name": "Mufguedin le Suprême",
+    "level": 94,
+    "gfxId": 592
+  },
+  {
+    "id": 2581,
+    "name": "Palmbytch la Bronzée",
+    "level": 37,
+    "gfxId": 588
+  },
+  {
+    "id": 2582,
+    "name": "Palmito le Menteur",
+    "level": 37,
+    "gfxId": 589
+  },
+  {
+    "id": 2583,
+    "name": "Palmiche le Serein",
+    "level": 37,
+    "gfxId": 591
+  },
+  {
+    "id": 2584,
+    "name": "Palmiflette le Convivial",
+    "level": 37,
+    "gfxId": 590
+  },
+  {
+    "id": 2585,
+    "name": "Osuxion le Vampirique",
+    "level": 35,
+    "gfxId": 87
+  },
+  {
+    "id": 2587,
+    "name": "Seripoth l'Ennemi",
+    "level": 123,
+    "gfxId": 580
+  },
+  {
+    "id": 2588,
+    "name": "Sparoket le Lanceur",
+    "level": 57,
+    "gfxId": 572
+  },
+  {
+    "id": 2589,
+    "name": "Ougaould le Parasite",
+    "level": 42,
+    "gfxId": 697
+  },
+  {
+    "id": 2590,
+    "name": "Sarkastik l'Incompris",
+    "level": 122,
+    "gfxId": 698
+  },
+  {
+    "id": 2591,
+    "name": "Akaka le Souillé",
+    "level": 122,
+    "gfxId": 699
+  },
+  {
+    "id": 2592,
+    "name": "Koko la Violente",
+    "level": 122,
+    "gfxId": 700
+  },
+  {
+    "id": 2593,
+    "name": "Grenuche la Gentille",
+    "level": 102,
+    "gfxId": 701
+  },
+  {
+    "id": 2597,
+    "name": "Tronquette la Réduite",
+    "level": 132,
+    "gfxId": 702
+  },
+  {
+    "id": 2598,
+    "name": "Bonpake le Chavireur",
+    "level": 122,
+    "gfxId": 703
+  },
+  {
+    "id": 2600,
+    "name": "Champmé le Méchant",
+    "level": 172,
+    "gfxId": 637
+  },
+  {
+    "id": 2601,
+    "name": "Tromplamor le Survivant",
+    "level": 172,
+    "gfxId": 634
+  },
+  {
+    "id": 2614,
+    "name": "Roy le Merlin",
+    "level": 181,
+    "gfxId": 581
+  },
+  {
+    "id": 2615,
+    "name": "Scaratyn l'Huître",
+    "level": 110,
+    "gfxId": 462
+  },
+  {
+    "id": 2616,
+    "name": "Ouature la Mobile",
+    "level": 32,
+    "gfxId": 279
+  },
+  {
+    "id": 3178,
+    "name": "Krokette la Croustillante",
+    "level": 20,
+    "gfxId": 877
+  },
+  {
+    "id": 3179,
+    "name": "Krokillage la Marine",
+    "level": 20,
+    "gfxId": 879
+  },
+  {
+    "id": 3180,
+    "name": "Krokcinelle la Tâchetée",
+    "level": 20,
+    "gfxId": 878
+  },
+  {
+    "id": 3181,
+    "name": "Krokikrisp la Céréalière",
+    "level": 20,
+    "gfxId": 876
+  },
+  {
+    "id": 3182,
+    "name": "Krokis l'Esquissée",
+    "level": 20,
+    "gfxId": 880
+  },
+  {
+    "id": 3183,
+    "name": "Krokenjambe la Tombeuse",
+    "level": 50,
+    "gfxId": 882
+  },
+  {
+    "id": 3184,
+    "name": "Kroktail la Désaltérante",
+    "level": 50,
+    "gfxId": 884
+  },
+  {
+    "id": 3185,
+    "name": "Krokotte la Minutée",
+    "level": 50,
+    "gfxId": 883
+  },
+  {
+    "id": 3186,
+    "name": "Krokée l'Entamée",
+    "level": 50,
+    "gfxId": 881
+  },
+  {
+    "id": 3187,
+    "name": "Krokblanche l'Immaculée",
+    "level": 50,
+    "gfxId": 885
+  },
+  {
+    "id": 3188,
+    "name": "Krokrodaille la Mordante",
+    "level": 100,
+    "gfxId": 887
+  },
+  {
+    "id": 3189,
+    "name": "Kroknemboure la Mousseuse",
+    "level": 100,
+    "gfxId": 889
+  },
+  {
+    "id": 3190,
+    "name": "Krokine l'Allumeuse",
+    "level": 100,
+    "gfxId": 888
+  },
+  {
+    "id": 3191,
+    "name": "Krokue la Trompée",
+    "level": 100,
+    "gfxId": 886
+  },
+  {
+    "id": 3192,
+    "name": "Krokpit la Pilotée",
+    "level": 100,
+    "gfxId": 890
+  },
+  {
+    "id": 3193,
+    "name": "Krokage la Vorace",
+    "level": 150,
+    "gfxId": 892
+  },
+  {
+    "id": 3194,
+    "name": "Krokillagée la Sage",
+    "level": 150,
+    "gfxId": 894
+  },
+  {
+    "id": 3195,
+    "name": "Krokuite la Calcinée",
+    "level": 150,
+    "gfxId": 893
+  },
+  {
+    "id": 3196,
+    "name": "Krokobure la Maudite",
+    "level": 150,
+    "gfxId": 891
+  },
+  {
+    "id": 3197,
+    "name": "Krokrane la Distordue",
+    "level": 150,
+    "gfxId": 895
+  }
+]

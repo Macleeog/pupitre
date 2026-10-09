@@ -7,6 +7,9 @@ const { FrameStream, toJson } = require("./decode.cjs");
 const { createFightTracker } = require("./fights.cjs");
 const { codesHealth } = require("./known-types.cjs");
 const { readMarket } = require("./market.cjs");
+const { WATCHED, createHarebourgWatch } = require("./harebourg.cjs");
+const { createWantedWatch, sentence } = require("./wanted.cjs");
+const { startForegroundWatch } = require("../foreground.cjs");
 
 const GAME_PORTS = new Set([5555, 443]);
 const SERVERS = [
@@ -140,11 +143,12 @@ function captureFilter(addresses) {
 const FIELDS = ["frame.time_epoch", "tcp.srcport", "tcp.stream", "tcp.seq_raw", "tcp.seq", "tcp.payload"];
 
 class GameNetReader {
-  constructor({ capturesDir, cacheFile = null, onState, onEvent, ownFighterIds = [], onOwnFighters }) {
+  constructor({ capturesDir, cacheFile = null, onState, onEvent, ownFighterIds = [], onOwnFighters, mapLookup = null }) {
     this.capturesDir = capturesDir;
     this.cacheFile = cacheFile;
     this.onState = onState;
     this.onEvent = onEvent;
+    this.mapLookup = mapLookup;
     this.child = null;
     this.timer = null;
     this.dirty = true;
@@ -168,6 +172,53 @@ class GameNetReader {
     this.lastFightEnd = null;
     this.fightsSeen = 0;
     this.lastMarket = null;
+    this.lastWanted = null;
+    this.wantedNotices = true;
+    this.archiNotices = true;
+    this.wantedToken = null;
+    this.harebourg = createHarebourgWatch((event) => {
+      this.lastHarebourg = event;
+      this.dirty = true;
+      this.onEvent?.(event);
+    });
+    this.lastHarebourg = null;
+    this.foreground = null;
+    this.wanted = createWantedWatch((event) => {
+      if (event.type === "wanted-absent") {
+        this.wantedToken = null;
+        this.lastWanted = null;
+        this.dirty = true;
+        this.onEvent?.(event);
+        return;
+      }
+      if (event.type !== "wanted-sighting") return;
+      const monsters = event.monsters.filter((monster) =>
+        monster.kind === "archi" ? this.archiNotices !== false : this.wantedNotices !== false,
+      );
+      if (monsters.length === 0) return;
+      const sighting =
+        monsters.length === event.monsters.length
+          ? event
+          : { ...event, monsters, text: sentence(monsters, event.coords) };
+      this.lastWanted = sighting;
+      this.dirty = true;
+      this.onEvent?.(sighting);
+      if (sighting.coords || !this.mapLookup || !sighting.mapId) return;
+      const token = sighting.at;
+      this.wantedToken = token;
+      Promise.resolve()
+        .then(() => this.mapLookup(sighting.mapId))
+        .then((coords) => {
+          if (this.wantedToken !== token || !coords) return;
+          const next = { ...sighting, coords };
+          this.lastWanted = next;
+          this.dirty = true;
+          this.onEvent?.(next);
+        })
+        .catch(() => {
+          // The alert still stands without coordinates.
+        });
+    });
     this.capture = null;
     this.status = "idle";
     this.detail = "";
@@ -218,8 +269,13 @@ class GameNetReader {
     this.setStatus("idle", "");
   }
 
+  setForeground(title, processName, rect) {
+    this.harebourg?.setForeground(title, processName, rect);
+  }
+
   async start() {
     if (this.child || this.starting) return;
+    this.foreground ??= startForegroundWatch((info) => this.setForeground(info.title, info.processName, info.rect));
     this.activeWanted = true;
     this.starting = true;
     try {
@@ -285,6 +341,8 @@ class GameNetReader {
   }
 
   stop() {
+    this.foreground?.stop();
+    this.foreground = null;
     this.activeWanted = false;
     if (this.idleTimer) clearTimeout(this.idleTimer);
     this.idleTimer = null;
@@ -356,6 +414,11 @@ class GameNetReader {
     }
     try {
       this.fights.handle(stream, message, at, direction);
+      this.wanted.handle(message, at);
+      const ownTurn = direction === "out" && (message.type === "jrj" || message.type === "jvv");
+      if (WATCHED.has(message.type) || ownTurn) {
+        this.harebourg.handle({ type: message.type, fields: toJson(message.value) }, at, direction, stream);
+      }
       const market = inbound ? readMarket(message) : null;
       if (market && market.prices.length > 0) {
         this.lastMarket = { at, source: market.source, items: market.prices.length };
@@ -413,6 +476,8 @@ class GameNetReader {
       ownFighterIds: this.fights.ownFighterIds(),
       codes: codesHealth([...this.types.keys()], this.counters.messages),
       lastMarket: this.lastMarket,
+      lastWanted: this.lastWanted,
+      harebourg: this.lastHarebourg,
     };
   }
 

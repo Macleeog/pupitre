@@ -14,7 +14,7 @@ import {
 } from "@/lib/pupitre/farm";
 import type { OverlaySize, ShortcutAction, ShortcutMap, ShortcutStatus } from "@/pupitre-desktop";
 
-export type DeskTab = "session" | "reseau" | "reglages";
+export type DeskTab = "session" | "quetes" | "veille" | "reseau" | "reglages";
 
 export type OverlayField = "rate" | "gross" | "kamas" | "items" | "combats" | "donjons";
 

@@ -1,0 +1,5292 @@
+{
+  "dofawa": {
+    "tougliSlug": "dofawa",
+    "flavor": "Une contrefaçon si célèbre qu'elle est presque devenue une relique. Comme quoi, même un faux Dofus peut écrire de vraies histoires",
+    "level": 15,
+    "kamasQuest": 454,
+    "kamasAchievement": 0,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 0,
+      "combat": 1,
+      "bashMobs": 0,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "1959": {
+        "combat": 1
+      }
+    }
+  },
+  "dofus-argente": {
+    "tougliSlug": "dofus-argente",
+    "flavor": "Plus qu'un protecteur, c'est un rappel : même les dragons savent qu'un aventurier a droit à une seconde chance",
+    "level": 40,
+    "kamasQuest": 28973,
+    "kamasAchievement": 23490,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 1,
+      "combat": 37,
+      "bashMobs": 16,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "2502": {
+        "combat": 1
+      },
+      "1630": {
+        "combat": 1
+      },
+      "1634": {
+        "combat": 1
+      },
+      "1633": {
+        "combat": 1
+      },
+      "1642": {
+        "combat": 1
+      },
+      "1643": {
+        "bashMobs": 1
+      },
+      "1644": {
+        "bashMobs": 1
+      },
+      "1645": {
+        "bashMobs": 1
+      },
+      "1655": {
+        "bashMobs": 1
+      },
+      "1646": {
+        "bashMobs": 1
+      },
+      "1647": {
+        "combat": 1
+      },
+      "1638": {
+        "dungeon": 1
+      },
+      "1648": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1635": {
+        "combat": 1
+      },
+      "1959": {
+        "combat": 1
+      },
+      "1963": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1960": {
+        "combat": 2
+      },
+      "718": {
+        "combat": 1
+      },
+      "1962": {
+        "combat": 1
+      },
+      "1975": {
+        "combat": 1
+      },
+      "1976": {
+        "combat": 1
+      },
+      "1988": {
+        "combat": 1
+      },
+      "1981": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1980": {
+        "bashMobs": 1
+      },
+      "1982": {
+        "bashMobs": 1
+      },
+      "1999": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2000": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1998": {
+        "combat": 2
+      },
+      "1984": {
+        "bashMobs": 1
+      },
+      "1996": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1985": {
+        "combat": 1
+      },
+      "1987": {
+        "combat": 1
+      },
+      "1989": {
+        "combat": 1
+      },
+      "1990": {
+        "combat": 3
+      },
+      "1992": {
+        "combat": 1
+      },
+      "1983": {
+        "bashMobs": 1
+      },
+      "1991": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2007": {
+        "combat": 4
+      },
+      "2008": {
+        "combat": 1
+      }
+    }
+  },
+  "dofus-cawotte": {
+    "tougliSlug": "dofus-cawotte",
+    "flavor": "Nul ne sait s'il est né d'un dragon ou d'un Wabbit un peu trop créatif. Une chose est sûre : pour obtenir ce Dofus, il faut avoir plus de sagesse que d'appétit",
+    "level": 80,
+    "kamasQuest": 76075,
+    "kamasAchievement": 14520,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 2,
+      "combat": 16,
+      "bashMobs": 3,
+      "hours": 0,
+      "group": 1
+    },
+    "countersByQuest": {
+      "2502": {
+        "combat": 1
+      },
+      "1630": {
+        "combat": 1
+      },
+      "1634": {
+        "combat": 1
+      },
+      "1635": {
+        "combat": 1
+      },
+      "1959": {
+        "combat": 1
+      },
+      "1963": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1960": {
+        "combat": 2
+      },
+      "1962": {
+        "combat": 1
+      },
+      "2149": {
+        "bashMobs": 1
+      },
+      "2192": {
+        "combat": 2
+      },
+      "2193": {
+        "combat": 2
+      },
+      "837": {
+        "bashMobs": 1
+      },
+      "841": {
+        "combat": 1
+      },
+      "842": {
+        "group": 1
+      },
+      "843": {
+        "combat": 1
+      },
+      "834": {
+        "dungeon": 1
+      },
+      "835": {
+        "dungeon": 1
+      }
+    }
+  },
+  "dokoko": {
+    "tougliSlug": "dokoko",
+    "flavor": "Né sous les cocotiers de Moon, il rappelle qu'un bon aventurier sait aussi quand il est temps de reprendre des forces",
+    "level": 100,
+    "kamasQuest": 58500,
+    "kamasAchievement": 11980,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 3,
+      "combat": 2,
+      "bashMobs": 2,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "1667": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1668": {
+        "dungeon": 1
+      },
+      "1669": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1670": {
+        "dungeon": 1,
+        "bashMobs": 1
+      }
+    }
+  },
+  "dofus-emeraude": {
+    "tougliSlug": "dofus-emeraude",
+    "flavor": "Les dragons ont confié leur puissance au monde. L'Émeraude, lui, a choisi de la partager avec votre barre de vie",
+    "level": 120,
+    "kamasQuest": 173685,
+    "kamasAchievement": 108880,
+    "achievementIds": [
+      95,
+      107
+    ],
+    "counters": {
+      "dungeon": 6,
+      "combat": 27,
+      "bashMobs": 2,
+      "hours": 1,
+      "group": 0
+    },
+    "countersByQuest": {
+      "2502": {
+        "combat": 1
+      },
+      "1634": {
+        "combat": 1
+      },
+      "1635": {
+        "combat": 1
+      },
+      "1959": {
+        "combat": 1
+      },
+      "1963": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1960": {
+        "combat": 2
+      },
+      "1962": {
+        "combat": 1
+      },
+      "2149": {
+        "bashMobs": 1
+      },
+      "2192": {
+        "combat": 2
+      },
+      "2193": {
+        "combat": 2
+      },
+      "2194": {
+        "combat": 1
+      },
+      "2450": {
+        "hours": 1
+      },
+      "2195": {
+        "combat": 2
+      },
+      "1463": {
+        "combat": 2
+      },
+      "1464": {
+        "combat": 1
+      },
+      "1465": {
+        "dungeon": 5,
+        "combat": 1
+      },
+      "1466": {
+        "combat": 1
+      },
+      "1467": {
+        "combat": 1
+      },
+      "1469": {
+        "combat": 1
+      },
+      "1470": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1471": {
+        "combat": 3
+      }
+    }
+  },
+  "dofus-des-veilleurs": {
+    "tougliSlug": "dofus-des-veilleurs",
+    "flavor": "Certains comptent les Bouftous pour s'endormir. Les Veilleurs préfèrent compter les aventuriers encore en vie",
+    "level": 100,
+    "kamasQuest": 285340,
+    "kamasAchievement": 221805,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 1,
+      "combat": 19,
+      "bashMobs": 0,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "232": {
+        "combat": 3
+      },
+      "1486": {
+        "combat": 1
+      },
+      "1532": {
+        "combat": 1
+      },
+      "1571": {
+        "combat": 1
+      },
+      "1572": {
+        "combat": 2
+      },
+      "1573": {
+        "combat": 1
+      },
+      "1608": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1610": {
+        "combat": 1
+      },
+      "1611": {
+        "combat": 1
+      },
+      "1612": {
+        "combat": 5
+      },
+      "1613": {
+        "combat": 1
+      }
+    }
+  },
+  "dotruche": {
+    "tougliSlug": "dotruche",
+    "flavor": "Les aventuriers racontent que la Haute Truche ne garde pas ses secrets… elle les pond. Et le Dotruche en serait l’écho le plus stable",
+    "level": 130,
+    "kamasQuest": 40570,
+    "kamasAchievement": 1480,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 1,
+      "combat": 6,
+      "bashMobs": 0,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "1199": {
+        "combat": 1
+      },
+      "1201": {
+        "combat": 2
+      },
+      "1200": {
+        "combat": 3
+      },
+      "1517": {
+        "dungeon": 1
+      }
+    }
+  },
+  "dofus-pourpre": {
+    "tougliSlug": "dofus-pourpre",
+    "flavor": "Lorsque le Dragon Primordial qui l'a pondu y insuffla sa puissance, il oublia visiblement d'y glisser un peu de retenue",
+    "level": 130,
+    "kamasQuest": 374343,
+    "kamasAchievement": 23620,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 8,
+      "combat": 25,
+      "bashMobs": 3,
+      "hours": 1,
+      "group": 0
+    },
+    "countersByQuest": {
+      "2502": {
+        "combat": 1
+      },
+      "1634": {
+        "combat": 1
+      },
+      "1635": {
+        "combat": 1
+      },
+      "1959": {
+        "combat": 1
+      },
+      "1963": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1960": {
+        "combat": 2
+      },
+      "1962": {
+        "combat": 1
+      },
+      "2149": {
+        "bashMobs": 1
+      },
+      "2192": {
+        "combat": 2
+      },
+      "2193": {
+        "combat": 2
+      },
+      "2194": {
+        "combat": 1
+      },
+      "2450": {
+        "hours": 1
+      },
+      "2195": {
+        "combat": 2
+      },
+      "1521": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1522": {
+        "dungeon": 1
+      },
+      "1527": {
+        "dungeon": 3,
+        "combat": 1
+      },
+      "2538": {
+        "combat": 1
+      },
+      "1524": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1525": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1526": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1523": {
+        "combat": 1
+      },
+      "1528": {
+        "combat": 1
+      },
+      "1529": {
+        "dungeon": 1,
+        "combat": 1
+      }
+    }
+  },
+  "domakuro": {
+    "tougliSlug": "domakuro",
+    "flavor": "Les dragons offrent parfois leur puissance. Les Pandawas, eux, vous apprendront qu'il faut savoir attendre avant de la mériter",
+    "level": 140,
+    "kamasQuest": 251600,
+    "kamasAchievement": 22380,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 5,
+      "combat": 19,
+      "bashMobs": 2,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "2149": {
+        "bashMobs": 1
+      },
+      "2150": {
+        "combat": 3
+      },
+      "2151": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2152": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2153": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2154": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2155": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2197": {
+        "combat": 2
+      }
+    }
+  },
+  "dorigami": {
+    "tougliSlug": "dorigami",
+    "flavor": "Les dragons ont leurs œufs. Les Pandawas ont leurs secrets. Celui-ci tient étonnamment bien dans une feuille pliée",
+    "level": 170,
+    "kamasQuest": 443251,
+    "kamasAchievement": 56420,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 12,
+      "combat": 48,
+      "bashMobs": 5,
+      "hours": 1,
+      "group": 0
+    },
+    "countersByQuest": {
+      "1630": {
+        "combat": 1
+      },
+      "1634": {
+        "combat": 1
+      },
+      "1635": {
+        "combat": 1
+      },
+      "1959": {
+        "combat": 1
+      },
+      "1963": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1960": {
+        "combat": 2
+      },
+      "1962": {
+        "combat": 1
+      },
+      "2149": {
+        "bashMobs": 1
+      },
+      "2192": {
+        "combat": 2
+      },
+      "2193": {
+        "combat": 2
+      },
+      "2194": {
+        "combat": 1
+      },
+      "2450": {
+        "hours": 1
+      },
+      "2195": {
+        "combat": 2
+      },
+      "2150": {
+        "combat": 3
+      },
+      "2151": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2152": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2153": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2154": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2155": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2197": {
+        "combat": 2
+      },
+      "1465": {
+        "dungeon": 5,
+        "combat": 1
+      },
+      "2179": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2180": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2198": {
+        "combat": 8,
+        "bashMobs": 1
+      }
+    }
+  },
+  "dofus-turquoise": {
+    "tougliSlug": "dofus-turquoise",
+    "flavor": "Certains dragons soufflaient le feu. Celui du Turquoise préférait souffler un peu de chance à ses alliés",
+    "level": 180,
+    "kamasQuest": 650727,
+    "kamasAchievement": 40120,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 12,
+      "combat": 33,
+      "bashMobs": 4,
+      "hours": 1,
+      "group": 0
+    },
+    "countersByQuest": {
+      "2502": {
+        "combat": 1
+      },
+      "1630": {
+        "combat": 1
+      },
+      "1634": {
+        "combat": 1
+      },
+      "1635": {
+        "combat": 1
+      },
+      "1959": {
+        "combat": 1
+      },
+      "1963": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1960": {
+        "combat": 2
+      },
+      "1962": {
+        "combat": 1
+      },
+      "2149": {
+        "bashMobs": 1
+      },
+      "2192": {
+        "combat": 2
+      },
+      "2193": {
+        "combat": 2
+      },
+      "2194": {
+        "combat": 1
+      },
+      "2450": {
+        "hours": 1
+      },
+      "2195": {
+        "combat": 2
+      },
+      "1653": {
+        "dungeon": 2,
+        "combat": 2
+      },
+      "1654": {
+        "combat": 4
+      },
+      "1656": {
+        "combat": 2
+      },
+      "1657": {
+        "bashMobs": 1
+      },
+      "1660": {
+        "dungeon": 3
+      },
+      "1658": {
+        "combat": 1
+      },
+      "1661": {
+        "dungeon": 4
+      },
+      "1659": {
+        "combat": 1
+      },
+      "1662": {
+        "dungeon": 3
+      },
+      "1663": {
+        "combat": 6,
+        "bashMobs": 1
+      }
+    }
+  },
+  "dofus-ocre": {
+    "tougliSlug": "le-dofus-de-barbe___douce",
+    "flavor": "Les dragons offrent parfois leurs trésors. Encore faut-il convaincre Otomaï de vous laisser repartir avec",
+    "level": 40,
+    "kamasQuest": 3810,
+    "kamasAchievement": 1905,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 0,
+      "combat": 3,
+      "bashMobs": 0,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "232": {
+        "combat": 3
+      }
+    }
+  },
+  "dofus-des-glaces": {
+    "tougliSlug": "dofus-des-glaces",
+    "flavor": "Les dragons ont pondu des Dofus. Celui-ci est né des larmes d'une gardienne. Preuve que même le froid peut donner naissance à une légende",
+    "level": 200,
+    "kamasQuest": 4275008,
+    "kamasAchievement": 546418,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 36,
+      "combat": 32,
+      "bashMobs": 22,
+      "hours": 3,
+      "group": 2
+    },
+    "countersByQuest": {
+      "556": {
+        "bashMobs": 1
+      },
+      "615": {
+        "combat": 1,
+        "bashMobs": 1,
+        "group": 1
+      },
+      "619": {
+        "dungeon": 1
+      },
+      "646": {
+        "bashMobs": 1
+      },
+      "557": {
+        "bashMobs": 1
+      },
+      "590": {
+        "combat": 1
+      },
+      "558": {
+        "bashMobs": 1
+      },
+      "577": {
+        "dungeon": 1
+      },
+      "583": {
+        "bashMobs": 1
+      },
+      "620": {
+        "dungeon": 1
+      },
+      "591": {
+        "dungeon": 1
+      },
+      "543": {
+        "bashMobs": 1
+      },
+      "578": {
+        "combat": 1
+      },
+      "628": {
+        "combat": 1
+      },
+      "629": {
+        "combat": 1
+      },
+      "579": {
+        "combat": 1
+      },
+      "559": {
+        "bashMobs": 1
+      },
+      "592": {
+        "combat": 4
+      },
+      "621": {
+        "dungeon": 1
+      },
+      "560": {
+        "bashMobs": 1
+      },
+      "593": {
+        "bashMobs": 1
+      },
+      "561": {
+        "dungeon": 1,
+        "bashMobs": 1
+      },
+      "622": {
+        "dungeon": 1
+      },
+      "594": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "562": {
+        "bashMobs": 1
+      },
+      "595": {
+        "combat": 1
+      },
+      "623": {
+        "dungeon": 1
+      },
+      "596": {
+        "hours": 2
+      },
+      "678": {
+        "dungeon": 2
+      },
+      "375": {
+        "combat": 1
+      },
+      "1317": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "563": {
+        "bashMobs": 1
+      },
+      "624": {
+        "dungeon": 1
+      },
+      "564": {
+        "bashMobs": 1
+      },
+      "625": {
+        "dungeon": 1
+      },
+      "597": {
+        "dungeon": 1,
+        "bashMobs": 1
+      },
+      "565": {
+        "bashMobs": 1
+      },
+      "598": {
+        "combat": 1
+      },
+      "626": {
+        "dungeon": 1
+      },
+      "1318": {
+        "dungeon": 1,
+        "combat": 4,
+        "bashMobs": 1,
+        "hours": 1
+      },
+      "653": {
+        "dungeon": 8
+      },
+      "1335": {
+        "combat": 1
+      },
+      "1319": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1320": {
+        "combat": 3
+      },
+      "1322": {
+        "combat": 1
+      },
+      "1326": {
+        "dungeon": 4,
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1336": {
+        "bashMobs": 1
+      },
+      "1323": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1337": {
+        "dungeon": 1
+      },
+      "1338": {
+        "dungeon": 1
+      },
+      "1339": {
+        "dungeon": 1
+      },
+      "1324": {
+        "combat": 1
+      },
+      "1333": {
+        "dungeon": 1,
+        "combat": 3,
+        "bashMobs": 1,
+        "group": 1
+      },
+      "919": {
+        "dungeon": 1
+      },
+      "1327": {
+        "dungeon": 1
+      },
+      "1310": {
+        "dungeon": 1
+      }
+    }
+  },
+  "dofus-tachete": {
+    "tougliSlug": "dofus-tachete",
+    "flavor": "Attaquer vous rend plus dangereux, ne rien faire vous rend plus solide : il s’adapte à votre façon de survivre",
+    "level": 200,
+    "kamasQuest": 794241,
+    "kamasAchievement": 102780,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 14,
+      "combat": 68,
+      "bashMobs": 5,
+      "hours": 1,
+      "group": 0
+    },
+    "countersByQuest": {
+      "1630": {
+        "combat": 1
+      },
+      "1634": {
+        "combat": 1
+      },
+      "1635": {
+        "combat": 1
+      },
+      "1959": {
+        "combat": 1
+      },
+      "1963": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1960": {
+        "combat": 2
+      },
+      "1962": {
+        "combat": 1
+      },
+      "2149": {
+        "bashMobs": 1
+      },
+      "2164": {
+        "combat": 2
+      },
+      "2450": {
+        "hours": 1
+      },
+      "2192": {
+        "combat": 2
+      },
+      "2193": {
+        "combat": 2
+      },
+      "2194": {
+        "combat": 1
+      },
+      "2195": {
+        "combat": 2
+      },
+      "1463": {
+        "combat": 2
+      },
+      "1464": {
+        "combat": 1
+      },
+      "1465": {
+        "dungeon": 5,
+        "combat": 1
+      },
+      "2150": {
+        "combat": 3
+      },
+      "2151": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2152": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2153": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2154": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2155": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2197": {
+        "combat": 2
+      },
+      "2179": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2180": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2198": {
+        "combat": 8,
+        "bashMobs": 1
+      },
+      "2200": {
+        "combat": 3
+      },
+      "2201": {
+        "dungeon": 2,
+        "combat": 6
+      },
+      "2158": {
+        "combat": 4
+      },
+      "2202": {
+        "combat": 2
+      }
+    }
+  },
+  "dofus-abyssal": {
+    "tougliSlug": "dofus-abyssal",
+    "flavor": "Les dragons ont offert la puissance. L’Abyssal, lui, a offert la mobilité… et le droit de changer d’avis en plein combat",
+    "level": 200,
+    "kamasQuest": 1814175,
+    "kamasAchievement": 329850,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 4,
+      "combat": 41,
+      "bashMobs": 10,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "1441": {
+        "combat": 1
+      },
+      "1440": {
+        "combat": 1
+      },
+      "1438": {
+        "bashMobs": 1
+      },
+      "1439": {
+        "bashMobs": 1
+      },
+      "1443": {
+        "dungeon": 1
+      },
+      "1731": {
+        "combat": 1
+      },
+      "1737": {
+        "dungeon": 1
+      },
+      "1738": {
+        "combat": 3
+      },
+      "1739": {
+        "combat": 3
+      },
+      "1740": {
+        "combat": 1
+      },
+      "1741": {
+        "combat": 1
+      },
+      "1742": {
+        "combat": 4
+      },
+      "1733": {
+        "combat": 2
+      },
+      "1734": {
+        "combat": 1
+      },
+      "1735": {
+        "dungeon": 1
+      },
+      "1736": {
+        "combat": 1
+      },
+      "1743": {
+        "bashMobs": 1
+      },
+      "1744": {
+        "combat": 2
+      },
+      "1745": {
+        "combat": 2
+      },
+      "1746": {
+        "combat": 1
+      },
+      "1747": {
+        "combat": 2
+      },
+      "1756": {
+        "combat": 1
+      },
+      "1758": {
+        "combat": 1
+      },
+      "1759": {
+        "dungeon": 1
+      },
+      "1748": {
+        "combat": 1
+      },
+      "1755": {
+        "bashMobs": 1
+      },
+      "1764": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1749": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1752": {
+        "combat": 1
+      },
+      "1750": {
+        "combat": 1
+      },
+      "1753": {
+        "bashMobs": 1
+      },
+      "1751": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1765": {
+        "bashMobs": 1
+      },
+      "1754": {
+        "bashMobs": 1
+      },
+      "1757": {
+        "combat": 2
+      },
+      "1766": {
+        "combat": 1
+      },
+      "1732": {
+        "combat": 3
+      }
+    }
+  },
+  "dofus-ivoire": {
+    "tougliSlug": "dofus-ivoire",
+    "flavor": "Il ne renforce pas seulement le corps : il apprend à esquiver les coups que même les armures ne sauraient encaisser",
+    "level": 200,
+    "kamasQuest": 1900709,
+    "kamasAchievement": 88000,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 34,
+      "combat": 140,
+      "bashMobs": 25,
+      "hours": 1,
+      "group": 15
+    },
+    "countersByQuest": {
+      "2502": {
+        "combat": 1
+      },
+      "1630": {
+        "combat": 1
+      },
+      "1634": {
+        "combat": 1
+      },
+      "1635": {
+        "combat": 1
+      },
+      "1959": {
+        "combat": 1
+      },
+      "1963": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1960": {
+        "combat": 2
+      },
+      "1962": {
+        "combat": 1
+      },
+      "2149": {
+        "bashMobs": 1
+      },
+      "2192": {
+        "combat": 2
+      },
+      "2193": {
+        "combat": 2
+      },
+      "2194": {
+        "combat": 1
+      },
+      "703": {
+        "dungeon": 1
+      },
+      "2450": {
+        "hours": 1
+      },
+      "2195": {
+        "combat": 2
+      },
+      "1504": {
+        "bashMobs": 1
+      },
+      "1505": {
+        "combat": 1
+      },
+      "1506": {
+        "dungeon": 1
+      },
+      "1510": {
+        "combat": 1
+      },
+      "1871": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1872": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "1910": {
+        "combat": 3,
+        "bashMobs": 1
+      },
+      "1858": {
+        "combat": 1
+      },
+      "1859": {
+        "combat": 1
+      },
+      "1317": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1607": {
+        "dungeon": 1
+      },
+      "1845": {
+        "combat": 1
+      },
+      "1846": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1848": {
+        "combat": 3,
+        "bashMobs": 1
+      },
+      "1854": {
+        "dungeon": 1,
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1850": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1731": {
+        "combat": 1
+      },
+      "1733": {
+        "combat": 2
+      },
+      "1734": {
+        "combat": 1
+      },
+      "1735": {
+        "dungeon": 1
+      },
+      "1736": {
+        "combat": 1
+      },
+      "375": {
+        "combat": 1
+      },
+      "378": {
+        "bashMobs": 1
+      },
+      "379": {
+        "combat": 1
+      },
+      "381": {
+        "combat": 1
+      },
+      "384": {
+        "combat": 1
+      },
+      "385": {
+        "dungeon": 1,
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "386": {
+        "dungeon": 1
+      },
+      "389": {
+        "bashMobs": 1
+      },
+      "390": {
+        "bashMobs": 1
+      },
+      "393": {
+        "dungeon": 1
+      },
+      "395": {
+        "combat": 3
+      },
+      "396": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "397": {
+        "combat": 1
+      },
+      "399": {
+        "bashMobs": 1
+      },
+      "400": {
+        "combat": 1
+      },
+      "402": {
+        "bashMobs": 1
+      },
+      "403": {
+        "dungeon": 1
+      },
+      "404": {
+        "combat": 1
+      },
+      "406": {
+        "combat": 1
+      },
+      "407": {
+        "dungeon": 1
+      },
+      "408": {
+        "dungeon": 1
+      },
+      "410": {
+        "combat": 1
+      },
+      "411": {
+        "bashMobs": 1
+      },
+      "412": {
+        "combat": 1
+      },
+      "413": {
+        "combat": 1
+      },
+      "414": {
+        "dungeon": 1
+      },
+      "246": {
+        "dungeon": 1
+      },
+      "247": {
+        "combat": 1
+      },
+      "248": {
+        "combat": 2,
+        "group": 1
+      },
+      "251": {
+        "bashMobs": 1
+      },
+      "252": {
+        "combat": 2,
+        "group": 1
+      },
+      "253": {
+        "combat": 1
+      },
+      "255": {
+        "combat": 1
+      },
+      "256": {
+        "combat": 1,
+        "group": 1
+      },
+      "445": {
+        "combat": 1,
+        "group": 1
+      },
+      "267": {
+        "combat": 1
+      },
+      "270": {
+        "bashMobs": 1
+      },
+      "271": {
+        "combat": 1
+      },
+      "273": {
+        "dungeon": 1
+      },
+      "275": {
+        "combat": 1
+      },
+      "276": {
+        "combat": 5,
+        "group": 1
+      },
+      "277": {
+        "combat": 1
+      },
+      "278": {
+        "combat": 1
+      },
+      "308": {
+        "combat": 1
+      },
+      "309": {
+        "dungeon": 1
+      },
+      "314": {
+        "group": 1
+      },
+      "315": {
+        "combat": 1
+      },
+      "317": {
+        "dungeon": 1
+      },
+      "320": {
+        "combat": 2,
+        "group": 1
+      },
+      "322": {
+        "combat": 1
+      },
+      "323": {
+        "combat": 2,
+        "group": 1
+      },
+      "327": {
+        "bashMobs": 1,
+        "group": 1
+      },
+      "324": {
+        "combat": 5,
+        "group": 1
+      },
+      "329": {
+        "combat": 1
+      },
+      "330": {
+        "group": 1
+      },
+      "331": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "332": {
+        "combat": 2
+      },
+      "352": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "474": {
+        "combat": 1
+      },
+      "1716": {
+        "combat": 1
+      },
+      "1718": {
+        "combat": 1
+      },
+      "1720": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1722": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1726": {
+        "combat": 1
+      },
+      "1727": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1888": {
+        "combat": 2
+      },
+      "1890": {
+        "combat": 1
+      },
+      "1892": {
+        "combat": 2
+      },
+      "1894": {
+        "combat": 1
+      },
+      "1896": {
+        "combat": 1,
+        "group": 1
+      },
+      "1898": {
+        "dungeon": 1
+      },
+      "1900": {
+        "combat": 1
+      },
+      "1902": {
+        "dungeon": 1
+      },
+      "1904": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "109": {
+        "dungeon": 1,
+        "group": 1
+      },
+      "120": {
+        "combat": 2
+      },
+      "421": {
+        "dungeon": 1,
+        "combat": 1,
+        "bashMobs": 1,
+        "group": 1
+      },
+      "1916": {
+        "dungeon": 1,
+        "combat": 5,
+        "group": 1
+      },
+      "1905": {
+        "dungeon": 1
+      },
+      "1906": {
+        "dungeon": 1,
+        "combat": 6
+      },
+      "1907": {
+        "combat": 1
+      },
+      "1908": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1909": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1914": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1911": {
+        "combat": 5
+      },
+      "1912": {
+        "dungeon": 2
+      },
+      "1913": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1915": {
+        "dungeon": 1,
+        "combat": 2
+      }
+    }
+  },
+  "dofus-ebene": {
+    "tougliSlug": "dofus-ebene",
+    "flavor": "Chaque coup qu’il accompagne laisse une trace invisible : un poison qui ronge et des blessures qui deviennent de plus en plus lourdes",
+    "level": 200,
+    "kamasQuest": 1179596,
+    "kamasAchievement": 50500,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 12,
+      "combat": 80,
+      "bashMobs": 9,
+      "hours": 1,
+      "group": 0
+    },
+    "countersByQuest": {
+      "2502": {
+        "combat": 1
+      },
+      "1630": {
+        "combat": 1
+      },
+      "1634": {
+        "combat": 1
+      },
+      "1635": {
+        "combat": 1
+      },
+      "1959": {
+        "combat": 1
+      },
+      "1963": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1960": {
+        "combat": 2
+      },
+      "1988": {
+        "combat": 1
+      },
+      "1989": {
+        "combat": 1
+      },
+      "1990": {
+        "combat": 3
+      },
+      "1991": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1962": {
+        "combat": 1
+      },
+      "2149": {
+        "bashMobs": 1
+      },
+      "2450": {
+        "hours": 1
+      },
+      "2192": {
+        "combat": 2
+      },
+      "2193": {
+        "combat": 2
+      },
+      "2194": {
+        "combat": 1
+      },
+      "2195": {
+        "combat": 2
+      },
+      "2010": {
+        "combat": 1
+      },
+      "894": {
+        "combat": 2
+      },
+      "1607": {
+        "dungeon": 1
+      },
+      "1845": {
+        "combat": 1
+      },
+      "1853": {
+        "combat": 1
+      },
+      "1867": {
+        "combat": 2
+      },
+      "1868": {
+        "combat": 2
+      },
+      "1869": {
+        "combat": 2
+      },
+      "2011": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "2019": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2012": {
+        "combat": 2
+      },
+      "2013": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2014": {
+        "dungeon": 1,
+        "combat": 4,
+        "bashMobs": 1
+      },
+      "2035": {
+        "dungeon": 2,
+        "combat": 4
+      },
+      "2036": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2038": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2039": {
+        "dungeon": 1,
+        "combat": 12,
+        "bashMobs": 1
+      },
+      "2040": {
+        "combat": 5
+      },
+      "2041": {
+        "dungeon": 2,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2042": {
+        "combat": 2
+      },
+      "2043": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2044": {
+        "dungeon": 1,
+        "combat": 3,
+        "bashMobs": 1
+      }
+    }
+  },
+  "dofus-nebuleux": {
+    "tougliSlug": "dofus-nebuleux",
+    "flavor": "Sa puissance va et vient, comme les astres dont il tire sa force. Mieux vaut savoir attendre... ou frapper au bon moment",
+    "level": 200,
+    "kamasQuest": 3511830,
+    "kamasAchievement": 933620,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 13,
+      "combat": 109,
+      "bashMobs": 9,
+      "hours": 0,
+      "group": 1
+    },
+    "countersByQuest": {
+      "1486": {
+        "combat": 1
+      },
+      "1532": {
+        "combat": 1
+      },
+      "1571": {
+        "combat": 1
+      },
+      "1572": {
+        "combat": 2
+      },
+      "1573": {
+        "combat": 1
+      },
+      "1608": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1610": {
+        "combat": 1
+      },
+      "1611": {
+        "combat": 1
+      },
+      "1612": {
+        "combat": 5
+      },
+      "1613": {
+        "combat": 1
+      },
+      "1504": {
+        "bashMobs": 1
+      },
+      "1505": {
+        "combat": 1
+      },
+      "1487": {
+        "combat": 3
+      },
+      "1501": {
+        "combat": 1
+      },
+      "1506": {
+        "dungeon": 1
+      },
+      "1510": {
+        "combat": 1
+      },
+      "1511": {
+        "combat": 2
+      },
+      "1513": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1497": {
+        "combat": 3
+      },
+      "1488": {
+        "combat": 3
+      },
+      "1502": {
+        "combat": 1
+      },
+      "1508": {
+        "combat": 1
+      },
+      "1516": {
+        "combat": 1
+      },
+      "1499": {
+        "combat": 1
+      },
+      "1500": {
+        "dungeon": 1
+      },
+      "1509": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1492": {
+        "combat": 1
+      },
+      "1493": {
+        "combat": 2
+      },
+      "1494": {
+        "combat": 5
+      },
+      "1495": {
+        "dungeon": 1
+      },
+      "1514": {
+        "dungeon": 1
+      },
+      "1491": {
+        "bashMobs": 1
+      },
+      "1489": {
+        "combat": 1
+      },
+      "1496": {
+        "combat": 1
+      },
+      "1503": {
+        "combat": 2
+      },
+      "1515": {
+        "combat": 1
+      },
+      "1533": {
+        "combat": 3
+      },
+      "1535": {
+        "combat": 1
+      },
+      "1542": {
+        "combat": 2
+      },
+      "1543": {
+        "dungeon": 1
+      },
+      "1538": {
+        "combat": 1
+      },
+      "1539": {
+        "combat": 2
+      },
+      "1553": {
+        "combat": 1
+      },
+      "1534": {
+        "combat": 4
+      },
+      "1544": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1536": {
+        "bashMobs": 1
+      },
+      "1555": {
+        "combat": 1
+      },
+      "1545": {
+        "combat": 1
+      },
+      "1546": {
+        "combat": 1
+      },
+      "1547": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1554": {
+        "combat": 1
+      },
+      "1548": {
+        "combat": 1
+      },
+      "1550": {
+        "combat": 1
+      },
+      "1551": {
+        "combat": 1
+      },
+      "1552": {
+        "dungeon": 1
+      },
+      "1562": {
+        "combat": 1
+      },
+      "1540": {
+        "combat": 2
+      },
+      "1559": {
+        "bashMobs": 1
+      },
+      "1560": {
+        "combat": 1
+      },
+      "1556": {
+        "combat": 1
+      },
+      "1558": {
+        "combat": 1
+      },
+      "1592": {
+        "bashMobs": 1
+      },
+      "1588": {
+        "combat": 1
+      },
+      "1593": {
+        "dungeon": 1
+      },
+      "1584": {
+        "combat": 2
+      },
+      "1594": {
+        "combat": 1
+      },
+      "1577": {
+        "combat": 1
+      },
+      "1585": {
+        "combat": 5,
+        "group": 1
+      },
+      "1586": {
+        "dungeon": 1
+      },
+      "1589": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1575": {
+        "bashMobs": 1
+      },
+      "1580": {
+        "combat": 1
+      },
+      "1581": {
+        "combat": 5
+      },
+      "1602": {
+        "combat": 3
+      },
+      "1600": {
+        "combat": 1
+      },
+      "1596": {
+        "combat": 2
+      },
+      "1582": {
+        "dungeon": 1
+      },
+      "1601": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1590": {
+        "combat": 2
+      },
+      "1597": {
+        "combat": 1
+      },
+      "1598": {
+        "combat": 1
+      },
+      "1599": {
+        "combat": 1
+      },
+      "1614": {
+        "combat": 1
+      }
+    }
+  },
+  "dofus-vulbis": {
+    "tougliSlug": "dofus-vulbis",
+    "flavor": "Certains Dofus donnent de nouvelles capacités. Celui-ci se contente d’une vérité simple : tout ce que vous infligez devient légèrement plus irréversible, comme si le monde hésitait moins à vous laisser gagner",
+    "level": 200,
+    "kamasQuest": 2836243,
+    "kamasAchievement": 152200,
+    "achievementIds": [
+      1048,
+      1101,
+      1385,
+      5220
+    ],
+    "counters": {
+      "dungeon": 33,
+      "combat": 120,
+      "bashMobs": 6,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "1423": {
+        "combat": 3
+      },
+      "657": {
+        "combat": 1
+      },
+      "2062": {
+        "combat": 2
+      },
+      "2063": {
+        "combat": 2
+      },
+      "2064": {
+        "combat": 6
+      },
+      "2085": {
+        "combat": 2
+      },
+      "2086": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2087": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1463": {
+        "combat": 2
+      },
+      "1464": {
+        "combat": 1
+      },
+      "1465": {
+        "dungeon": 5,
+        "combat": 1
+      },
+      "1466": {
+        "combat": 1
+      },
+      "1467": {
+        "combat": 1
+      },
+      "1469": {
+        "combat": 1
+      },
+      "1470": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1471": {
+        "combat": 3
+      },
+      "1521": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1522": {
+        "dungeon": 1
+      },
+      "1523": {
+        "combat": 1
+      },
+      "1524": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1525": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1526": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1528": {
+        "combat": 1
+      },
+      "1529": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1653": {
+        "dungeon": 2,
+        "combat": 2
+      },
+      "1654": {
+        "combat": 4
+      },
+      "1656": {
+        "combat": 2
+      },
+      "1657": {
+        "bashMobs": 1
+      },
+      "1658": {
+        "combat": 1
+      },
+      "1659": {
+        "combat": 1
+      },
+      "1660": {
+        "dungeon": 3
+      },
+      "1661": {
+        "dungeon": 4
+      },
+      "1662": {
+        "dungeon": 3
+      },
+      "1663": {
+        "combat": 6,
+        "bashMobs": 1
+      },
+      "2442": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2443": {
+        "dungeon": 1
+      },
+      "2444": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2445": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2446": {
+        "combat": 2
+      },
+      "2447": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2448": {
+        "combat": 1
+      },
+      "1782": {
+        "dungeon": 1,
+        "combat": 4,
+        "bashMobs": 1
+      },
+      "1784": {
+        "dungeon": 1,
+        "combat": 4
+      },
+      "1665": {
+        "combat": 2
+      },
+      "1785": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1787": {
+        "combat": 8
+      },
+      "1788": {
+        "combat": 3
+      },
+      "1789": {
+        "combat": 8
+      },
+      "1791": {
+        "combat": 3
+      },
+      "1786": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2078": {
+        "combat": 5
+      },
+      "2079": {
+        "combat": 7
+      },
+      "2080": {
+        "combat": 2
+      },
+      "2081": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2082": {
+        "combat": 2
+      },
+      "2083": {
+        "combat": 3
+      }
+    }
+  },
+  "dofus-forgelave": {
+    "tougliSlug": "dofus-forgelave",
+    "flavor": "Il enveloppe son porteur d’une défense croissante à chaque fois que le combat le force à bouger, comme si le déséquilibre lui-même devenait un rempart",
+    "level": 200,
+    "kamasQuest": 931350,
+    "kamasAchievement": 307860,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 3,
+      "combat": 40,
+      "bashMobs": 7,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "894": {
+        "combat": 2
+      },
+      "1607": {
+        "dungeon": 1
+      },
+      "1845": {
+        "combat": 1
+      },
+      "1853": {
+        "combat": 1
+      },
+      "1867": {
+        "combat": 2
+      },
+      "1868": {
+        "combat": 2
+      },
+      "1869": {
+        "combat": 2
+      },
+      "1934": {
+        "combat": 2
+      },
+      "1935": {
+        "combat": 1
+      },
+      "1939": {
+        "bashMobs": 1
+      },
+      "1936": {
+        "combat": 2
+      },
+      "1937": {
+        "combat": 4
+      },
+      "1956": {
+        "combat": 4
+      },
+      "1949": {
+        "combat": 3
+      },
+      "1948": {
+        "bashMobs": 1
+      },
+      "1950": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1951": {
+        "bashMobs": 1
+      },
+      "1940": {
+        "combat": 2
+      },
+      "1952": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1943": {
+        "combat": 2
+      },
+      "1955": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1942": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1954": {
+        "dungeon": 2
+      },
+      "1944": {
+        "combat": 1
+      },
+      "1945": {
+        "combat": 1
+      },
+      "1946": {
+        "combat": 2
+      },
+      "1947": {
+        "combat": 1
+      }
+    }
+  },
+  "dofus-argente-scintillant": {
+    "tougliSlug": "dofus-argente-scintillant",
+    "flavor": "Quand la vie vacille, il répond par un sursaut : un soin salvateur et une puissance ravivée, comme si la fin n’était qu’un nouveau départ",
+    "level": 200,
+    "kamasQuest": 5195469,
+    "kamasAchievement": 441050,
+    "achievementIds": [
+      1077,
+      1679,
+      1048,
+      1101,
+      1385,
+      1704,
+      1622
+    ],
+    "counters": {
+      "dungeon": 45,
+      "combat": 136,
+      "bashMobs": 8,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "2150": {
+        "combat": 3
+      },
+      "1463": {
+        "combat": 2
+      },
+      "1464": {
+        "combat": 1
+      },
+      "1465": {
+        "dungeon": 5,
+        "combat": 1
+      },
+      "1466": {
+        "combat": 1
+      },
+      "1467": {
+        "combat": 1
+      },
+      "1469": {
+        "combat": 1
+      },
+      "1470": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1471": {
+        "combat": 3
+      },
+      "1521": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1522": {
+        "dungeon": 1
+      },
+      "1523": {
+        "combat": 1
+      },
+      "1524": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1525": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1526": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1528": {
+        "combat": 1
+      },
+      "1529": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1653": {
+        "dungeon": 2,
+        "combat": 2
+      },
+      "1654": {
+        "combat": 4
+      },
+      "1656": {
+        "combat": 2
+      },
+      "1657": {
+        "bashMobs": 1
+      },
+      "1658": {
+        "combat": 1
+      },
+      "1659": {
+        "combat": 1
+      },
+      "1660": {
+        "dungeon": 3
+      },
+      "1661": {
+        "dungeon": 4
+      },
+      "1662": {
+        "dungeon": 3
+      },
+      "1663": {
+        "combat": 6,
+        "bashMobs": 1
+      },
+      "2035": {
+        "dungeon": 2,
+        "combat": 4
+      },
+      "2036": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2038": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2039": {
+        "dungeon": 1,
+        "combat": 12,
+        "bashMobs": 1
+      },
+      "2040": {
+        "combat": 5
+      },
+      "2041": {
+        "dungeon": 2,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2042": {
+        "combat": 2
+      },
+      "2043": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2044": {
+        "dungeon": 1,
+        "combat": 3,
+        "bashMobs": 1
+      },
+      "1905": {
+        "dungeon": 1
+      },
+      "1906": {
+        "dungeon": 1,
+        "combat": 6
+      },
+      "1907": {
+        "combat": 1
+      },
+      "1908": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1909": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1911": {
+        "combat": 5
+      },
+      "1912": {
+        "dungeon": 2
+      },
+      "1913": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1914": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1915": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1665": {
+        "combat": 2
+      },
+      "1782": {
+        "dungeon": 1,
+        "combat": 4,
+        "bashMobs": 1
+      },
+      "1784": {
+        "dungeon": 1,
+        "combat": 4
+      },
+      "1785": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1788": {
+        "combat": 3
+      },
+      "1789": {
+        "combat": 8
+      },
+      "1791": {
+        "combat": 3
+      },
+      "1787": {
+        "combat": 8
+      },
+      "1786": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "1792": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1793": {
+        "combat": 1
+      },
+      "2048": {
+        "combat": 3
+      },
+      "2051": {
+        "combat": 2
+      }
+    }
+  },
+  "dofus-du-cauchemar": {
+    "tougliSlug": "dofus-du-cauchemar",
+    "flavor": "Certains disent qu’il n’est qu’un fragment des Songes. D’autres y voient l’écho des Quatre Cavaliers de l’Apocalypse, rappelant que même les rêves finissent par céder devant la fin des cycles",
+    "level": 200,
+    "kamasQuest": 3592594,
+    "kamasAchievement": 1026490,
+    "achievementIds": [
+      1679
+    ],
+    "counters": {
+      "dungeon": 43,
+      "combat": 249,
+      "bashMobs": 23,
+      "hours": 1,
+      "group": 4
+    },
+    "countersByQuest": {
+      "2502": {
+        "combat": 1
+      },
+      "1630": {
+        "combat": 1
+      },
+      "1634": {
+        "combat": 1
+      },
+      "1635": {
+        "combat": 1
+      },
+      "1959": {
+        "combat": 1
+      },
+      "1963": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1960": {
+        "combat": 2
+      },
+      "1962": {
+        "combat": 1
+      },
+      "2149": {
+        "bashMobs": 1
+      },
+      "2164": {
+        "combat": 2
+      },
+      "2450": {
+        "hours": 1
+      },
+      "2192": {
+        "combat": 2
+      },
+      "2193": {
+        "combat": 2
+      },
+      "2194": {
+        "combat": 1
+      },
+      "2195": {
+        "combat": 2
+      },
+      "1463": {
+        "combat": 2
+      },
+      "1464": {
+        "combat": 1
+      },
+      "1465": {
+        "dungeon": 5,
+        "combat": 1
+      },
+      "1618": {
+        "combat": 1
+      },
+      "1619": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1620": {
+        "dungeon": 1
+      },
+      "1621": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "2150": {
+        "combat": 3
+      },
+      "2163": {
+        "bashMobs": 1
+      },
+      "2161": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2151": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2152": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2153": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2154": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2155": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2197": {
+        "combat": 2
+      },
+      "2179": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2180": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2162": {
+        "combat": 7
+      },
+      "2198": {
+        "combat": 8,
+        "bashMobs": 1
+      },
+      "2200": {
+        "combat": 3
+      },
+      "2062": {
+        "combat": 2
+      },
+      "2063": {
+        "combat": 2
+      },
+      "2064": {
+        "combat": 6
+      },
+      "2097": {
+        "combat": 8
+      },
+      "2098": {
+        "combat": 14
+      },
+      "2099": {
+        "combat": 4
+      },
+      "2120": {
+        "combat": 5
+      },
+      "2133": {
+        "combat": 9,
+        "bashMobs": 1
+      },
+      "2202": {
+        "combat": 2
+      },
+      "2135": {
+        "combat": 8
+      },
+      "657": {
+        "combat": 1
+      },
+      "2204": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2160": {
+        "combat": 3
+      },
+      "2407": {
+        "combat": 4,
+        "bashMobs": 1
+      },
+      "2408": {
+        "combat": 3
+      },
+      "2201": {
+        "dungeon": 2,
+        "combat": 6
+      },
+      "2158": {
+        "combat": 4
+      },
+      "2000": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1486": {
+        "combat": 1
+      },
+      "1532": {
+        "combat": 1
+      },
+      "1571": {
+        "combat": 1
+      },
+      "1572": {
+        "combat": 2
+      },
+      "1573": {
+        "combat": 1
+      },
+      "1608": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1613": {
+        "combat": 1
+      },
+      "1504": {
+        "bashMobs": 1
+      },
+      "1505": {
+        "combat": 1
+      },
+      "1506": {
+        "dungeon": 1
+      },
+      "1510": {
+        "combat": 1
+      },
+      "109": {
+        "dungeon": 1,
+        "group": 1
+      },
+      "120": {
+        "combat": 2
+      },
+      "421": {
+        "dungeon": 1,
+        "combat": 1,
+        "bashMobs": 1,
+        "group": 1
+      },
+      "1916": {
+        "dungeon": 1,
+        "combat": 5,
+        "group": 1
+      },
+      "2411": {
+        "combat": 4
+      },
+      "2412": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2413": {
+        "combat": 2
+      },
+      "2424": {
+        "group": 1
+      },
+      "1473": {
+        "combat": 4
+      },
+      "1474": {
+        "combat": 2
+      },
+      "1475": {
+        "dungeon": 1
+      },
+      "2121": {
+        "combat": 5
+      },
+      "1991": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1607": {
+        "dungeon": 1
+      },
+      "1845": {
+        "combat": 1
+      },
+      "1853": {
+        "combat": 1
+      },
+      "1867": {
+        "combat": 2
+      },
+      "1868": {
+        "combat": 2
+      },
+      "1869": {
+        "combat": 2
+      },
+      "2112": {
+        "bashMobs": 1
+      },
+      "2117": {
+        "combat": 4
+      },
+      "2118": {
+        "combat": 3,
+        "bashMobs": 1
+      },
+      "2130": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2131": {
+        "dungeon": 3,
+        "combat": 1
+      },
+      "2111": {
+        "dungeon": 1,
+        "combat": 4
+      },
+      "2132": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2119": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "2113": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2114": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2115": {
+        "combat": 1
+      },
+      "2116": {
+        "combat": 4,
+        "bashMobs": 1
+      },
+      "2122": {
+        "combat": 1
+      },
+      "2136": {
+        "dungeon": 2,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2137": {
+        "combat": 3
+      },
+      "2138": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2421": {
+        "dungeon": 1,
+        "combat": 3,
+        "bashMobs": 1
+      },
+      "2422": {
+        "combat": 3
+      },
+      "2425": {
+        "dungeon": 6
+      },
+      "2423": {
+        "combat": 11
+      }
+    }
+  },
+  "dom-de-pin": {
+    "tougliSlug": "dom-de-pin",
+    "flavor": "Certains trésors brillent. D’autres piquent un peu. Celui-ci fait surtout comprendre que la nature n’a pas besoin de dragons pour surprendre",
+    "level": 200,
+    "kamasQuest": 7540357,
+    "kamasAchievement": 999785,
+    "achievementIds": [
+      1048,
+      1101,
+      1385,
+      1704,
+      1622
+    ],
+    "counters": {
+      "dungeon": 75,
+      "combat": 375,
+      "bashMobs": 21,
+      "hours": 1,
+      "group": 1
+    },
+    "countersByQuest": {
+      "1463": {
+        "combat": 2
+      },
+      "1464": {
+        "combat": 1
+      },
+      "1465": {
+        "dungeon": 5,
+        "combat": 1
+      },
+      "1466": {
+        "combat": 1
+      },
+      "1467": {
+        "combat": 1
+      },
+      "1469": {
+        "combat": 1
+      },
+      "1470": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1471": {
+        "combat": 3
+      },
+      "1521": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1522": {
+        "dungeon": 1
+      },
+      "1523": {
+        "combat": 1
+      },
+      "1524": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1525": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1526": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1528": {
+        "combat": 1
+      },
+      "1529": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1653": {
+        "dungeon": 2,
+        "combat": 2
+      },
+      "1654": {
+        "combat": 4
+      },
+      "1656": {
+        "combat": 2
+      },
+      "1657": {
+        "bashMobs": 1
+      },
+      "1658": {
+        "combat": 1
+      },
+      "1659": {
+        "combat": 1
+      },
+      "1660": {
+        "dungeon": 3
+      },
+      "1661": {
+        "dungeon": 4
+      },
+      "1662": {
+        "dungeon": 3
+      },
+      "1663": {
+        "combat": 6,
+        "bashMobs": 1
+      },
+      "2035": {
+        "dungeon": 2,
+        "combat": 4
+      },
+      "2036": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2038": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2039": {
+        "dungeon": 1,
+        "combat": 12,
+        "bashMobs": 1
+      },
+      "2040": {
+        "combat": 5
+      },
+      "2041": {
+        "dungeon": 2,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2042": {
+        "combat": 2
+      },
+      "2043": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2044": {
+        "dungeon": 1,
+        "combat": 3,
+        "bashMobs": 1
+      },
+      "1905": {
+        "dungeon": 1
+      },
+      "1906": {
+        "dungeon": 1,
+        "combat": 6
+      },
+      "1907": {
+        "combat": 1
+      },
+      "1908": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1909": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1911": {
+        "combat": 5
+      },
+      "1912": {
+        "dungeon": 2
+      },
+      "1913": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1914": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1915": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2164": {
+        "combat": 2
+      },
+      "2150": {
+        "combat": 3
+      },
+      "2163": {
+        "bashMobs": 1
+      },
+      "2161": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2151": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "1618": {
+        "combat": 1
+      },
+      "1619": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1620": {
+        "dungeon": 1
+      },
+      "1621": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "2152": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2153": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2154": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2155": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2197": {
+        "combat": 2
+      },
+      "2179": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2180": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2162": {
+        "combat": 7
+      },
+      "2198": {
+        "combat": 8,
+        "bashMobs": 1
+      },
+      "2158": {
+        "combat": 4
+      },
+      "2200": {
+        "combat": 3
+      },
+      "2204": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2201": {
+        "dungeon": 2,
+        "combat": 6
+      },
+      "2202": {
+        "combat": 2
+      },
+      "657": {
+        "combat": 1
+      },
+      "2062": {
+        "combat": 2
+      },
+      "2063": {
+        "combat": 2
+      },
+      "2064": {
+        "combat": 6
+      },
+      "2097": {
+        "combat": 8
+      },
+      "2098": {
+        "combat": 14
+      },
+      "2099": {
+        "combat": 4
+      },
+      "2120": {
+        "combat": 5
+      },
+      "2133": {
+        "combat": 9,
+        "bashMobs": 1
+      },
+      "2135": {
+        "combat": 8
+      },
+      "2407": {
+        "combat": 4,
+        "bashMobs": 1
+      },
+      "2408": {
+        "combat": 3
+      },
+      "2160": {
+        "combat": 3
+      },
+      "2000": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1486": {
+        "combat": 1
+      },
+      "1532": {
+        "combat": 1
+      },
+      "1571": {
+        "combat": 1
+      },
+      "1572": {
+        "combat": 2
+      },
+      "1573": {
+        "combat": 1
+      },
+      "1608": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1613": {
+        "combat": 1
+      },
+      "2411": {
+        "combat": 4
+      },
+      "2412": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2413": {
+        "combat": 2
+      },
+      "2424": {
+        "group": 1
+      },
+      "2421": {
+        "dungeon": 1,
+        "combat": 3,
+        "bashMobs": 1
+      },
+      "2422": {
+        "combat": 3
+      },
+      "1473": {
+        "combat": 4
+      },
+      "1474": {
+        "combat": 2
+      },
+      "1475": {
+        "dungeon": 1
+      },
+      "2121": {
+        "combat": 5
+      },
+      "2122": {
+        "combat": 1
+      },
+      "2138": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "718": {
+        "combat": 1
+      },
+      "232": {
+        "combat": 3
+      },
+      "1423": {
+        "combat": 3
+      },
+      "2442": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2443": {
+        "dungeon": 1
+      },
+      "2444": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2445": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2451": {
+        "dungeon": 1,
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2446": {
+        "combat": 2
+      },
+      "2447": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2448": {
+        "combat": 1
+      },
+      "1665": {
+        "combat": 2
+      },
+      "1782": {
+        "dungeon": 1,
+        "combat": 4,
+        "bashMobs": 1
+      },
+      "1784": {
+        "dungeon": 1,
+        "combat": 4
+      },
+      "1785": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1786": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "1788": {
+        "combat": 3
+      },
+      "1789": {
+        "combat": 8
+      },
+      "1791": {
+        "combat": 3
+      },
+      "1787": {
+        "combat": 8
+      },
+      "1792": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1793": {
+        "combat": 1
+      },
+      "2048": {
+        "combat": 3
+      },
+      "2049": {
+        "dungeon": 2,
+        "combat": 10
+      },
+      "2050": {
+        "combat": 7
+      },
+      "2409": {
+        "combat": 2
+      },
+      "2420": {
+        "combat": 2
+      },
+      "2449": {
+        "combat": 2
+      },
+      "2463": {
+        "combat": 1
+      },
+      "2464": {
+        "combat": 2
+      },
+      "2465": {
+        "combat": 1
+      },
+      "2466": {
+        "dungeon": 1
+      },
+      "2468": {
+        "combat": 1
+      },
+      "2471": {
+        "combat": 2,
+        "hours": 1
+      },
+      "2472": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2473": {
+        "combat": 5
+      },
+      "2474": {
+        "combat": 1
+      },
+      "2475": {
+        "dungeon": 1,
+        "combat": 5
+      },
+      "2482": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2478": {
+        "combat": 2
+      },
+      "2479": {
+        "combat": 7
+      },
+      "2480": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2481": {
+        "combat": 1
+      }
+    }
+  },
+  "dofus-sylvestre": {
+    "tougliSlug": "dofus-sylvestre",
+    "flavor": "Les Dragons Primordiaux ont marqué le monde. Les forêts, elles, ont simplement choisi de le recouvrir lentement, jusqu’à faire oublier la frontière entre nature et légende",
+    "level": 200,
+    "kamasQuest": 1688361,
+    "kamasAchievement": 71068,
+    "achievementIds": [
+      1679
+    ],
+    "counters": {
+      "dungeon": 22,
+      "combat": 31,
+      "bashMobs": 9,
+      "hours": 3,
+      "group": 1
+    },
+    "countersByQuest": {
+      "615": {
+        "combat": 1,
+        "bashMobs": 1,
+        "group": 1
+      },
+      "619": {
+        "dungeon": 1
+      },
+      "590": {
+        "combat": 1
+      },
+      "583": {
+        "bashMobs": 1
+      },
+      "620": {
+        "dungeon": 1
+      },
+      "591": {
+        "dungeon": 1
+      },
+      "543": {
+        "bashMobs": 1
+      },
+      "1286": {
+        "combat": 1
+      },
+      "592": {
+        "combat": 4
+      },
+      "621": {
+        "dungeon": 1
+      },
+      "593": {
+        "bashMobs": 1
+      },
+      "594": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "622": {
+        "dungeon": 1
+      },
+      "595": {
+        "combat": 1
+      },
+      "623": {
+        "dungeon": 1
+      },
+      "596": {
+        "hours": 2
+      },
+      "678": {
+        "dungeon": 2
+      },
+      "375": {
+        "combat": 1
+      },
+      "1317": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "624": {
+        "dungeon": 1
+      },
+      "597": {
+        "dungeon": 1,
+        "bashMobs": 1
+      },
+      "1318": {
+        "dungeon": 1,
+        "combat": 4,
+        "bashMobs": 1,
+        "hours": 1
+      },
+      "1326": {
+        "dungeon": 4,
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1327": {
+        "dungeon": 1
+      },
+      "2486": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2487": {
+        "combat": 3
+      },
+      "2489": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2488": {
+        "dungeon": 3,
+        "combat": 6,
+        "bashMobs": 1
+      }
+    }
+  },
+  "dofoozbz": {
+    "tougliSlug": "dofoozbz",
+    "flavor": "Les Dragons Primordiaux ont façonné le monde, mais certaines forces semblent leur avoir échappé. Gargandyas serait l’un de ces vestiges, né d’une époque où la magie n’avait pas encore de règles",
+    "level": 200,
+    "kamasQuest": 855761,
+    "kamasAchievement": 76260,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 3,
+      "combat": 17,
+      "bashMobs": 4,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "2010": {
+        "combat": 1
+      },
+      "2515": {
+        "bashMobs": 1
+      },
+      "2520": {
+        "bashMobs": 1
+      },
+      "2516": {
+        "combat": 1
+      },
+      "2521": {
+        "combat": 1
+      },
+      "2522": {
+        "dungeon": 1
+      },
+      "2523": {
+        "combat": 3
+      },
+      "2517": {
+        "combat": 2
+      },
+      "2530": {
+        "bashMobs": 1
+      },
+      "2531": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "2518": {
+        "combat": 2
+      },
+      "2532": {
+        "dungeon": 1,
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2533": {
+        "combat": 4
+      },
+      "2519": {
+        "combat": 1
+      }
+    }
+  },
+  "dofus-cacao": {
+    "tougliSlug": "dofus-cacao",
+    "flavor": "Les chroniques hésitent : relique ou douceur interdite ? Dans tous les cas, il est dit qu’il fond plus vite que certaines légendes ne survivent",
+    "level": 60,
+    "kamasQuest": 44235,
+    "kamasAchievement": 0,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 1,
+      "combat": 3,
+      "bashMobs": 1,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "2056": {
+        "combat": 1
+      },
+      "2057": {
+        "combat": 1
+      },
+      "2058": {
+        "dungeon": 1,
+        "bashMobs": 1
+      },
+      "2059": {
+        "combat": 1
+      }
+    }
+  },
+  "dofus-kaliptus": {
+    "tougliSlug": "dofus-kaliptus",
+    "flavor": "Chaque Kaliptus semble différent du précédent. Ses effets varient, imprévisibles, comme si la nature refusait d’être apprivoisée ou répétée",
+    "level": null,
+    "kamasQuest": 0,
+    "kamasAchievement": 16780,
+    "achievementIds": [
+      69
+    ],
+    "counters": {
+      "dungeon": 0,
+      "combat": 0,
+      "bashMobs": 0,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {}
+  },
+  "dokille": {
+    "tougliSlug": "dokille",
+    "flavor": "Il n’apparaît qu’à ceux qui ont compris une chose essentielle : sur cette île, le plus grand danger n’est pas les monstres… mais le sable",
+    "level": 150,
+    "kamasQuest": 245680,
+    "kamasAchievement": 43980,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 0,
+      "combat": 0,
+      "bashMobs": 1,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "742": {
+        "bashMobs": 1
+      }
+    }
+  },
+  "dolmanax": {
+    "tougliSlug": "dolmanax",
+    "flavor": "Il ne se trouve pas dans un combat, ni au fond d’un donjon : il se construit lentement, au rythme des jours que l’on accepte de lui consacrer.",
+    "level": 20,
+    "kamasQuest": 0,
+    "kamasAchievement": 131940,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 0,
+      "combat": 0,
+      "bashMobs": 0,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {}
+  },
+  "halouine": {
+    "tougliSlug": "halouine",
+    "flavor": "Ce guide pour permettra d'obtenir l'ornement Halouine",
+    "level": 100,
+    "kamasQuest": 65890,
+    "kamasAchievement": 125790,
+    "achievementIds": [
+      1154,
+      1155,
+      1148,
+      1149,
+      1150,
+      1151,
+      1152
+    ],
+    "counters": {
+      "dungeon": 2,
+      "combat": 1,
+      "bashMobs": 3,
+      "hours": 0,
+      "group": 0
+    },
+    "countersByQuest": {
+      "2033": {
+        "bashMobs": 1
+      },
+      "2034": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "2045": {
+        "bashMobs": 1
+      },
+      "2046": {
+        "dungeon": 1,
+        "bashMobs": 1
+      }
+    }
+  },
+  "les-dofus-de-pandala": {
+    "tougliSlug": "les-dofus-de-pandala",
+    "flavor": "Ce guide pour permettra d'obtenir les trois dofus de Panda, c'est-à-dire, le Domakuro, le Dorigami puis le Tacheté",
+    "level": 200,
+    "kamasQuest": 794241,
+    "kamasAchievement": 102780,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 14,
+      "combat": 68,
+      "bashMobs": 5,
+      "hours": 1,
+      "group": 0
+    },
+    "countersByQuest": {
+      "1630": {
+        "combat": 1
+      },
+      "1634": {
+        "combat": 1
+      },
+      "1635": {
+        "combat": 1
+      },
+      "1959": {
+        "combat": 1
+      },
+      "1963": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1960": {
+        "combat": 2
+      },
+      "1962": {
+        "combat": 1
+      },
+      "2149": {
+        "bashMobs": 1
+      },
+      "2164": {
+        "combat": 2
+      },
+      "2192": {
+        "combat": 2
+      },
+      "2193": {
+        "combat": 2
+      },
+      "2194": {
+        "combat": 1
+      },
+      "2450": {
+        "hours": 1
+      },
+      "2195": {
+        "combat": 2
+      },
+      "1463": {
+        "combat": 2
+      },
+      "1464": {
+        "combat": 1
+      },
+      "1465": {
+        "dungeon": 5,
+        "combat": 1
+      },
+      "2150": {
+        "combat": 3
+      },
+      "2151": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2152": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2153": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2154": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2155": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2197": {
+        "combat": 2
+      },
+      "2179": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2180": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2198": {
+        "combat": 8,
+        "bashMobs": 1
+      },
+      "2200": {
+        "combat": 3
+      },
+      "2201": {
+        "dungeon": 2,
+        "combat": 6
+      },
+      "2158": {
+        "combat": 4
+      },
+      "2202": {
+        "combat": 2
+      }
+    }
+  },
+  "ebene-et-forgelave": {
+    "tougliSlug": "ebene-et-forgelave",
+    "flavor": "Ce guide cour permettra d'obtenir les Dofus Ebene et Forgelave en y mêlant leurs quêtes",
+    "level": 200,
+    "kamasQuest": 2095106,
+    "kamasAchievement": 358360,
+    "achievementIds": [],
+    "counters": {
+      "dungeon": 14,
+      "combat": 110,
+      "bashMobs": 16,
+      "hours": 1,
+      "group": 0
+    },
+    "countersByQuest": {
+      "2502": {
+        "combat": 1
+      },
+      "1630": {
+        "combat": 1
+      },
+      "1634": {
+        "combat": 1
+      },
+      "1635": {
+        "combat": 1
+      },
+      "1959": {
+        "combat": 1
+      },
+      "1963": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1960": {
+        "combat": 2
+      },
+      "1988": {
+        "combat": 1
+      },
+      "1989": {
+        "combat": 1
+      },
+      "1990": {
+        "combat": 3
+      },
+      "1991": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1962": {
+        "combat": 1
+      },
+      "2149": {
+        "bashMobs": 1
+      },
+      "2450": {
+        "hours": 1
+      },
+      "2192": {
+        "combat": 2
+      },
+      "2193": {
+        "combat": 2
+      },
+      "2194": {
+        "combat": 1
+      },
+      "2195": {
+        "combat": 2
+      },
+      "2010": {
+        "combat": 1
+      },
+      "894": {
+        "combat": 2
+      },
+      "1607": {
+        "dungeon": 1
+      },
+      "1845": {
+        "combat": 1
+      },
+      "1853": {
+        "combat": 1
+      },
+      "1867": {
+        "combat": 2
+      },
+      "1868": {
+        "combat": 2
+      },
+      "1869": {
+        "combat": 2
+      },
+      "1934": {
+        "combat": 2
+      },
+      "1935": {
+        "combat": 1
+      },
+      "1939": {
+        "bashMobs": 1
+      },
+      "1936": {
+        "combat": 2
+      },
+      "1937": {
+        "combat": 4
+      },
+      "2011": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "2019": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2012": {
+        "combat": 2
+      },
+      "2013": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2014": {
+        "dungeon": 1,
+        "combat": 4,
+        "bashMobs": 1
+      },
+      "2035": {
+        "dungeon": 2,
+        "combat": 4
+      },
+      "2036": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "1956": {
+        "combat": 4
+      },
+      "1943": {
+        "combat": 2
+      },
+      "1955": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1942": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1944": {
+        "combat": 1
+      },
+      "1945": {
+        "combat": 1
+      },
+      "1946": {
+        "combat": 2
+      },
+      "1947": {
+        "combat": 1
+      },
+      "1949": {
+        "combat": 3
+      },
+      "1948": {
+        "bashMobs": 1
+      },
+      "1950": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1951": {
+        "bashMobs": 1
+      },
+      "1940": {
+        "combat": 2
+      },
+      "1952": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2038": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2039": {
+        "dungeon": 1,
+        "combat": 12,
+        "bashMobs": 1
+      },
+      "2040": {
+        "combat": 5
+      },
+      "2041": {
+        "dungeon": 2,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2042": {
+        "combat": 2
+      },
+      "2043": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2044": {
+        "dungeon": 1,
+        "combat": 3,
+        "bashMobs": 1
+      },
+      "1954": {
+        "dungeon": 2
+      }
+    }
+  },
+  "rsa-rush-sylvestre-accelere": {
+    "tougliSlug": "rsa-rush-sylvestre-accelere",
+    "flavor": "Ce guide vous permettra de faire uniquement les quêtes pour obtenir votre Sylvestre rapidement",
+    "level": 200,
+    "kamasQuest": 11596145,
+    "kamasAchievement": 1836923,
+    "achievementIds": [
+      95,
+      107
+    ],
+    "counters": {
+      "dungeon": 145,
+      "combat": 592,
+      "bashMobs": 62,
+      "hours": 6,
+      "group": 17
+    },
+    "countersByQuest": {
+      "2502": {
+        "combat": 1
+      },
+      "1630": {
+        "combat": 1
+      },
+      "1634": {
+        "combat": 1
+      },
+      "1635": {
+        "combat": 1
+      },
+      "1959": {
+        "combat": 1
+      },
+      "1963": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1960": {
+        "combat": 2
+      },
+      "718": {
+        "combat": 1
+      },
+      "1962": {
+        "combat": 2
+      },
+      "2000": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1989": {
+        "combat": 1
+      },
+      "1990": {
+        "combat": 3
+      },
+      "1607": {
+        "dungeon": 1
+      },
+      "1991": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2149": {
+        "bashMobs": 1
+      },
+      "2192": {
+        "combat": 2
+      },
+      "2193": {
+        "combat": 2
+      },
+      "2194": {
+        "combat": 1
+      },
+      "703": {
+        "dungeon": 1
+      },
+      "2450": {
+        "hours": 1
+      },
+      "2195": {
+        "combat": 2
+      },
+      "232": {
+        "combat": 3
+      },
+      "1486": {
+        "combat": 1
+      },
+      "1532": {
+        "combat": 1
+      },
+      "1571": {
+        "combat": 1
+      },
+      "1572": {
+        "combat": 2
+      },
+      "1573": {
+        "combat": 1
+      },
+      "1608": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1610": {
+        "combat": 1
+      },
+      "1611": {
+        "combat": 1
+      },
+      "1612": {
+        "combat": 5
+      },
+      "1613": {
+        "combat": 1
+      },
+      "1853": {
+        "combat": 1
+      },
+      "1848": {
+        "combat": 3,
+        "bashMobs": 1
+      },
+      "1854": {
+        "dungeon": 1,
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1850": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1846": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1867": {
+        "combat": 2
+      },
+      "1868": {
+        "combat": 2
+      },
+      "1869": {
+        "combat": 2
+      },
+      "1871": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1872": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "577": {
+        "dungeon": 1
+      },
+      "578": {
+        "combat": 1
+      },
+      "628": {
+        "combat": 1
+      },
+      "629": {
+        "combat": 1
+      },
+      "579": {
+        "combat": 1
+      },
+      "1858": {
+        "combat": 1
+      },
+      "1859": {
+        "combat": 1
+      },
+      "55": {
+        "combat": 1
+      },
+      "1317": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "1504": {
+        "bashMobs": 1
+      },
+      "1505": {
+        "combat": 1
+      },
+      "1506": {
+        "dungeon": 1
+      },
+      "1510": {
+        "combat": 1
+      },
+      "2010": {
+        "combat": 1
+      },
+      "2014": {
+        "dungeon": 1,
+        "combat": 4,
+        "bashMobs": 1
+      },
+      "2011": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "2019": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2012": {
+        "combat": 2
+      },
+      "2013": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1910": {
+        "combat": 3,
+        "bashMobs": 1
+      },
+      "1731": {
+        "combat": 1
+      },
+      "1733": {
+        "combat": 2
+      },
+      "1734": {
+        "combat": 1
+      },
+      "1735": {
+        "dungeon": 1
+      },
+      "1736": {
+        "combat": 1
+      },
+      "58": {
+        "bashMobs": 1
+      },
+      "59": {
+        "combat": 1
+      },
+      "61": {
+        "combat": 1
+      },
+      "64": {
+        "bashMobs": 1
+      },
+      "65": {
+        "dungeon": 1
+      },
+      "66": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "70": {
+        "bashMobs": 1
+      },
+      "71": {
+        "bashMobs": 1
+      },
+      "1463": {
+        "combat": 2
+      },
+      "1464": {
+        "combat": 1
+      },
+      "1465": {
+        "dungeon": 5,
+        "combat": 1
+      },
+      "1466": {
+        "combat": 1
+      },
+      "1467": {
+        "combat": 1
+      },
+      "1469": {
+        "combat": 1
+      },
+      "1470": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1471": {
+        "combat": 3
+      },
+      "1521": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1522": {
+        "dungeon": 1
+      },
+      "1527": {
+        "dungeon": 3,
+        "combat": 1
+      },
+      "2538": {
+        "combat": 1
+      },
+      "1524": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1525": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1526": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "73": {
+        "dungeon": 1
+      },
+      "1523": {
+        "combat": 1
+      },
+      "1528": {
+        "combat": 1
+      },
+      "1529": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "75": {
+        "combat": 3
+      },
+      "76": {
+        "dungeon": 1
+      },
+      "79": {
+        "combat": 1
+      },
+      "81": {
+        "bashMobs": 1
+      },
+      "83": {
+        "dungeon": 1
+      },
+      "84": {
+        "combat": 1
+      },
+      "86": {
+        "group": 1
+      },
+      "87": {
+        "dungeon": 1
+      },
+      "88": {
+        "dungeon": 1
+      },
+      "90": {
+        "combat": 1
+      },
+      "91": {
+        "bashMobs": 1
+      },
+      "92": {
+        "combat": 1
+      },
+      "93": {
+        "combat": 1
+      },
+      "94": {
+        "dungeon": 1
+      },
+      "257": {
+        "dungeon": 1
+      },
+      "258": {
+        "bashMobs": 1
+      },
+      "260": {
+        "combat": 1
+      },
+      "261": {
+        "combat": 1
+      },
+      "262": {
+        "group": 1
+      },
+      "263": {
+        "group": 1
+      },
+      "264": {
+        "group": 1
+      },
+      "266": {
+        "combat": 1
+      },
+      "280": {
+        "combat": 1
+      },
+      "283": {
+        "group": 1
+      },
+      "284": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "285": {
+        "combat": 6,
+        "group": 1
+      },
+      "286": {
+        "group": 1
+      },
+      "290": {
+        "combat": 1
+      },
+      "289": {
+        "combat": 3,
+        "group": 1
+      },
+      "296": {
+        "combat": 1
+      },
+      "1653": {
+        "dungeon": 2,
+        "combat": 2
+      },
+      "1654": {
+        "combat": 4
+      },
+      "1656": {
+        "combat": 2
+      },
+      "1657": {
+        "bashMobs": 1
+      },
+      "1660": {
+        "dungeon": 3
+      },
+      "1658": {
+        "combat": 1
+      },
+      "1661": {
+        "dungeon": 4
+      },
+      "302": {
+        "dungeon": 2
+      },
+      "298": {
+        "combat": 1
+      },
+      "299": {
+        "combat": 1
+      },
+      "303": {
+        "combat": 1
+      },
+      "304": {
+        "combat": 1,
+        "group": 1
+      },
+      "1659": {
+        "combat": 1
+      },
+      "1662": {
+        "dungeon": 3
+      },
+      "333": {
+        "dungeon": 1,
+        "bashMobs": 1
+      },
+      "1663": {
+        "combat": 6,
+        "bashMobs": 1
+      },
+      "321": {
+        "combat": 1
+      },
+      "325": {
+        "hours": 1
+      },
+      "326": {
+        "combat": 2
+      },
+      "334": {
+        "combat": 2,
+        "group": 1
+      },
+      "335": {
+        "combat": 1
+      },
+      "328": {
+        "combat": 1
+      },
+      "456": {
+        "group": 1
+      },
+      "457": {
+        "combat": 1
+      },
+      "337": {
+        "combat": 1
+      },
+      "343": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1715": {
+        "combat": 1
+      },
+      "1717": {
+        "combat": 3
+      },
+      "1719": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2035": {
+        "dungeon": 2,
+        "combat": 4
+      },
+      "2036": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2038": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2039": {
+        "dungeon": 1,
+        "combat": 12,
+        "bashMobs": 1
+      },
+      "2040": {
+        "combat": 5
+      },
+      "2041": {
+        "dungeon": 2,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2042": {
+        "combat": 2
+      },
+      "2043": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2044": {
+        "dungeon": 1,
+        "combat": 3,
+        "bashMobs": 1
+      },
+      "1721": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1729": {
+        "combat": 1
+      },
+      "1730": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1887": {
+        "combat": 2
+      },
+      "1889": {
+        "combat": 1
+      },
+      "1891": {
+        "combat": 2
+      },
+      "1893": {
+        "combat": 1
+      },
+      "1895": {
+        "combat": 1,
+        "group": 1
+      },
+      "1897": {
+        "dungeon": 1
+      },
+      "1899": {
+        "combat": 1
+      },
+      "1901": {
+        "dungeon": 1
+      },
+      "1903": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "109": {
+        "dungeon": 1,
+        "group": 1
+      },
+      "120": {
+        "combat": 2
+      },
+      "421": {
+        "dungeon": 1,
+        "combat": 1,
+        "bashMobs": 1,
+        "group": 1
+      },
+      "1916": {
+        "dungeon": 1,
+        "combat": 5,
+        "group": 1
+      },
+      "1905": {
+        "dungeon": 1
+      },
+      "1906": {
+        "dungeon": 1,
+        "combat": 6
+      },
+      "1907": {
+        "combat": 1
+      },
+      "1908": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1911": {
+        "combat": 5
+      },
+      "1912": {
+        "dungeon": 2
+      },
+      "1913": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1914": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1909": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1915": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1423": {
+        "combat": 3
+      },
+      "2442": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2443": {
+        "dungeon": 1
+      },
+      "2444": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2445": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2451": {
+        "dungeon": 1,
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2446": {
+        "combat": 2
+      },
+      "2447": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2448": {
+        "combat": 1
+      },
+      "1665": {
+        "combat": 2
+      },
+      "1782": {
+        "dungeon": 1,
+        "combat": 4,
+        "bashMobs": 1
+      },
+      "1784": {
+        "dungeon": 1,
+        "combat": 4
+      },
+      "1785": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1787": {
+        "combat": 8
+      },
+      "1788": {
+        "combat": 3
+      },
+      "1789": {
+        "combat": 8
+      },
+      "1791": {
+        "combat": 3
+      },
+      "1786": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "1792": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "1793": {
+        "combat": 1
+      },
+      "2150": {
+        "combat": 3
+      },
+      "615": {
+        "combat": 1,
+        "bashMobs": 1,
+        "group": 1
+      },
+      "619": {
+        "dungeon": 1
+      },
+      "590": {
+        "combat": 1
+      },
+      "583": {
+        "bashMobs": 1
+      },
+      "620": {
+        "dungeon": 1
+      },
+      "591": {
+        "dungeon": 1
+      },
+      "543": {
+        "bashMobs": 1
+      },
+      "1286": {
+        "combat": 1
+      },
+      "592": {
+        "combat": 4
+      },
+      "621": {
+        "dungeon": 1
+      },
+      "593": {
+        "bashMobs": 1
+      },
+      "622": {
+        "dungeon": 1
+      },
+      "594": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "595": {
+        "combat": 1
+      },
+      "623": {
+        "dungeon": 1
+      },
+      "596": {
+        "hours": 2
+      },
+      "678": {
+        "dungeon": 2
+      },
+      "624": {
+        "dungeon": 1
+      },
+      "597": {
+        "dungeon": 1,
+        "bashMobs": 1
+      },
+      "1318": {
+        "dungeon": 1,
+        "combat": 4,
+        "bashMobs": 1,
+        "hours": 1
+      },
+      "1326": {
+        "dungeon": 4,
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1327": {
+        "dungeon": 1
+      },
+      "2164": {
+        "combat": 2
+      },
+      "2151": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2163": {
+        "bashMobs": 1
+      },
+      "2161": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2152": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2153": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2154": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2155": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2197": {
+        "combat": 2
+      },
+      "2179": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2180": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2162": {
+        "combat": 7
+      },
+      "2198": {
+        "combat": 8,
+        "bashMobs": 1
+      },
+      "2200": {
+        "combat": 3
+      },
+      "2201": {
+        "dungeon": 2,
+        "combat": 6
+      },
+      "2158": {
+        "combat": 4
+      },
+      "2202": {
+        "combat": 2
+      },
+      "2204": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "1618": {
+        "combat": 1
+      },
+      "1619": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "1620": {
+        "dungeon": 1
+      },
+      "1621": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "657": {
+        "combat": 1
+      },
+      "2062": {
+        "combat": 2
+      },
+      "2063": {
+        "combat": 2
+      },
+      "2064": {
+        "combat": 6
+      },
+      "2097": {
+        "combat": 8
+      },
+      "2098": {
+        "combat": 14
+      },
+      "2099": {
+        "combat": 4
+      },
+      "2120": {
+        "combat": 5
+      },
+      "2133": {
+        "combat": 9,
+        "bashMobs": 1
+      },
+      "2135": {
+        "combat": 8
+      },
+      "2409": {
+        "combat": 2
+      },
+      "2160": {
+        "combat": 3
+      },
+      "2408": {
+        "combat": 3
+      },
+      "2407": {
+        "combat": 4,
+        "bashMobs": 1
+      },
+      "2411": {
+        "combat": 4
+      },
+      "2412": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2413": {
+        "combat": 2
+      },
+      "2424": {
+        "group": 1
+      },
+      "2421": {
+        "dungeon": 1,
+        "combat": 3,
+        "bashMobs": 1
+      },
+      "2422": {
+        "combat": 3
+      },
+      "2463": {
+        "combat": 1
+      },
+      "2464": {
+        "combat": 2
+      },
+      "2465": {
+        "combat": 1
+      },
+      "2466": {
+        "dungeon": 1
+      },
+      "2468": {
+        "combat": 1
+      },
+      "2471": {
+        "combat": 2,
+        "hours": 1
+      },
+      "2472": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2473": {
+        "combat": 5
+      },
+      "2474": {
+        "combat": 1
+      },
+      "2475": {
+        "dungeon": 1,
+        "combat": 5
+      },
+      "2478": {
+        "combat": 2
+      },
+      "2479": {
+        "combat": 7
+      },
+      "2480": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2482": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2481": {
+        "combat": 1
+      },
+      "1473": {
+        "combat": 4
+      },
+      "1474": {
+        "combat": 2
+      },
+      "1475": {
+        "dungeon": 1
+      },
+      "2121": {
+        "combat": 5
+      },
+      "2112": {
+        "bashMobs": 1
+      },
+      "2117": {
+        "combat": 4
+      },
+      "2118": {
+        "combat": 3,
+        "bashMobs": 1
+      },
+      "2130": {
+        "combat": 1,
+        "bashMobs": 1
+      },
+      "2131": {
+        "dungeon": 3,
+        "combat": 1
+      },
+      "2111": {
+        "dungeon": 1,
+        "combat": 4
+      },
+      "2132": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2119": {
+        "dungeon": 1,
+        "combat": 1
+      },
+      "2113": {
+        "dungeon": 1,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2114": {
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2115": {
+        "combat": 1
+      },
+      "2116": {
+        "combat": 4,
+        "bashMobs": 1
+      },
+      "2122": {
+        "combat": 1
+      },
+      "2136": {
+        "dungeon": 2,
+        "combat": 2,
+        "bashMobs": 1
+      },
+      "2137": {
+        "combat": 3
+      },
+      "2138": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2425": {
+        "dungeon": 6
+      },
+      "2420": {
+        "combat": 2
+      },
+      "2423": {
+        "combat": 11
+      },
+      "2449": {
+        "combat": 2
+      },
+      "2048": {
+        "combat": 3
+      },
+      "2049": {
+        "dungeon": 2,
+        "combat": 10
+      },
+      "2050": {
+        "combat": 7
+      },
+      "2486": {
+        "dungeon": 1,
+        "combat": 3
+      },
+      "2487": {
+        "combat": 3
+      },
+      "2489": {
+        "dungeon": 1,
+        "combat": 2
+      },
+      "2488": {
+        "dungeon": 3,
+        "combat": 6,
+        "bashMobs": 1
+      }
+    }
+  }
+}

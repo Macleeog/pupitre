@@ -12,6 +12,22 @@ contextBridge.exposeInMainWorld("pupitre", {
   overlayDragEnd() {
     ipcRenderer.send("overlay:drag-end");
   },
+  copyTravel(command) {
+    ipcRenderer.send("clipboard:travel", command);
+  },
+  harebourg: {
+    setEnabled: (enabled) => ipcRenderer.send("harebourg:enabled", enabled),
+  },
+  toast: {
+    setCount: (count) => ipcRenderer.send("toast:count", count),
+    moveBy: (dx, dy) => ipcRenderer.send("toast:move-by", dx, dy),
+    dragEnd: () => ipcRenderer.send("toast:drag-end"),
+    onCoords(handler) {
+      const listener = (_event, coords) => handler(coords);
+      ipcRenderer.on("toast:coords", listener);
+      return () => ipcRenderer.removeListener("toast:coords", listener);
+    },
+  },
   shortcuts: {
     set: (map) => ipcRenderer.invoke("shortcuts:set", map),
   },
@@ -37,6 +53,8 @@ contextBridge.exposeInMainWorld("pupitre", {
     openFolder: () => ipcRenderer.invoke("net:open-folder"),
     forgetOwn: () => ipcRenderer.invoke("net:forget-own"),
     setActive: (active) => ipcRenderer.send("net:set-active", active),
+    setWantedNotices: (enabled) => ipcRenderer.send("net:set-wanted-notices", enabled),
+    setArchiNotices: (enabled) => ipcRenderer.send("net:set-archi-notices", enabled),
     onState(handler) {
       const listener = (_event, state) => handler(state);
       ipcRenderer.on("net:state", listener);

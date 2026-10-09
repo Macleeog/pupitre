@@ -4,17 +4,17 @@
 @theme {
   --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", ui-serif, Georgia, serif;
-  --color-pine: #1a120c;
-  --color-moss: #2c1d12;
-  --color-canopy: #3d2918;
-  --color-edge: #6e4b28;
-  --color-fog: #f4e7cc;
-  --color-mist: #c4a882;
-  --color-paper: #f6ead0;
-  --color-ink: #2a1a10;
-  --color-lamp: #e0a33a;
-  --color-lamp-ink: #2a1604;
-  --color-clay: #c45a32;
+  --color-pine: #121212;
+  --color-moss: #1b1b1b;
+  --color-canopy: #242424;
+  --color-edge: #3d4f28;
+  --color-fog: #f3f6ee;
+  --color-mist: #b2b2b2;
+  --color-paper: #e7f5c8;
+  --color-ink: #14241a;
+  --color-lamp: #b7dc69;
+  --color-lamp-ink: #14241a;
+  --color-clay: #d6ff9a;
   --radius-card: 1.15rem;
 }
 
@@ -31,8 +31,8 @@
 
   body {
     background:
-      radial-gradient(ellipse 80% 45% at 50% -10%, #4a3018 0%, transparent 60%),
-      #1a120c;
+      radial-gradient(ellipse 80% 45% at 50% -10%, #243318 0%, transparent 60%),
+      #121212;
     color: var(--color-fog);
     font-family: var(--font-sans);
     line-height: 1.5;

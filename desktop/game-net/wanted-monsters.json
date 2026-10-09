@@ -1,0 +1,512 @@
+[
+  {
+    "id": 446,
+    "name": "Aermyne 'Braco' Scalptaras",
+    "level": 80,
+    "gfxId": 240
+  },
+  {
+    "id": 459,
+    "name": "Padgref Demoël",
+    "level": 130,
+    "gfxId": 249
+  },
+  {
+    "id": 460,
+    "name": "Frakacia Leukocytine",
+    "level": 30,
+    "gfxId": 250
+  },
+  {
+    "id": 462,
+    "name": "Ogivol Scalarcin",
+    "level": 50,
+    "gfxId": 252
+  },
+  {
+    "id": 463,
+    "name": "Fouduglen l'Écureuil",
+    "level": 20,
+    "gfxId": 206
+  },
+  {
+    "id": 464,
+    "name": "Brumen Tinctorias",
+    "level": 60,
+    "gfxId": 253
+  },
+  {
+    "id": 481,
+    "name": "Qil Bil",
+    "level": 70,
+    "gfxId": 266
+  },
+  {
+    "id": 550,
+    "name": "Rok Gnorok",
+    "level": 90,
+    "gfxId": 268
+  },
+  {
+    "id": 552,
+    "name": "Musha L'Oni",
+    "level": 80,
+    "gfxId": 141
+  },
+  {
+    "id": 554,
+    "name": "Marzwel le Gobelin",
+    "level": 60,
+    "gfxId": 99
+  },
+  {
+    "id": 555,
+    "name": "Zatoïshwan",
+    "level": 150,
+    "gfxId": 294
+  },
+  {
+    "id": 2901,
+    "name": "Bouflouth",
+    "level": 120,
+    "gfxId": 814
+  },
+  {
+    "id": 2902,
+    "name": "Monsieur Pingouin",
+    "level": 130,
+    "gfxId": 815
+  },
+  {
+    "id": 2903,
+    "name": "Katigrou",
+    "level": 140,
+    "gfxId": 816
+  },
+  {
+    "id": 2904,
+    "name": "Fantômayte",
+    "level": 150,
+    "gfxId": 817
+  },
+  {
+    "id": 2905,
+    "name": "Vengeuse Masquée",
+    "level": 160,
+    "gfxId": 529
+  },
+  {
+    "id": 2906,
+    "name": "YeCh'Ti",
+    "level": 170,
+    "gfxId": 760
+  },
+  {
+    "id": 2908,
+    "name": "Dremoan",
+    "level": 180,
+    "gfxId": 818
+  },
+  {
+    "id": 2909,
+    "name": "Flasho",
+    "level": 190,
+    "gfxId": 819
+  },
+  {
+    "id": 2910,
+    "name": "Viti Glourson",
+    "level": 190,
+    "gfxId": 820
+  },
+  {
+    "id": 2970,
+    "name": "Fuji Givrefoux",
+    "level": 190,
+    "gfxId": 843
+  },
+  {
+    "id": 3373,
+    "name": "Glourdorak",
+    "level": 200,
+    "gfxId": 866
+  },
+  {
+    "id": 3400,
+    "name": "Docteur Eggob",
+    "level": 190,
+    "gfxId": 977
+  },
+  {
+    "id": 3401,
+    "name": "Mekamouth",
+    "level": 200,
+    "gfxId": 978
+  },
+  {
+    "id": 3402,
+    "name": "Culbutœuf",
+    "level": 200,
+    "gfxId": 979
+  },
+  {
+    "id": 3403,
+    "name": "Chevalier de Glace",
+    "level": 200,
+    "gfxId": 980
+  },
+  {
+    "id": 3413,
+    "name": "Psikopompe",
+    "level": 200,
+    "gfxId": 990
+  },
+  {
+    "id": 3524,
+    "name": "Ali Grothor",
+    "level": 130,
+    "gfxId": 1047
+  },
+  {
+    "id": 3525,
+    "name": "Ambi Guman",
+    "level": 30,
+    "gfxId": 1048
+  },
+  {
+    "id": 3526,
+    "name": "Exi Guman",
+    "level": 30,
+    "gfxId": 1049
+  },
+  {
+    "id": 3527,
+    "name": "Gadoo",
+    "level": 60,
+    "gfxId": 1050
+  },
+  {
+    "id": 3528,
+    "name": "Amy l'empoisonneuse",
+    "level": 140,
+    "gfxId": 1051
+  },
+  {
+    "id": 3533,
+    "name": "Hyperscampe",
+    "level": 200,
+    "gfxId": 918
+  },
+  {
+    "id": 3668,
+    "name": "Voldelor",
+    "level": 200,
+    "gfxId": 1125
+  },
+  {
+    "id": 3669,
+    "name": "Aigripoil",
+    "level": 150,
+    "gfxId": 1126
+  },
+  {
+    "id": 3670,
+    "name": "Maxi-Malle",
+    "level": 100,
+    "gfxId": 1127
+  },
+  {
+    "id": 3760,
+    "name": "Mouchâme",
+    "level": 1440,
+    "gfxId": 1173
+  },
+  {
+    "id": 3761,
+    "name": "Gein",
+    "level": 1600,
+    "gfxId": 1103
+  },
+  {
+    "id": 3762,
+    "name": "Pantèroz",
+    "level": 1040,
+    "gfxId": 1174
+  },
+  {
+    "id": 3845,
+    "name": "Morblok",
+    "level": 120,
+    "gfxId": 1218
+  },
+  {
+    "id": 3848,
+    "name": "Hin",
+    "level": 170,
+    "gfxId": 1221
+  },
+  {
+    "id": 3851,
+    "name": "Sicogne",
+    "level": 200,
+    "gfxId": 1223
+  },
+  {
+    "id": 4014,
+    "name": "Tyranne la Terrible",
+    "level": 80,
+    "gfxId": 1275
+  },
+  {
+    "id": 4015,
+    "name": "Fojumo",
+    "level": 140,
+    "gfxId": 1276
+  },
+  {
+    "id": 4016,
+    "name": "Guerrier du K.O.",
+    "level": 180,
+    "gfxId": 1277
+  },
+  {
+    "id": 4017,
+    "name": "Anatak Diskedor",
+    "level": 160,
+    "gfxId": 1278
+  },
+  {
+    "id": 4027,
+    "name": "Naganita",
+    "level": 100,
+    "gfxId": 1279
+  },
+  {
+    "id": 4028,
+    "name": "Grand Kongoku",
+    "level": 200,
+    "gfxId": 1280
+  },
+  {
+    "id": 4041,
+    "name": "Nenufor Tilotus",
+    "level": 120,
+    "gfxId": 1274
+  },
+  {
+    "id": 4240,
+    "name": "Trukipik",
+    "level": 100,
+    "gfxId": 1338
+  },
+  {
+    "id": 4266,
+    "name": "Sam Sagaz",
+    "level": 20,
+    "gfxId": 413
+  },
+  {
+    "id": 4268,
+    "name": "Maître Boulet",
+    "level": 30,
+    "gfxId": 194
+  },
+  {
+    "id": 4270,
+    "name": "Roub' Ignolles",
+    "level": 40,
+    "gfxId": 1162
+  },
+  {
+    "id": 4272,
+    "name": "Bouss Baybe",
+    "level": 50,
+    "gfxId": 332
+  },
+  {
+    "id": 4273,
+    "name": "Nono le Wobot",
+    "level": 60,
+    "gfxId": 102
+  },
+  {
+    "id": 4274,
+    "name": "Armada l'Invincible",
+    "level": 70,
+    "gfxId": 127
+  },
+  {
+    "id": 4275,
+    "name": "Dragodingo",
+    "level": 80,
+    "gfxId": 1349
+  },
+  {
+    "id": 4276,
+    "name": "Degolas",
+    "level": 90,
+    "gfxId": 110
+  },
+  {
+    "id": 4277,
+    "name": "Prince Marchand",
+    "level": 100,
+    "gfxId": 1350
+  },
+  {
+    "id": 4328,
+    "name": "Atcham",
+    "level": 200,
+    "gfxId": 1334
+  },
+  {
+    "id": 4329,
+    "name": "Atcham",
+    "level": 200,
+    "gfxId": 1335
+  },
+  {
+    "id": 4330,
+    "name": "Atcham",
+    "level": 200,
+    "gfxId": 1333
+  },
+  {
+    "id": 4506,
+    "name": "Buldalazred",
+    "level": 200,
+    "gfxId": 1447
+  },
+  {
+    "id": 4507,
+    "name": "Takomako",
+    "level": 200,
+    "gfxId": 1448
+  },
+  {
+    "id": 4532,
+    "name": "Homard Medali",
+    "level": 200,
+    "gfxId": 1457
+  },
+  {
+    "id": 4618,
+    "name": "Tournade",
+    "level": 80,
+    "gfxId": 1492
+  },
+  {
+    "id": 4622,
+    "name": "Roi Camole",
+    "level": 130,
+    "gfxId": 1496
+  },
+  {
+    "id": 4734,
+    "name": "Khepricorne",
+    "level": 200,
+    "gfxId": 1539
+  },
+  {
+    "id": 4737,
+    "name": "Ka'Youloud",
+    "level": 170,
+    "gfxId": 1541
+  },
+  {
+    "id": 4814,
+    "name": "Simbadas",
+    "level": 90,
+    "gfxId": 1575
+  },
+  {
+    "id": 4815,
+    "name": "Carlita de l'Aguerfelde",
+    "level": 100,
+    "gfxId": 1576
+  },
+  {
+    "id": 4816,
+    "name": "Shushu Debruk'Sayl",
+    "level": 180,
+    "gfxId": 1577
+  },
+  {
+    "id": 4834,
+    "name": "Predagob",
+    "level": 190,
+    "gfxId": 1583
+  },
+  {
+    "id": 4949,
+    "name": "Jérart Dupaindur",
+    "level": 130,
+    "gfxId": 1624
+  },
+  {
+    "id": 4953,
+    "name": "Le Fantôme Braïdeur",
+    "level": 200,
+    "gfxId": 1625
+  },
+  {
+    "id": 5073,
+    "name": "Gobrechaun",
+    "level": 110,
+    "gfxId": 1648
+  },
+  {
+    "id": 5074,
+    "name": "Vashkiwi",
+    "level": 120,
+    "gfxId": 1649
+  },
+  {
+    "id": 5076,
+    "name": "Darma",
+    "level": 140,
+    "gfxId": 1650
+  },
+  {
+    "id": 5077,
+    "name": "Mogligli",
+    "level": 150,
+    "gfxId": 1651
+  },
+  {
+    "id": 5081,
+    "name": "Glandaf l'Aigri",
+    "level": 160,
+    "gfxId": 1652
+  },
+  {
+    "id": 5083,
+    "name": "Crasper",
+    "level": 170,
+    "gfxId": 1653
+  },
+  {
+    "id": 5084,
+    "name": "Carter le Pillard",
+    "level": 180,
+    "gfxId": 1654
+  },
+  {
+    "id": 5086,
+    "name": "Sans Visage",
+    "level": 190,
+    "gfxId": 1655
+  },
+  {
+    "id": 8063,
+    "name": "Ganos",
+    "level": 200,
+    "gfxId": 2516
+  },
+  {
+    "id": 8184,
+    "name": "Comte Harebourg",
+    "level": 220,
+    "gfxId": 993
+  }
+]
