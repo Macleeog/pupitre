@@ -3,6 +3,7 @@ import { FolderOpen, RotateCw, Store, Swords, Circle, Square, TriangleAlert, Use
 import { fightLoot, hasLoot, useNetState } from "@/lib/pupitre/game-net";
 import { useItemNames } from "@/lib/pupitre/items";
 import { usePupitre } from "@/lib/pupitre/store";
+import { ArchiIcon, travelCommand } from "@/components/pupitre/wanted-toast";
 import type { FightEnd, FightEvent, NetState, NetStatus } from "@/pupitre-desktop";
 
 const STATUS: Record<NetStatus, { label: string; tone: string }> = {
@@ -73,6 +74,7 @@ export function NetworkView() {
       <StatusCard state={state} now={now} />
       {state.codes?.state === "stale" ? <StaleCodes share={state.codes.knownShare ?? 0} /> : null}
       <FightCard state={state} />
+      <WantedNotice now={now} />
       <MarketCard now={now} />
       <CaptureCard state={state} now={now} />
       {state.status === "missing" || state.status === "error" || state.status === "unsupported" ? <SetupHelp /> : null}
@@ -188,6 +190,62 @@ function OwnFighters({ ids }: { ids: string[] }) {
         </button>
       ) : null}
     </div>
+  );
+}
+
+function WantedNotice({ now }: { now: number }) {
+  const sighting = usePupitre((state) => state.lastWanted);
+  const [copied, setCopied] = useState(false);
+  const fresh = sighting !== null && now - sighting.at < 10 * 60 * 1000;
+  const command = fresh && sighting ? travelCommand(sighting.coords) : null;
+  return (
+    <section className="rounded-card border border-edge bg-moss p-4">
+      <h2 className="font-medium text-fog">Avis de recherche et archimonstres</h2>
+      <p className="mt-1 text-sm text-mist">
+        {fresh && sighting
+          ? `${sighting.text} Repéré ${ago(sighting.at, now)}.`
+          : "Aucun sur la carte actuelle. Pupitre prévient en arrivant sur une carte qui en a un."}
+      </p>
+      {fresh && sighting ? (
+        <ul className="mt-3 flex flex-wrap gap-2">
+          {sighting.monsters.map((monster) => (
+            <li
+              key={monster.id}
+              className={
+                "flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm " +
+                (monster.kind === "archi" ? "border-lamp bg-canopy text-lamp" : "border-edge bg-pine text-fog")
+              }
+            >
+              {monster.kind === "archi" ? <ArchiIcon className="size-4" /> : null}
+              {monster.name}
+              <span className="text-xs text-mist">niv. {monster.level}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {fresh && sighting?.coords ? (
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <p className="text-sm text-fog">
+            <span className="text-mist">
+              {sighting.coords.x},{sighting.coords.y}
+            </span>{" "}
+            <span className="font-medium">{command ?? "Autre monde"}</span>
+          </p>
+          {command ? (
+            <button
+              type="button"
+              onClick={() => {
+                window.pupitre?.toast?.copy?.(command);
+                void navigator.clipboard?.writeText(command).finally(() => setCopied(true));
+              }}
+              className="min-h-11 rounded-full border border-edge px-4 text-sm font-medium text-fog"
+            >
+              {copied ? "Copié" : "Copier"}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+    </section>
   );
 }
 

@@ -6,11 +6,17 @@ contextBridge.exposeInMainWorld("pupitre", {
     ipcRenderer.on("farm-command", listener);
     return () => ipcRenderer.removeListener("farm-command", listener);
   },
+  overlayDragStart() {
+    ipcRenderer.send("overlay:drag-start");
+  },
   overlayMoveBy(dx, dy) {
     ipcRenderer.send("overlay:move-by", dx, dy);
   },
   overlayDragEnd() {
     ipcRenderer.send("overlay:drag-end");
+  },
+  overlayHide() {
+    ipcRenderer.send("overlay:hide");
   },
   copyTravel(command) {
     ipcRenderer.send("clipboard:travel", command);
@@ -19,9 +25,18 @@ contextBridge.exposeInMainWorld("pupitre", {
     setEnabled: (enabled) => ipcRenderer.send("harebourg:enabled", enabled),
   },
   toast: {
-    setCount: (count) => ipcRenderer.send("toast:count", count),
-    moveBy: (dx, dy) => ipcRenderer.send("toast:move-by", dx, dy),
-    dragEnd: () => ipcRenderer.send("toast:drag-end"),
+    setCount(count) {
+      ipcRenderer.send("toast:count", count);
+    },
+    moveBy(dx, dy) {
+      ipcRenderer.send("toast:move-by", dx, dy);
+    },
+    dragEnd() {
+      ipcRenderer.send("toast:drag-end");
+    },
+    copy(text) {
+      ipcRenderer.send("toast:copy", text);
+    },
     onCoords(handler) {
       const listener = (_event, coords) => handler(coords);
       ipcRenderer.on("toast:coords", listener);

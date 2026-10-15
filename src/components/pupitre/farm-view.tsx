@@ -6,7 +6,7 @@ import {
   formatDecimal,
   formatDuration,
   formatKamas,
-  parseKamas,
+  lineValue,
   perHour,
   snapshot,
   type FarmStatus,
@@ -37,11 +37,13 @@ export function FarmView() {
   const addResource = usePupitre((state) => state.addResource);
   const patchResource = usePupitre((state) => state.patchResource);
   const removeResource = usePupitre((state) => state.removeResource);
+  const clearResources = usePupitre((state) => state.clearResources);
   const removeFarmHistory = usePupitre((state) => state.removeFarmHistory);
   const undoFightLoot = usePupitre((state) => state.undoFightLoot);
   const shortcuts = usePupitre((state) => state.shortcuts);
   const [selected, setSelected] = useState<string | null>(null);
   const totals = snapshot(farm, elapsedMs(farm, Date.now()));
+  const resourcesValue = farm.resources.reduce((sum, resource) => sum + lineValue(resource.qty, resource.price), 0);
   const counting = farm.status === "running" || farm.status === "paused";
   const sessionEmpty =
     farm.status === "idle" &&
@@ -94,6 +96,7 @@ export function FarmView() {
             <section className="rounded-card border border-edge bg-moss p-4">
               <p className="text-xs font-medium tracking-widest text-mist uppercase">Session</p>
               <p className="mt-2 text-center font-medium text-lamp">{STATUS_LABEL[farm.status]}</p>
+              <p className="mt-1 text-center text-sm">Ressources : {formatKamas(resourcesValue)}</p>
               <div className="mt-3 grid grid-cols-3 gap-2">
                 <button
                   type="button"
@@ -175,6 +178,17 @@ export function FarmView() {
                   >
                     Supprimer
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      clearResources();
+                      setSelected(null);
+                    }}
+                    disabled={farm.resources.length === 0}
+                    className="min-h-11 rounded-full border border-edge px-3 text-sm disabled:opacity-40"
+                  >
+                    Tout vider
+                  </button>
                 </div>
               </div>
               {farm.resources.length === 0 ? (
@@ -188,7 +202,7 @@ export function FarmView() {
                     <span>Valeur</span>
                   </li>
                   {farm.resources.map((resource) => {
-                    const line = parseKamas(resource.qty) * parseKamas(resource.price);
+                    const line = lineValue(resource.qty, resource.price);
                     const active = selected === resource.id;
                     return (
                       <li key={resource.id}>
@@ -257,7 +271,8 @@ export function FarmView() {
           </div>
           <p className="text-sm text-mist">
             Les objets viennent du catalogue Dofus 3 (DofusDB). Dans l'exe, l'onglet Réseau ajoute seul les combats, les
-            kamas et le butin, et reprend les prix que tu vois à l'hôtel des ventes. Un prix tapé à la main reste le tien.
+            kamas et le butin. Le prix unitaire est le prix moyen d'une unité, et la valeur est la quantité fois ce
+            prix. Un prix tapé à la main reste le tien.
           </p>
           <FightLog entries={farm.fightLog ?? []} resources={farm.resources} onUndo={undoFightLoot} />
           <section>
@@ -353,13 +368,17 @@ function ResourceName({
               combat
             </span>
           ) : null}
-          {resource.priceFrom === "hdv" ? (
+          {resource.priceFrom === "hdv" || resource.priceFrom === "average" ? (
             <span
               className="inline-flex items-center gap-1 rounded-full border border-edge px-1.5 text-fog"
-              title="Prix lu à l'hôtel des ventes. Tape un prix pour garder le tien."
+              title={
+                resource.priceFrom === "average"
+                  ? "Prix moyen d'une unité. La valeur est la quantité fois ce prix."
+                  : "Prix d'une unité lu à l'hôtel des ventes. Tape un prix pour garder le tien."
+              }
             >
               <Store className="size-3" aria-hidden="true" />
-              HDV
+              {resource.priceFrom === "average" ? "moyen" : "HDV"}
             </span>
           ) : null}
           {linked
@@ -386,9 +405,6 @@ function ResourceName({
                     icon: item.icon,
                     typeName: item.typeName,
                     level: item.level,
-                    ...(!resource.price && item.price > 1
-                      ? { price: String(item.price), priceFrom: "catalog" as const }
-                      : {}),
                   });
                 }}
               >

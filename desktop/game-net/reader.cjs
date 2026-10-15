@@ -6,9 +6,9 @@ const readline = require("node:readline");
 const { FrameStream, toJson } = require("./decode.cjs");
 const { createFightTracker } = require("./fights.cjs");
 const { codesHealth } = require("./known-types.cjs");
+const { createWantedWatch, sentence } = require("./wanted.cjs");
 const { readMarket } = require("./market.cjs");
 const { WATCHED, createHarebourgWatch } = require("./harebourg.cjs");
-const { createWantedWatch, sentence } = require("./wanted.cjs");
 const { startForegroundWatch } = require("../foreground.cjs");
 
 const GAME_PORTS = new Set([5555, 443]);
@@ -192,6 +192,7 @@ class GameNetReader {
         return;
       }
       if (event.type !== "wanted-sighting") return;
+      // Both kinds are always detected; the two settings decide which ones are announced.
       const monsters = event.monsters.filter((monster) =>
         monster.kind === "archi" ? this.archiNotices !== false : this.wantedNotices !== false,
       );
