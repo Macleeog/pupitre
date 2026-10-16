@@ -30,6 +30,8 @@ jobs:
             dist-electron/*.blockmap
             dist-electron/latest*.yml
             dist-electron/beta*.yml
+      # The installer is attached to a release of this same repo. The repo has to be public
+      # at that moment, otherwise installed copies get a 404 on releases.atom.
       - uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:

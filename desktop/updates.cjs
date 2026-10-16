@@ -42,7 +42,7 @@ function watchForUpdates(desk) {
     updater.on("update-available", (info) => set({ status: "downloading", available: info.version, progress: 0 }));
     updater.on("download-progress", (progress) => set({ status: "downloading", progress: Math.round(progress.percent) }));
     updater.on("update-downloaded", (info) => set({ status: "ready", available: info.version, progress: 100 }));
-    updater.on("error", (error) => set({ status: "error", detail: String(error?.message ?? error).slice(0, 300) }));
+    updater.on("error", (error) => set({ status: "error", detail: readableUpdateError(error) }));
     const check = () => updater.checkForUpdates().catch(() => {});
     setTimeout(check, 8000);
     setInterval(check, CHECK_EVERY_MS);
@@ -57,6 +57,15 @@ function watchForUpdates(desk) {
   ipcMain.on("update:install", (event) => {
     if (fromDesk(event) && updater && state.status === "ready") updater.quitAndInstall(true, true);
   });
+}
+
+// A private repo answers 404 on the releases feed. The raw message includes headers.
+function readableUpdateError(error) {
+  const message = String(error?.message ?? error);
+  if (/404/.test(message)) {
+    return "La page des versions ne répond pas pour le moment. Réessaie plus tard.";
+  }
+  return message.replace(/\s+/g, " ").slice(0, 180);
 }
 
 module.exports = { watchForUpdates };

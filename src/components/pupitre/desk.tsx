@@ -14,7 +14,34 @@ import { bindFarmHotkeys, bindFarmSync } from "@/lib/pupitre/farm-sync";
 import { bindShortcuts } from "@/lib/pupitre/shortcuts";
 import { useUpdateState } from "@/lib/pupitre/updates";
 import { APP_VERSION } from "@/lib/pupitre/version";
-import { loadWatchSettings, pushWatchSettings, readerShouldRun } from "@/lib/pupitre/watch-settings";
+import { WantedSquares, type WantedCard } from "@/components/pupitre/wanted-toast";
+import { loadWatchSettings, saveWatchSettings, type WatchSettings } from "@/lib/pupitre/watch-settings";
+
+const STORE_KEY = "pupitre-dofus3";
+
+// v0.2.1 kept the two alert switches in the Veille tab. v0.1.17 kept them in Réglages.
+// Whichever copy was actually saved wins, then both screens follow the same values.
+function reconcileNoticeSettings() {
+  const watch = loadWatchSettings();
+  let explicitStore = false;
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(STORE_KEY) ?? "") as { state?: Record<string, unknown> };
+    const state = saved.state ?? {};
+    explicitStore = Object.prototype.hasOwnProperty.call(state, "wantedNotices") || Object.prototype.hasOwnProperty.call(state, "archiNotices");
+  } catch {
+    explicitStore = false;
+  }
+  if (explicitStore) {
+    const { wantedNotices, archiNotices } = usePupitre.getState();
+    saveWatchSettings({
+      ...watch,
+      wantedNotices: wantedNotices !== false,
+      archiNotices: archiNotices !== false,
+    });
+    return;
+  }
+  usePupitre.setState({ wantedNotices: watch.wantedNotices, archiNotices: watch.archiNotices });
+}
 
 const TABS: { id: DeskTab; label: string; icon: typeof Timer }[] = [
   { id: "session", label: "Session", icon: Timer },
@@ -34,14 +61,40 @@ export function Desk() {
   const frame = current === "reglages" ? "max-w-3xl" : "max-w-6xl";
 
   useEffect(() => {
+    let ready = false;
     const syncReader = () => {
-      const { farm, tab } = usePupitre.getState();
+      if (!ready) return;
+      const { farm, tab, wantedNotices, archiNotices } = usePupitre.getState();
       const watch = loadWatchSettings();
-      pushWatchSettings(watch);
-      window.pupitre?.net?.setActive?.(readerShouldRun(watch, farm.status === "running", tab === "reseau"));
+      const notices = wantedNotices !== false;
+      const archi = archiNotices !== false;
+      if (watch.wantedNotices !== notices || watch.archiNotices !== archi) {
+        saveWatchSettings({ ...watch, wantedNotices: notices, archiNotices: archi });
+      }
+      window.pupitre?.harebourg?.setEnabled?.(watch.harebourg !== false);
+      window.pupitre?.net?.setWantedNotices?.(notices);
+      window.pupitre?.net?.setArchiNotices?.(archi);
+      window.pupitre?.net?.setActive?.(
+        farm.status === "running" || tab === "reseau" || watch.harebourg !== false || notices || archi,
+      );
+    };
+    const onWatch = (event: Event) => {
+      const detail = (event as CustomEvent<WatchSettings>).detail;
+      if (!detail) return;
+      const { wantedNotices, archiNotices } = usePupitre.getState();
+      const notices = detail.wantedNotices !== false;
+      const archi = detail.archiNotices !== false;
+      if (wantedNotices !== notices || archiNotices !== archi) {
+        usePupitre.setState({ wantedNotices: notices, archiNotices: archi });
+        return;
+      }
+      syncReader();
     };
     const unsub = usePupitre.subscribe(syncReader);
+    window.addEventListener("pupitre-watch-settings", onWatch);
     void Promise.resolve(usePupitre.persist.rehydrate()).then(() => {
+      reconcileNoticeSettings();
+      ready = true;
       setHydrated(true);
       syncReader();
     });
@@ -51,6 +104,7 @@ export function Desk() {
     const unbindShortcuts = bindShortcuts();
     return () => {
       unsub();
+      window.removeEventListener("pupitre-watch-settings", onWatch);
       unbindShortcuts();
       unbindSync();
       unbindKeys();
@@ -88,6 +142,7 @@ export function Desk() {
           ) : null}
         </div>
         <UpdateBanner onOpen={() => setTab("reglages")} />
+        <WantedBanner />
       </header>
 
       <main className={"mx-auto w-full px-4 pt-5 pb-28 " + frame}>
@@ -132,6 +187,25 @@ export function Desk() {
       </nav>
     </div>
   );
+}
+
+function WantedBanner() {
+  const sighting = usePupitre((state) => state.lastWanted);
+  const enabled = usePupitre((state) => state.wantedNotices);
+  const archi = usePupitre((state) => state.archiNotices);
+  const [desktop, setDesktop] = useState(false);
+  useEffect(() => {
+    setDesktop(Boolean(window.pupitre?.toast));
+  }, []);
+  if (desktop || (enabled === false && archi === false) || !sighting) return null;
+  if (Date.now() - sighting.at > 10_000) return null;
+  const monsters: WantedCard[] = sighting.monsters.slice(0, 3).map((monster) => ({
+    id: monster.id,
+    name: monster.name,
+    gfxId: monster.gfxId,
+    kind: monster.kind,
+  }));
+  return <WantedSquares key={sighting.at} monsters={monsters} coords={sighting.coords ?? null} />;
 }
 
 function UpdateBanner({ onOpen }: { onOpen: () => void }) {

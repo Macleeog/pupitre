@@ -21,8 +21,12 @@ while ($true) {
   if ($null -eq $target -or [PupitreWin]::IsIconic($target.MainWindowHandle) -or -not [PupitreWin]::GetWindowRect($target.MainWindowHandle, [ref]$rect)) {
     $line = "none"
   } else {
-    $front = if ($target.MainWindowHandle -eq $foreground) { 1 } else { 0 }
-    $line = "{0},{1},{2},{3},{4}" -f $rect.Left, $rect.Top, $rect.Right, $rect.Bottom, $front
+    # Clicking the bandeau focuses Pupitre. Treat that as Dofus still being in front, or the
+    # bandeau would hide itself the moment it is dragged. The desk window is a different handle.
+    $foregroundValue = $foreground.ToInt64()
+    $overlayValue = [int64]__OVERLAY_HWND__
+    $front = if ($target.MainWindowHandle.ToInt64() -eq $foregroundValue -or $foregroundValue -eq $overlayValue) { 1 } else { 0 }
+    $line = "{0},{1},{2},{3},{4},{5}" -f $rect.Left, $rect.Top, $rect.Right, $rect.Bottom, $front, $target.MainWindowHandle.ToInt64()
   }
   if ($line -ne $last) {
     $last = $line

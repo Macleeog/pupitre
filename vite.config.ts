@@ -146,6 +146,11 @@ function authPopupPlugin(): Plugin {
 // The dev server starts once `src/router.tsx` and `src/routes/` exist — see
 // AGENTS.md § "First scaffold".
 const pupitreVersion = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8")).version;
+// The desktop exe has no accounts and no server calls. SPA mode writes one HTML shell
+// and the client handles every route, so the package ships `.output/public` only.
+// Nitro's static preset fails while bundling the PWA middleware (`?raw`), so the
+// desktop build keeps the node-server preset long enough to emit that shell.
+const desktopBuild = process.env.PUPITRE_DESKTOP === "1";
 
 export default defineConfig(({ command, isPreview }) => ({
   define: {
@@ -171,11 +176,11 @@ export default defineConfig(({ command, isPreview }) => ({
     // PWA head + ?install=1 tutorial page; runs before Start/Nitro.
     grokPwaPlugin(),
     tailwindcss(),
-    tanstackStart(),
+    tanstackStart(desktopBuild ? { spa: { enabled: true } } : undefined),
     ...(command === "build" || isPreview
       ? [
           nitro({
-            preset: process.env.PUPITRE_DESKTOP === "1" ? "node-server" : "vercel",
+            preset: desktopBuild ? "node-server" : "vercel",
             // Auto-registers server/middleware/* (the PWA install page +
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.

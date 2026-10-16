@@ -72,14 +72,49 @@ function sellerPrices(payload) {
   return [...lots].map(([itemId, unit]) => ({ itemId, unitPrice: Math.max(1, Math.round(unit)) }));
 }
 
-function readMarket(message) {
-  const sale = message.type === MARKET_CODES.sellerListings;
-  if (!sale && message.type !== MARKET_CODES.itemPrices) return null;
-  const payload = parseMessage(message.value);
-  if (!payload) return null;
-  return sale
-    ? { source: "sale", prices: sellerPrices(payload) }
-    : { source: "search", prices: marketPrices(payload) };
+function asUnit(entry) {
+  if (!entry || entry.wireType !== 0) return null;
+  const value = Number(entry.value);
+  return Number.isSafeInteger(value) && value > 0 ? value : null;
 }
 
-module.exports = { MARKET_CODES, readMarket, sellerPrices, marketPrices };
+// Prix moyen of one unit, sent as a list of { gid, average } or as one gid plus its average
+// (the optional third field is the seller's lot grid and is not the unit price).
+// The average is already for a single unit: it is never divided by a quantity.
+function averageUnitPrices(payload) {
+  const keys = [...payload.keys()];
+  if (keys.length === 1 && keys[0] === 1) {
+    const entries = payload.get(1) ?? [];
+    if (entries.length < 2) return null;
+    const prices = [];
+    for (const entry of entries) {
+      if (entry.wireType !== 2) return null;
+      const row = parseMessage(entry.raw);
+      const rowKeys = row ? [...row.keys()] : [];
+      if (!row || rowKeys.length !== 2 || !row.has(1) || !row.has(2)) return null;
+      const itemId = asUnit(row.get(1)[0]);
+      const unitPrice = asUnit(row.get(2)[0]);
+      if (itemId === null || unitPrice === null) return null;
+      prices.push({ itemId, unitPrice });
+    }
+    return prices;
+  }
+  if (!keys.includes(1) || !keys.includes(2) || keys.some((key) => key > 3)) return null;
+  const extra = payload.get(3)?.[0];
+  if (!extra || extra.wireType !== 2) return null;
+  const itemId = asUnit(payload.get(1)?.[0]);
+  const unitPrice = asUnit(payload.get(2)?.[0]);
+  if (itemId === null || unitPrice === null) return null;
+  return [{ itemId, unitPrice }];
+}
+
+function readMarket(message) {
+  const payload = parseMessage(message.value);
+  if (!payload) return null;
+  if (message.type === MARKET_CODES.sellerListings) return { source: "sale", prices: sellerPrices(payload) };
+  if (message.type === MARKET_CODES.itemPrices) return { source: "search", prices: marketPrices(payload) };
+  const prices = averageUnitPrices(payload);
+  return prices ? { source: "average", prices } : null;
+}
+
+module.exports = { MARKET_CODES, readMarket, sellerPrices, marketPrices, averageUnitPrices };

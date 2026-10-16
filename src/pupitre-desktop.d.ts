@@ -53,15 +53,19 @@ export type HarebourgState = {
   dofusWindow: { x: number; y: number; width: number; height: number } | null;
 };
 
+export type WantedKind = "wanted" | "archi";
+
 export type WantedMonster = {
   id: number;
   name: string;
   level?: number;
   gfxId?: number;
-  kind?: "archi" | "wanted";
+  kind?: WantedKind;
 };
 
 export type WantedCoords = { x: number; y: number; world?: number };
+
+export type MapCoords = WantedCoords;
 
 export type WantedSighting = {
   type: "wanted-sighting";
@@ -74,10 +78,15 @@ export type WantedSighting = {
 
 export type GameEvent =
   | FightEvent
-  | { type: "hdv-prices"; at: number; source: "sale"; prices: { itemId: number; unitPrice: number }[] }
+  | {
+      type: "hdv-prices";
+      at: number;
+      source: "sale" | "search" | "average";
+      prices: { itemId: number; unitPrice: number }[];
+    }
   | HarebourgState
   | WantedSighting
-  | { type: "wanted-absent"; at: number };
+  | { type: "wanted-absent"; at: number; mapId?: number | null };
 
 export type NetState = {
   status: NetStatus;
@@ -100,7 +109,7 @@ export type NetState = {
   fightsSeen: number;
   ownFighterIds?: string[];
   codes?: { state: "ok" | "unknown" | "stale"; knownShare: number | null };
-  lastMarket?: { at: number; source: "sale"; items: number } | null;
+  lastMarket?: { at: number; source: "sale" | "search" | "average"; items: number } | null;
   lastWanted?: WantedSighting | null;
   harebourg?: HarebourgState | null;
 };
@@ -123,8 +132,10 @@ declare global {
       onFarmCommand: (handler: (command: FarmCommand) => void) => () => void;
       onCombatUpdate?: (fn: (snapshot: CombatSnapshot) => void) => () => void;
       sendCombatSnapshot?: (snapshot: CombatSnapshot) => void;
+      overlayDragStart?: () => void;
       overlayMoveBy?: (dx: number, dy: number) => void;
       overlayDragEnd?: () => void;
+      overlayHide?: () => void;
       copyTravel?: (command: string) => void;
       harebourg?: {
         setEnabled: (enabled: boolean) => void;
@@ -133,6 +144,7 @@ declare global {
         setCount: (count: number) => void;
         moveBy: (dx: number, dy: number) => void;
         dragEnd: () => void;
+        copy: (text: string) => void;
         onCoords: (handler: (coords: WantedCoords | null) => void) => () => void;
       };
       shortcuts?: {
